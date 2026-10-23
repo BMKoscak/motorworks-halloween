@@ -85,9 +85,9 @@
  },
  {
   "file": "forklift.glb",
-  "objects": 12,
-  "meshes": 10,
-  "tris": 412,
+  "objects": 17,
+  "meshes": 13,
+  "tris": 472,
   "hinges": [
    "Forks",
    "ForkWheel_FL",
@@ -95,7 +95,7 @@
    "ForkWheel_RL",
    "ForkWheel_RR"
   ],
-  "bytes": 34128
+  "bytes": 41080
  },
  {
   "file": "lift.glb",
@@ -119,71 +119,115 @@
  },
  {
   "file": "plant.glb",
-  "objects": 78,
-  "meshes": 76,
-  "tris": 6960,
+  "objects": 255,
+  "meshes": 242,
+  "tris": 21804,
   "hinges": [
-   "GiantSpider"
+   "GiantSpider",
+   "SwitchLever_NightShift"
   ],
-  "bytes": 451752
+  "bytes": 1544804
  },
  {
   "file": "diner.glb",
-  "objects": 16,
-  "meshes": 14,
-  "tris": 1596,
-  "hinges": [],
-  "bytes": 97428
+  "objects": 176,
+  "meshes": 159,
+  "tris": 6632,
+  "hinges": [
+   "Door_Back",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 504948
  },
  {
   "file": "gas_station.glb",
-  "objects": 26,
-  "meshes": 25,
-  "tris": 1392,
-  "hinges": [],
-  "bytes": 96108
+  "objects": 122,
+  "meshes": 99,
+  "tris": 5396,
+  "hinges": [
+   "Door_Front",
+   "Hose_0_0",
+   "Hose_0_1",
+   "Hose_1_0",
+   "Hose_1_1",
+   "Nozzle_0_0",
+   "Nozzle_0_1",
+   "Nozzle_1_0",
+   "Nozzle_1_1",
+   "SwitchLever_Main"
+  ],
+  "bytes": 402964
  },
  {
   "file": "hardware.glb",
-  "objects": 11,
-  "meshes": 10,
-  "tris": 844,
-  "hinges": [],
-  "bytes": 56280
+  "objects": 125,
+  "meshes": 100,
+  "tris": 5536,
+  "hinges": [
+   "Door_Back",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 405964
  },
  {
   "file": "police_station.glb",
-  "objects": 21,
-  "meshes": 20,
-  "tris": 1028,
+  "objects": 168,
+  "meshes": 144,
+  "tris": 4688,
+  "hinges": [
+   "Cell_Door",
+   "Door_Back",
+   "Door_Evidence",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 400540
+ },
+ {
+  "file": "jumbotron.glb",
+  "objects": 12,
+  "meshes": 7,
+  "tris": 368,
   "hinges": [],
-  "bytes": 79380
+  "bytes": 32156
  },
  {
   "file": "house_a.glb",
-  "objects": 28,
-  "meshes": 26,
-  "tris": 1116,
-  "hinges": [],
-  "bytes": 94776
+  "objects": 184,
+  "meshes": 163,
+  "tris": 4776,
+  "hinges": [
+   "BreakerLever",
+   "Door_Back",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 435216
  },
  {
   "file": "house_b.glb",
-  "objects": 22,
-  "meshes": 20,
-  "tris": 636,
-  "hinges": [],
-  "bytes": 58604
+  "objects": 149,
+  "meshes": 128,
+  "tris": 3240,
+  "hinges": [
+   "BreakerLever",
+   "Door_Back",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 305456
  },
  {
   "file": "props.glb",
-  "objects": 103,
-  "meshes": 75,
-  "tris": 5818,
+  "objects": 185,
+  "meshes": 138,
+  "tris": 8528,
   "hinges": [
    "CryptDoor",
    "Turntable_Top"
   ],
-  "bytes": 408356
+  "bytes": 602076
  }
 ]

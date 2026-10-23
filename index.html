@@ -38,7 +38,11 @@
           <span>C</span><span>Chase ⇄ cockpit camera</span>
           <span>H</span><span>Horn</span>
           <span>R</span><span>Haunted car radio</span>
-          <span>L</span><span>Headlights</span>
+          <span>L</span><span>Headlights / tail-lights / underglow</span>
+          <span>1 – 5</span><span>Fists · Crowbar · Pistol · Shotgun · Jack-o'-Lantern Launcher</span>
+          <span>RMB / LMB</span><span>Aim / Fire (Q also aims)</span>
+          <span>R (on foot)</span><span>Reload</span>
+          <span>E</span><span>Doors · light switches · breakers · doorbells · loot · trunk · pumps · shops</span>
           <span>V / F / T</span><span>Station cam / Follow car / Fast-forward build</span>
           <span>N</span><span>Toggle waypoint guide</span>
           <span>Backspace</span><span>Reset car upright</span>
@@ -76,7 +80,17 @@
       <div id="spd-val">0</div><div class="unit">MPH</div>
       <div id="spd-gear">N</div>
       <div class="rpm"><div id="spd-rpm"></div></div>
+      <div class="fuel"><span class="fuel-ic" id="fuel-light">⛽</span><div class="fuel-bar"><div id="fuel-fill"></div></div><span id="fuel-pct">100%</span></div>
+      <div id="car-dmg" class="hint"></div>
     </div>
+    <div id="crosshair" class="hidden"><i></i><i></i><i></i><i></i></div>
+    <div id="weapon-panel">
+      <div id="wp-health"><div id="wp-health-fill"></div></div>
+      <div class="wp-row"><span id="wp-name">Fists</span><b id="wp-ammo"></b></div>
+      <div id="wp-slots"></div>
+      <div id="wp-bag" class="hint"></div>
+    </div>
+    <div id="pump-panel" class="panel hidden"><div class="ph">PUMP 3 · REGULAR</div><div class="pump-row"><span>GALLONS</span><b id="pump-gal">0.000</b></div><div class="pump-row"><span>SALE $</span><b id="pump-cost">0.00</b></div><div class="bar small"><div id="pump-bar"></div></div></div>
     <div id="prompt" class="hidden"></div>
     <div id="toasts"></div>
     <div id="subtitle" class="hidden"><b id="sub-name"></b><span id="sub-text"></span></div>

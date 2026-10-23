@@ -413,12 +413,14 @@ export class CarVisual {
   // ------------------------------------------------------------------- optimisation / fx
   /** Lite mode (civilian/police): bake the body, driver door, rims and calipers into vertex-coloured meshes. */
   _mergeStatic() {
-    const keepRoots = new Set([this.n.Door_L, ...this.wheelNodes.map((w) => w.knuckle)]);
+    // the driver door, the steering wheel (turns with the seated driver's hands) and the wheels stay articulated
+    const keepRoots = new Set([this.n.Door_L, this.n.SteeringWheel, ...this.wheelNodes.map((w) => w.knuckle)].filter(Boolean));
     if (this.opts.police && this.partNodes.roof) keepRoots.add(this.partNodes.roof);
     const paint = new THREE.Color(this.cfg.color);
     const colorOf = (o, m) => (m.name === 'PaintLive' ? paint : m.color || paint);
     bakeInto(this.model, ownedMeshes(this.model, this.model, (n) => keepRoots.has(n)), colorOf);
     if (this.n.Door_L) bakeInto(this.n.Door_L, ownedMeshes(this.n.Door_L, this.n.Door_L, () => false), colorOf);
+    if (this.n.SteeringWheel) bakeInto(this.n.SteeringWheel, ownedMeshes(this.n.SteeringWheel, this.n.SteeringWheel, (n) => /^FP_/.test(n.name)), colorOf, { shadow: false });
     for (const w of this.wheelNodes) {
       if (w.rim) bakeInto(w.rim, ownedMeshes(w.rim, w.rim, () => false), colorOf);
       if (w.caliper) bakeInto(w.caliper, ownedMeshes(w.caliper, w.caliper, () => false), colorOf, { shadow: false });

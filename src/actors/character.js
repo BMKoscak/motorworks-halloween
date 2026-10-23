@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { bakeInto, ownedMeshes } from '../core/bake.js';
 
-const ACCESSORIES = ['Hat_Hard', 'Hat_Cap', 'Hat_Witch', 'Hat_Fedora', 'Mask_Pumpkin', 'Mask_Hockey', 'Mask_Welder',
-  'Hold_Lantern', 'Hold_Clipboard', 'Hold_Torch', 'Hold_Flashlight'];
+const ACCESSORIES = ['Hat_Hard', 'Hat_Cap', 'Hat_Witch', 'Hat_Fedora', 'Mask_Pumpkin', 'Mask_Hockey', 'Mask_Welder', 'Mask_Super',
+  'Hold_Lantern', 'Hold_Clipboard', 'Hold_Torch', 'Hold_Flashlight', 'Hold_CandyBag',
+  'Hair_Long', 'Hair_Ponytail', 'Beard', 'Moustache', 'Skirt', 'Costume_Ghost', 'Costume_Cape'];
 
 export const VARIANTS = {
   player: { shirt: '#9c1f1f', pants: '#22324f', shoes: '#141414', hair: '#2a1a10', skin: '#d8a283', acc: [] },
@@ -40,12 +41,17 @@ export class Character {
     this.rest = {};
     for (const k of Object.keys(this.j)) this.rest[k] = this.j[k].rotation.clone();
     if (!this.isSkeleton) {
-      const colors = { C_Shirt: v.shirt, C_Pants: v.pants, C_Shoes: v.shoes || '#16120e', C_Hair: v.hair, C_Skin: v.skin || '#d8a283' };
+      const colors = { C_Shirt: v.shirt, C_Pants: v.pants, C_Shoes: v.shoes || '#16120e', C_Hair: v.hair, C_Skin: v.skin || '#d8a283', C_Skirt: v.skirt || v.pants };
       this.model.traverse((m) => {
         if (m.isMesh && colors[m.material.name]) m.material = variantMat(m.material, colors[m.material.name]);
       });
     }
     this.setAccessories(v.acc || []);
+    this.noBake = !!opts.noBake;
+    this.profile = opts.profile || null;
+    this.steer = 0;
+    this.aimPitch = 0;
+    this.downT = 0;
     if (opts.scale) this.root.scale.setScalar(opts.scale);
     this.t = Math.random() * 10;
     this.anim = 'idle';
@@ -57,6 +63,7 @@ export class Character {
 
   /** Accessories live on both hands in the GLB ("Hold_Torch" = left, "Hold_Torch.001" = right); list right-hand ones as "Name.R". */
   setAccessories(list) {
+    if (this.optimized) this.unbake(); // re-bakes on the next update with the new outfit
     for (const [name, node] of Object.entries(this.j)) {
       const base = name.replace(/\.?\d{3}$/, ''); // GLTFLoader sanitises Blender's ".001" suffix to "001"
       if (!ACCESSORIES.includes(base)) continue;
@@ -79,12 +86,31 @@ export class Character {
     const joints = ['Hips', 'Torso', 'Head', 'Jaw', 'UpperArm_L', 'UpperArm_R', 'LowerArm_L', 'LowerArm_R', 'UpperLeg_L', 'UpperLeg_R', 'LowerLeg_L', 'LowerLeg_R']
       .map((n) => this.j[n]).filter(Boolean);
     const set = new Set(joints);
-    for (const J of joints) bakeInto(J, ownedMeshes(J, J, (n) => set.has(n)), null, { stop: this.root });
+    this._demoted = [];
+    this._baked = [];
+    for (const J of joints) {
+      // held weapons / props (userData.noBake) stay separate so they can be swapped
+      const ms = ownedMeshes(J, J, (n) => set.has(n) || (n.userData && n.userData.noBake));
+      this._baked.push(...bakeInto(J, ms, null, { stop: this.root }));
+      this._demoted.push(...ms.filter((m) => !m.isMesh));
+    }
   }
 
-  /** anim: idle | walk | run | wave | operate | talk | sit | panic | reach | dance */
+  /** Undo optimize() (outfit change): restore the original limb meshes. */
+  unbake() {
+    for (const m of this._baked || []) { m.parent && m.parent.remove(m); m.geometry.dispose(); }
+    for (const o of this._demoted || []) { o.isMesh = true; o.type = 'Mesh'; }
+    this._baked = this._demoted = null;
+    this.optimized = false;
+  }
+
+  /**
+   * anim: idle | walk | run | wave | operate | talk | sit | drive | panic | reach | dance | aim | carry | swing | down | cuffed
+   * `drive` is the seated driver pose (hips on the cushion, thighs ~85° forward, shins to the pedals, hands on the wheel)
+   * and follows this.steer (-1..1) so the arms turn with the steering wheel.
+   */
   update(dt, anim = this.anim, speed = 0) {
-    if (!this.optimized) this.optimize();
+    if (!this.optimized && !this.noBake) this.optimize();
     this.t += dt;
     this.anim = anim;
     const t = this.t;
@@ -125,6 +151,33 @@ export class Character {
       case 'sit':
         legLx = legRx = -1.45; kneeL = kneeR = 1.45; armLx = armRx = -0.9; foreL = foreR = -0.5; hipsX = 0;
         break;
+      case 'drive': {
+        const s = this.steer;
+        legLx = legRx = -1.48; kneeL = 1.38; kneeR = 1.3 + Math.sin(t * 0.7) * 0.05;
+        armLx = -1.25 + s * 0.28; armRx = -1.25 - s * 0.28; foreL = foreR = -0.28;
+        armLz = -0.18 - s * 0.12; armRz = 0.18 - s * 0.12; torsoX = -0.06; headY = s * 0.25;
+        break;
+      }
+      case 'aim':
+        armRx = -Math.PI / 2 - this.aimPitch; foreR = 0; armRz = 0.06;
+        armLx = -Math.PI / 2 - this.aimPitch + 0.25; foreL = -0.35; armLz = -0.45;
+        torsoX = 0.05; headX = -this.aimPitch * 0.6;
+        break;
+      case 'swing': {
+        const k = Math.sin(t * 12);
+        armRx = -1.6 + k * 1.1; foreR = -0.5; armRz = 0.3; torsoX = 0.15; headY = 0;
+        break;
+      }
+      case 'carry':
+        armLx = armRx = -1.15; foreL = foreR = -0.75; armLz = -0.25; armRz = 0.25;
+        legA = Math.sin(t * 6.2) * 0.35 * Math.min(1, speed); knee = Math.max(0, -Math.cos(t * 6.2)) * 0.5 * Math.min(1, speed);
+        break;
+      case 'cuffed':
+        armLx = armRx = 0.55; armLz = -0.35; armRz = 0.35; foreL = foreR = -0.6; headX = 0.3;
+        break;
+      case 'down':
+        armLz = 1.2; armRz = -1.4; legLx = -0.2; legRx = 0.15; kneeL = 0.3; kneeR = 0.1;
+        break;
       case 'dance':
         armLz = 2.6 + Math.sin(t * 6) * 0.3; armRz = -2.6 - Math.sin(t * 6) * 0.3; bob = Math.abs(Math.sin(t * 6)) * 0.08;
         legA = Math.sin(t * 6) * 0.3; headY = Math.sin(t * 3) * 0.3;
@@ -148,7 +201,20 @@ export class Character {
     this._rot('Head', headX, headY);
     if (j.Jaw) this._rot('Jaw', this.talking > 0 ? Math.abs(Math.sin(t * 17)) * (this.isSkeleton ? 0.45 : 0.18) : 0);
     this.talking = Math.max(0, this.talking - dt);
-    this.model.position.y = bob;
+    // knocked down: the whole rig tips over onto its back, then gets back up
+    this.downT += ((anim === 'down' ? 1 : 0) - this.downT) * Math.min(1, dt * 6);
+    this.model.rotation.x = -1.45 * this.downT;
+    this.model.position.y = bob + 0.18 * this.downT;
+    this.model.position.z = -0.75 * this.downT;
+  }
+
+  /** Attach a prop (weapon, loot) to the right or left hand. */
+  hold(obj, hand = 'R') {
+    const h = this.j['Hand_' + hand];
+    if (!h) return;
+    if (this.held && this.held.parent) this.held.parent.remove(this.held);
+    this.held = obj;
+    if (obj) { obj.userData.noBake = true; h.add(obj); }
   }
 
   /** world-space position of the head (speech bubbles) */

@@ -17,9 +17,10 @@ li img{max-width:48%;margin:4px}.cb{display:inline-block;width:20px;font-weight:
 npm run dev</code></pre>
 <p>A third-person 3D open-town car factory, customization and action game in the browser: order a car at the lobby kiosk, watch it get built across five animated assembly stations, then drive it through an autumn small town at Halloween, up a foggy hill to the Old Town Cemetery. You can also steal cars, run from the police, and find a handful of easter eggs. Built with <b>Three.js r170</b> for rendering, <b>cannon-es</b> for physics (raycast vehicle), <b>Blender 5.2</b> headless Python for every 3D model, and WebAudio for all sound.</p>
 <p><a href="docs/screenshots/01_title_screen.png" target="_blank"><img alt="Title screen" src="docs/screenshots/01_title_screen.png" loading="lazy"/></a></p>
+<p>&gt; <b>Phase 2: Major Expansion &amp; Realism Overhaul.</b> The second build pass added demographic-accurate NPC voices (kids, men, women), fully enterable buildings with furnished interiors, a rebuilt Motorworks plant with physical pick-and-place robots and a live Jumbotron, seated drivers in every vehicle, a road-graph traffic AI with physics safety clamps, police foot chases, weapons, light switches and breaker boxes, doorbells and burglary, and a fuel system with gas-station refuelling. Section 6 F–O covers the new systems, and §7 lists the 10 new QA checks.</p>
 <hr/>
 <h2 id="1-architecture">1. Architecture</h2>
-<table><thead><tr><th>Layer</th><th>Files</th><th>Notes</th></tr></thead><tbody><tr><td>Boot / game loop</td><td><code>src/main.js</code></td><td>Game states: <code>title → play ⇄ kiosk ⇄ paused</code>, <code>busted</code>. Fixed-step physics (1/60 s, up to 12 sub-steps, frame-rate independent), post-processing (bloom), automatic quality fallback on slow GPUs. Exposes <code>window.__MW</code> QA hooks.</td></tr><tr><td>Core</td><td><code>src/core/*</code></td><td><code>input.js</code> (keys, pointer lock, <b>key clearing on unlock/blur</b>), <code>assets.js</code> (GLB loader + stats), <code>physics.js</code> (cannon world, heightfield, COL_ colliders), <code>batcher.js</code> (static batching per material per 64 m cell), <code>bake.js</code> (vertex-colour baking of rigid parts), <code>cameraRig.js</code> (orbit / chase / cockpit / scripted cams).</td></tr><tr><td>World</td><td><code>src/world/*</code></td><td><code>terrain.js</code> (one height function shared by physics heightfield, visual mesh and road ribbons), <code>town.js</code>, <code>cemetery.js</code>, <code>factory.js</code>, <code>atmosphere.js</code> (dusk sky shader, harvest moon, stars, fog, falling leaves, ground fog).</td></tr><tr><td>Vehicles</td><td><code>src/vehicle/*</code></td><td><code>carVisual.js</code> (hinged Blender car + paint/livery shader + bolt-on parts + lights), <code>livery.js</code> (canvas-drawn decals projected in car space), <code>vehicle.js</code> (cannon <code>RaycastVehicle</code>), <code>effects.js</code> (skid marks, smoke, sparks, mist).</td></tr><tr><td>Actors</td><td><code>src/actors/*</code></td><td><code>character.js</code> (articulated joint rig: walk / run / wave / operate / talk / sit / panic / reach), <code>player.js</code>.</td></tr><tr><td>Systems</td><td><code>src/systems/*</code></td><td><code>assembly.js</code>, <code>kiosk.js</code>, <code>traffic.js</code>, <code>police.js</code>, <code>npcs.js</code>, <code>missions.js</code>, <code>audio.js</code> (dialogue FX chains, engine synth, sirens, procedural radio).</td></tr><tr><td>UI</td><td><code>index.html</code>, <code>src/style.css</code>, <code>src/ui/hud.js</code></td><td>HUD, rotating minimap, wanted skulls, speedometer, order tracker, subtitles and speech bubbles, pause/settings, kiosk panel, telemetry badge.</td></tr><tr><td>Build scripts</td><td><code>scripts/*</code>, <code>blender/*</code>, <code>tests/*</code></td><td><code>npm run assets</code> (Blender), <code>npm run dialogue</code> (ElevenLabs / local TTS), <code>npm test</code> (Playwright QA), <code>node scripts/build-docs.mjs</code>.</td></tr></tbody></table>
+<table><thead><tr><th>Layer</th><th>Files</th><th>Notes</th></tr></thead><tbody><tr><td>Boot / game loop</td><td><code>src/main.js</code></td><td>Game states: <code>title → play ⇄ kiosk ⇄ paused</code>, <code>busted</code>. Fixed-step physics (1/60 s, up to 12 sub-steps, frame-rate independent), post-processing (bloom), automatic quality fallback on slow GPUs. Exposes <code>window.__MW</code> QA hooks.</td></tr><tr><td>Core</td><td><code>src/core/*</code></td><td><code>input.js</code> (keys, mouse buttons, pointer lock, <b>key clearing on unlock/blur</b>), <code>assets.js</code> (GLB loader + stats), <code>physics.js</code> (cannon world, heightfield, COL_ colliders, <b>velocity/spin clamps + out-of-bounds watchdog</b>), <code>broadphase.js</code> (<b>spatial-hash broadphase</b> for thousands of static colliders), <code>navGraph.js</code> (<b>pedestrian nav graph + A\</b>*), <code>batcher.js</code> (static batching per material per 64 m cell, <b>vertex-colour folding</b>), <code>bake.js</code> (vertex-colour baking of rigid parts), <code>cameraRig.js</code> (orbit / chase / cockpit / <b>over-the-shoulder aim</b> / scripted cams).</td></tr><tr><td>World</td><td><code>src/world/*</code></td><td><code>terrain.js</code> (one height function shared by physics heightfield, visual mesh and road ribbons), <code>town.js</code>, <code>buildings.js</code> (<b>enterable-building runtime: hinged doors, switches, breakers, instanced shootable window glass, loot/shop/nav anchors</b>), <code>jumbotron.js</code> (<b>live render-target production screen</b>), <code>cemetery.js</code>, <code>factory.js</code>, <code>atmosphere.js</code> (dusk sky shader, harvest moon, stars, fog, falling leaves, ground fog).</td></tr><tr><td>Vehicles</td><td><code>src/vehicle/*</code></td><td><code>carVisual.js</code> (hinged Blender car + paint/livery shader + bolt-on parts + lights), <code>livery.js</code> (canvas-drawn decals projected in car space), <code>vehicle.js</code> (cannon <code>RaycastVehicle</code>, <b>fuel tank, flat tyres, engine damage/smoke/fire</b>), <code>effects.js</code> (skid marks, smoke, sparks, mist).</td></tr><tr><td>Actors</td><td><code>src/actors/*</code></td><td><code>character.js</code> (articulated joint rig: walk / run / wave / operate / talk / sit / <b>drive / aim / swing / carry / down / cuffed</b> / panic / reach), <code>player.js</code> (<b>step-up assist, aim strafing, seated in cars</b>), <code>agent.js</code> (<b>nav-path walker with door opening + floor clamping</b>).</td></tr><tr><td>Systems</td><td><code>src/systems/*</code></td><td><code>assembly.js</code> (<b>pick-and-place choreography</b>), <code>kiosk.js</code>, <code>roadGraph.js</code> (<b>closed-loop right-hand lane graph</b>), <code>traffic.js</code>, <code>police.js</code> (<b>cruisers + foot officers</b>), <code>npcs.js</code>, <code>combat.js</code>, <code>burglary.js</code>, <code>interactions.js</code>, <code>fuel.js</code>, <code>missions.js</code>, <code>audio.js</code> (dialogue FX chains, engine synth, sirens, procedural radio, <b>gunshots, glass, doorbell, pump</b>).</td></tr><tr><td>Data</td><td><code>src/data/*</code></td><td><code>dialogue.json</code> (82 lines, 23 voices, each tagged with a demographic), <code>demographics.js</code> (<b>NPC profile schema, line pools, costumes, 0.68× kids</b>).</td></tr><tr><td>UI</td><td><code>index.html</code>, <code>src/style.css</code>, <code>src/ui/hud.js</code></td><td>HUD, rotating minimap, wanted skulls, speedometer, order tracker, subtitles and speech bubbles, pause/settings, kiosk panel, telemetry badge.</td></tr><tr><td>Build scripts</td><td><code>scripts/*</code>, <code>blender/*</code>, <code>tests/*</code></td><td><code>npm run assets</code> (Blender), <code>npm run dialogue</code> (ElevenLabs / local TTS), <code>npm test</code> (Playwright QA), <code>node scripts/build-docs.mjs</code>.</td></tr></tbody></table>
 <p><b>Performance work.</b> The first build ran about 2,600 draw calls at 19 fps on the dev machine's AMD Radeon R5 M330. Three changes brought that down:</p>
 <ul>
 <li><b>Static batching.</b> Thousands of Blender prop meshes are merged per material and per 64 m cell, so frustum culling still works.</li>
@@ -27,6 +28,14 @@ npm run dev</code></pre>
 <li><b>Pooled lights.</b> Ten real <code>PointLight</code>s are reassigned to the nearest emissive sources (streetlights, lanterns, porch pumpkins) every 0.3 s.</li>
 </ul>
 <p>If the frame rate stays under 26 fps, the game steps Graphics Quality down automatically. Setting the quality by hand turns this off.</p>
+<p><b>Phase 2 performance pass.</b> The enterable interiors added about 2,400 static colliders and 1,000 more batched meshes, which dropped the game to 5–7 fps in headless Chromium. Profiling each system per frame found four problems, fixed as follows:</p>
+<ul>
+<li><b>Broadphase.</b> cannon's SAP broadphase sweeps static-versus-static pairs, which is O(n²). <code>src/core/broadphase.js</code> replaces it with a uniform spatial hash: statics stay in the hash, and only movers are tested against nearby statics and against each other. Raycasts use the hash too.</li>
+<li><b>Collision matrix.</b> cannon's dense <code>ArrayCollisionMatrix</code> resets an N²/2 array every sub-step, about 4.5 M entries here. It was swapped for the sparse <code>ObjectCollisionMatrix</code>, and sub-steps are capped at 5.</li>
+<li><b>Sleeping.</b> Parked cars sleep until something hits them. Driven vehicles, the player and kinematic traffic never sleep.</li>
+<li><b>Draw calls.</b> The static batcher now folds every untextured, opaque material into shared vertex-coloured materials (matte, metal and glow) per 64 m cell. Doors, switches, breakers, loot, shop items and mailboxes are baked into one or two meshes each. Furniture no longer casts shadows, and loot beyond 45 m is culled. Draw calls dropped from about 1,950 to about 830.</li>
+</ul>
+<p>The result was physics at 98 → 10 ms per frame and rendering at 45 → 20 ms, which brought the frame rate from 5–7 fps up to 26–37 fps in the same headless run.</p>
 <h2 id="2-blender-asset-pipeline">2. Blender asset pipeline</h2>
 <p>The models are generated procedurally by <code>blender -b --factory-startup -P blender/build_*.py</code> (<code>npm run assets</code>). <code>blender/mwlib.py</code> writes the geometry in game coordinates (x, y-up, z-forward) and converts it to Blender space, so the glTF <code>+Y up</code> export puts every node exactly where the game expects it.</p>
 <ul>
@@ -42,9 +51,26 @@ npm run dev</code></pre>
 <li><b>Collision.</b> Buildings, machines and props export invisible <code>COL_*</code> boxes, which become cannon static boxes. The gate and garage-door colliders follow their hinged nodes. Tombstones, curbs and the conveyor get explicit boxes.</li>
 <li><b>UVs.</b> World-scale box-projection UVs are written in <code>bmesh</code>, so bricks and siding tile at a constant size.</li>
 <li><b>Preview renders.</b> Every GLB is also rendered with Workbench for this document. Cars are rendered with their doors, hood and trunk opened, which shows the hinges.</li>
+<li><b>Interior kit (Phase 2).</b> <code>build_world.py</code> gained helpers that turn the buildings into hollow, walkable shells:</li>
+<li><code>openwall()</code>: walls with real door and window cut-outs. Each wall piece, lintel and sill gets its own <code>COL_*</code> slab, glazed openings get <code>Pane_*</code> glass, and every opening gets trim frames plus an interior wallpaper skin.</li>
+<li><code>hinged_door()</code>: a <code>Door_*</code> pivot on the hinge line. The swing direction is computed toward the interior, and a <code>COL_Door_*</code> child follows the swing.</li>
+<li><code>light_switch()</code> (<code>Switch_*</code> with a flippable <code>SwitchLever_*</code>) and <code>fixture()</code> (a <code>Lamp_Interior</code> mesh plus a <code>LightIn_*</code> light anchor).</li>
+<li><code>furn()</code>, which gives furniture its own colliders, and <code>tiles()</code> for the diner's checkerboard.</li>
+<li>Anchors for gameplay: <code>loot()</code>, <code>shop()</code>, <code>spot()</code> (navigation and NPC anchors), <code>Doorbell</code>, <code>Breaker_Box</code>/<code>BreakerLever</code> and <code>Phone</code>.</li>
+<li>Ceiling colliders keep the chase camera inside rooms.</li>
+<li><b>What uses the kit:</b></li>
+<li><b>Houses A and B.</b> Foyer, living room (sofa, rug, coffee table, glowing CRT TV, bookshelf, jewelry box, floor lamp), kitchen (counter, fridge, table and chairs, phone, radio), and front and back doors with steps.</li>
+<li><b>Moonlite Diner.</b> Walk-in stainless diner car with a checkerboard floor, chrome stools, red vinyl booths, a jukebox, a kitchen pass-through, the register and neon window signs.</li>
+<li><b>Moonbeam Mart.</b> Aisles, coolers, the counter with register and pump console, jerrycans, and a pump island whose hoses and nozzles swing on hinges.</li>
+<li><b>Hank's Hardware.</b> Pegboards, tool racks, a workbench, a locked weapon &amp; tool counter and masks, plus the back alley with the fence's dumpster.</li>
+<li><b>Police station.</b> Lobby desk, wanted posters, a holding cell with a barred <code>Cell_Door</code> on a hinge, the evidence lockers and the armory.</li>
+<li><b>Motorworks plant.</b> Red I-beam columns, triangulated trusses, volumetric light shafts, hazard-chevron lanes and a green walkway, safety bollards, two tool cribs, the glass <b>Foreman's Office</b> on stilts with stairs and an <b>observation catwalk</b>, the <b>Customer Delivery Showroom</b>, and a separate <b><code>jumbotron.glb</code></b>.</li>
+<li><b>Characters.</b> Gendered hair (<code>Hair_Long</code>, <code>Hair_Ponytail</code>, <code>Beard</code>, <code>Moustache</code>), a <code>Skirt</code>, the kid costumes <code>Costume_Ghost</code> and <code>Costume_Cape</code> with <code>Mask_Super</code>, and <code>Hold_CandyBag</code>.</li>
+<li><b>Props.</b> <code>Weapon_Pistol/Shotgun/Crowbar/Launcher</code> (each with a <code>Muzzle_*</code> anchor), <code>Item_Jerrycan/Ammo/Mask</code> and <code>Loot_TV/Register/Jewelry/Toolkit/Evidence/CandyBowl/Radio/Cash</code>, each carrying its value and weight in glTF extras.</li>
 </ul>
+<table><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="docs/screenshots/blender_house_a_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_house_a_interior.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_house_b_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_house_b_interior.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_diner_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_diner_interior.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_hardware_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_hardware_interior.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_police_station_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_police_station_interior.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_plant_interior.png" target="_blank"><img alt="" src="docs/screenshots/blender_plant_interior.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_jumbotron.png" target="_blank"><img alt="" src="docs/screenshots/blender_jumbotron.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_gas_station.png" target="_blank"><img alt="" src="docs/screenshots/blender_gas_station.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_props.png" target="_blank"><img alt="" src="docs/screenshots/blender_props.png" loading="lazy"/></a></td></tr></tbody></table>
 <table><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="docs/screenshots/blender_car_muscle.png" target="_blank"><img alt="" src="docs/screenshots/blender_car_muscle.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_car_pickup.png" target="_blank"><img alt="" src="docs/screenshots/blender_car_pickup.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_car_coupe.png" target="_blank"><img alt="" src="docs/screenshots/blender_car_coupe.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_car_hearse.png" target="_blank"><img alt="" src="docs/screenshots/blender_car_hearse.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_car_sedan.png" target="_blank"><img alt="" src="docs/screenshots/blender_car_sedan.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_parts.png" target="_blank"><img alt="" src="docs/screenshots/blender_parts.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_wheels.png" target="_blank"><img alt="" src="docs/screenshots/blender_wheels.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_robot_arm.png" target="_blank"><img alt="" src="docs/screenshots/blender_robot_arm.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_press.png" target="_blank"><img alt="" src="docs/screenshots/blender_press.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_crane.png" target="_blank"><img alt="" src="docs/screenshots/blender_crane.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_lift.png" target="_blank"><img alt="" src="docs/screenshots/blender_lift.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_scanner.png" target="_blank"><img alt="" src="docs/screenshots/blender_scanner.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_garage_door.png" target="_blank"><img alt="" src="docs/screenshots/blender_garage_door.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_sliding_door.png" target="_blank"><img alt="" src="docs/screenshots/blender_sliding_door.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_barrier.png" target="_blank"><img alt="" src="docs/screenshots/blender_barrier.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_forklift.png" target="_blank"><img alt="" src="docs/screenshots/blender_forklift.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_cemetery_gate.png" target="_blank"><img alt="" src="docs/screenshots/blender_cemetery_gate.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_props.png" target="_blank"><img alt="" src="docs/screenshots/blender_props.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_plant.png" target="_blank"><img alt="" src="docs/screenshots/blender_plant.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_diner.png" target="_blank"><img alt="" src="docs/screenshots/blender_diner.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_gas_station.png" target="_blank"><img alt="" src="docs/screenshots/blender_gas_station.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_hardware.png" target="_blank"><img alt="" src="docs/screenshots/blender_hardware.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_police_station.png" target="_blank"><img alt="" src="docs/screenshots/blender_police_station.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_house_a.png" target="_blank"><img alt="" src="docs/screenshots/blender_house_a.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/blender_house_b.png" target="_blank"><img alt="" src="docs/screenshots/blender_house_b.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_character.png" target="_blank"><img alt="" src="docs/screenshots/blender_character.png" loading="lazy"/></a></td><td><a href="docs/screenshots/blender_skeleton.png" target="_blank"><img alt="" src="docs/screenshots/blender_skeleton.png" loading="lazy"/></a></td></tr></tbody></table>
-<table><thead><tr><th>GLB</th><th>Objects</th><th>Meshes</th><th>Triangles</th><th>Hinged / jointed nodes</th><th>Size</th></tr></thead><tbody><tr><td><code>car_muscle.glb</code></td><td>62</td><td>44</td><td>2,080</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>160 KB</td></tr><tr><td><code>car_pickup.glb</code></td><td>59</td><td>41</td><td>1,864</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>147 KB</td></tr><tr><td><code>car_coupe.glb</code></td><td>53</td><td>35</td><td>1,552</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>126 KB</td></tr><tr><td><code>car_hearse.glb</code></td><td>63</td><td>45</td><td>2,032</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>162 KB</td></tr><tr><td><code>car_sedan.glb</code></td><td>58</td><td>40</td><td>1,684</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, DoorRear_L, DoorRear_R, Hood … (+6)</td><td>137 KB</td></tr><tr><td><code>parts.glb</code></td><td>109</td><td>87</td><td>2,612</td><td>Blower_Pulley</td><td>218 KB</td></tr><tr><td><code>wheels.glb</code></td><td>36</td><td>27</td><td>5,460</td><td>—</td><td>243 KB</td></tr><tr><td><code>robot_arm.glb</code></td><td>19</td><td>12</td><td>536</td><td>Base, Elbow, Shoulder, Wrist</td><td>42 KB</td></tr><tr><td><code>press.glb</code></td><td>9</td><td>8</td><td>300</td><td>Ram</td><td>28 KB</td></tr><tr><td><code>crane.glb</code></td><td>9</td><td>6</td><td>128</td><td>Bridge, Hoist, Trolley</td><td>14 KB</td></tr><tr><td><code>garage_door.glb</code></td><td>20</td><td>19</td><td>288</td><td>Slat_0, Slat_1, Slat_2, Slat_3, Slat_4, Slat_5, Slat_6, Slat_7</td><td>32 KB</td></tr><tr><td><code>sliding_door.glb</code></td><td>8</td><td>7</td><td>180</td><td>Panel_L, Panel_R</td><td>18 KB</td></tr><tr><td><code>barrier.glb</code></td><td>4</td><td>3</td><td>84</td><td>Arm</td><td>9 KB</td></tr><tr><td><code>cemetery_gate.glb</code></td><td>26</td><td>23</td><td>4,476</td><td>Gate_L, Gate_R</td><td>278 KB</td></tr><tr><td><code>forklift.glb</code></td><td>12</td><td>10</td><td>412</td><td>Forks, ForkWheel_FL, ForkWheel_FR, ForkWheel_RL, ForkWheel_RR</td><td>33 KB</td></tr><tr><td><code>lift.glb</code></td><td>4</td><td>3</td><td>108</td><td>Platform</td><td>10 KB</td></tr><tr><td><code>scanner.glb</code></td><td>4</td><td>3</td><td>72</td><td>Laser_Bar</td><td>8 KB</td></tr><tr><td><code>plant.glb</code></td><td>78</td><td>76</td><td>6,960</td><td>GiantSpider</td><td>441 KB</td></tr><tr><td><code>diner.glb</code></td><td>16</td><td>14</td><td>1,596</td><td>—</td><td>95 KB</td></tr><tr><td><code>gas_station.glb</code></td><td>26</td><td>25</td><td>1,392</td><td>—</td><td>94 KB</td></tr><tr><td><code>hardware.glb</code></td><td>11</td><td>10</td><td>844</td><td>—</td><td>55 KB</td></tr><tr><td><code>police_station.glb</code></td><td>21</td><td>20</td><td>1,028</td><td>—</td><td>78 KB</td></tr><tr><td><code>house_a.glb</code></td><td>28</td><td>26</td><td>1,116</td><td>—</td><td>93 KB</td></tr><tr><td><code>house_b.glb</code></td><td>22</td><td>20</td><td>636</td><td>—</td><td>57 KB</td></tr><tr><td><code>props.glb</code></td><td>103</td><td>75</td><td>5,818</td><td>CryptDoor, Turntable_Top</td><td>399 KB</td></tr><tr><td><code>character.glb</code></td><td>67</td><td>49</td><td>1,676</td><td>Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7)</td><td>124 KB</td></tr><tr><td><code>skeleton.glb</code></td><td>72</td><td>54</td><td>2,180</td><td>Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7)</td><td>161 KB</td></tr></tbody></table>
+<table><thead><tr><th>GLB</th><th>Objects</th><th>Meshes</th><th>Triangles</th><th>Hinged / jointed nodes</th><th>Size</th></tr></thead><tbody><tr><td><code>car_muscle.glb</code></td><td>62</td><td>44</td><td>2,080</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>160 KB</td></tr><tr><td><code>car_pickup.glb</code></td><td>59</td><td>41</td><td>1,864</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>147 KB</td></tr><tr><td><code>car_coupe.glb</code></td><td>53</td><td>35</td><td>1,552</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>126 KB</td></tr><tr><td><code>car_hearse.glb</code></td><td>63</td><td>45</td><td>2,032</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4)</td><td>162 KB</td></tr><tr><td><code>car_sedan.glb</code></td><td>58</td><td>40</td><td>1,684</td><td>Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, DoorRear_L, DoorRear_R, Hood … (+6)</td><td>137 KB</td></tr><tr><td><code>parts.glb</code></td><td>109</td><td>87</td><td>2,612</td><td>Blower_Pulley</td><td>218 KB</td></tr><tr><td><code>wheels.glb</code></td><td>36</td><td>27</td><td>5,460</td><td>—</td><td>243 KB</td></tr><tr><td><code>robot_arm.glb</code></td><td>19</td><td>12</td><td>536</td><td>Base, Elbow, Shoulder, Wrist</td><td>42 KB</td></tr><tr><td><code>press.glb</code></td><td>9</td><td>8</td><td>300</td><td>Ram</td><td>28 KB</td></tr><tr><td><code>crane.glb</code></td><td>9</td><td>6</td><td>128</td><td>Bridge, Hoist, Trolley</td><td>14 KB</td></tr><tr><td><code>garage_door.glb</code></td><td>20</td><td>19</td><td>288</td><td>Slat_0, Slat_1, Slat_2, Slat_3, Slat_4, Slat_5, Slat_6, Slat_7</td><td>32 KB</td></tr><tr><td><code>sliding_door.glb</code></td><td>8</td><td>7</td><td>180</td><td>Panel_L, Panel_R</td><td>18 KB</td></tr><tr><td><code>barrier.glb</code></td><td>4</td><td>3</td><td>84</td><td>Arm</td><td>9 KB</td></tr><tr><td><code>cemetery_gate.glb</code></td><td>26</td><td>23</td><td>4,476</td><td>Gate_L, Gate_R</td><td>278 KB</td></tr><tr><td><code>forklift.glb</code></td><td>17</td><td>13</td><td>472</td><td>Forks, ForkWheel_FL, ForkWheel_FR, ForkWheel_RL, ForkWheel_RR</td><td>40 KB</td></tr><tr><td><code>lift.glb</code></td><td>4</td><td>3</td><td>108</td><td>Platform</td><td>10 KB</td></tr><tr><td><code>scanner.glb</code></td><td>4</td><td>3</td><td>72</td><td>Laser_Bar</td><td>8 KB</td></tr><tr><td><code>plant.glb</code></td><td>255</td><td>242</td><td>21,804</td><td>GiantSpider, SwitchLever_NightShift</td><td>1509 KB</td></tr><tr><td><code>diner.glb</code></td><td>176</td><td>159</td><td>6,632</td><td>Door_Back, Door_Front, SwitchLever_Main</td><td>493 KB</td></tr><tr><td><code>gas_station.glb</code></td><td>122</td><td>99</td><td>5,396</td><td>Door_Front, Hose_0_0, Hose_0_1, Hose_1_0, Hose_1_1, Nozzle_0_0, Nozzle_0_1, Nozzle_1_0, Nozzle_1_1 … (+1)</td><td>394 KB</td></tr><tr><td><code>hardware.glb</code></td><td>125</td><td>100</td><td>5,536</td><td>Door_Back, Door_Front, SwitchLever_Main</td><td>396 KB</td></tr><tr><td><code>police_station.glb</code></td><td>168</td><td>144</td><td>4,688</td><td>Cell_Door, Door_Back, Door_Evidence, Door_Front, SwitchLever_Main</td><td>391 KB</td></tr><tr><td><code>jumbotron.glb</code></td><td>12</td><td>7</td><td>368</td><td>—</td><td>31 KB</td></tr><tr><td><code>house_a.glb</code></td><td>184</td><td>163</td><td>4,776</td><td>BreakerLever, Door_Back, Door_Front, SwitchLever_Main</td><td>425 KB</td></tr><tr><td><code>house_b.glb</code></td><td>149</td><td>128</td><td>3,240</td><td>BreakerLever, Door_Back, Door_Front, SwitchLever_Main</td><td>298 KB</td></tr><tr><td><code>props.glb</code></td><td>185</td><td>138</td><td>8,528</td><td>CryptDoor, Turntable_Top</td><td>588 KB</td></tr><tr><td><code>character.glb</code></td><td>94</td><td>66</td><td>2,674</td><td>Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7)</td><td>182 KB</td></tr><tr><td><code>skeleton.glb</code></td><td>91</td><td>66</td><td>2,780</td><td>Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7)</td><td>199 KB</td></tr></tbody></table>
 <h2 id="3-physics-engine">3. Physics engine</h2>
 <ul>
 <li><b>cannon-es <code>RaycastVehicle</code>.</b> Rear-wheel drive with soft suspension (stiffness 32, rest length 0.34 m adjusted by ride height), so you get visible body roll and compression over the 16 cm curbs.</li>
@@ -53,6 +79,9 @@ npm run dev</code></pre>
 <li><b>Extras.</b> Downforce applied at the centre of mass, adaptive angular damping, and self-righting (<code>Backspace</code> resets the car).</li>
 <li><b>Tuning.</b> Engine stage, transmission ratio and tire compound (grip or drift) set the drive force, top speed and front/rear friction.</li>
 <li><b>Other bodies.</b> Parked cars are dynamic and pushable. Civilian traffic uses kinematic bodies on lane loops. Police cruisers are full AI raycast vehicles. Breakable props (mailboxes, hydrants, barrels, hay bales) are sensors until a car smashes them.</li>
+<li><b>Safety clamps (Phase 2).</b> A <code>postStep</code> hook on every internal sub-step caps each vehicle body at <b>45 m/s</b> and <b>12 rad/s</b> and resets non-finite velocities. A watchdog puts any vehicle that leaves <code>|x| &gt; 600 || |z| &gt; 600 || y &lt; -20 || y &gt; 150</code> back onto the nearest lane of the road graph. Physics stats are exposed to QA.</li>
+<li><b>Ground clamping (Phase 2).</b> Walkers (pedestrians, homeowners, officers, fleeing drivers) ray-cast down every frame onto whatever is under their feet: sidewalk slabs, porches, house floors or stairs, with the terrain as fallback. Traffic cars sample the terrain at four footprint points and align their pitch and roll to the surface normal, so they climb the hill road flush with the asphalt. The player gets a <b>step-up assist</b> (a low ray hits, a knee-height ray is clear) for porch steps, stair risers and curbs.</li>
+<li><b>Fuel and damage (Phase 2).</b> Fuel drains with throttle, rpm and engine stage, and an empty tank stalls the engine. Popped tyres shrink the wheel radius and cut friction to 45 % and top speed to 72 % per flat. Engine damage from bullets, explosions and hard crashes over 12 m/s brings smoke and finally a stall with fire.</li>
 <li><b>Two bugs found by QA and fixed</b> (details in §7):</li>
 <li>cannon-es drives this axis convention backwards, so the engine sign is flipped.</li>
 <li>The downforce was first applied at a world-space point, which produced a huge roll torque and killed turning at speed.</li>
@@ -66,6 +95,8 @@ npm run dev</code></pre>
 <li><b>No overwrites.</b> <code>npm run dialogue</code> never replaces an ElevenLabs take unless you pass <code>--force</code>.</li>
 </ul>
 <table><thead><tr><th>Character</th><th>ElevenLabs voice</th><th>Voice ID</th><th>In-game FX chain</th></tr></thead><tbody><tr><td>Big Sal (foreman)</td><td>Grits Oxley – Gritty Grandpa</td><td><code>8vYCG1Q6bAbJWXdRuCIr</code></td><td>room</td></tr><tr><td>Bones McGee (skeleton welder)</td><td>Dr. Quibble – Nerdy Cartoon</td><td><code>RDSy0QN68yhrjuOgqzQ4</code></td><td>rattle (tremolo)</td></tr><tr><td>Old Mortimer (groundskeeper)</td><td>Romulus II – Deep, Mysterious</td><td><code>7lJ2JuXZKHyck5zlS7XQ</code></td><td>ghost (long reverb + delay)</td></tr><tr><td>The Phantom</td><td>Final Boss – Evil Villain</td><td><code>d3qrd1ge6zWDvUxIeXiH</code></td><td>ghost</td></tr><tr><td>Dolores (diner)</td><td>Latrice – Down-to-Earth Southern</td><td><code>tmHt9OXLAa0z2IPF4k0Y</code></td><td>room</td></tr><tr><td>Panicked car owner</td><td>Ayla – Bubbly &amp; Expressive</td><td><code>b8JMPeNuVrqqWExQc8e9</code></td><td>dry</td></tr><tr><td>Townsperson</td><td>Olivia – Storytelling</td><td><code>MJw0jtAmgm4D71m0HUJU</code></td><td>dry</td></tr><tr><td>Police dispatch</td><td>Claire – Crisp &amp; Clear</td><td><code>umwdC76NumBsGtudno3p</code></td><td>radio (band-pass, saturation, static)</td></tr><tr><td>Officer on foot</td><td>Johnny – Strong American</td><td><code>R3brgFoQWI6vjwB1A4aP</code></td><td>dry</td></tr><tr><td>Wolfman Jack-O (radio DJ)</td><td>Johnny Dynamite – Vintage Radio DJ</td><td><code>CeNX9CMwmxDxUF5Q2Inm</code></td><td>radio</td></tr><tr><td>Kiosk assistant</td><td>MegaBot</td><td><code>DXav2Iq8VRhoGarNlWcx</code></td><td>robot (ring modulation)</td></tr><tr><td>Plant PA</td><td>Clara – PA Clear Voice</td><td><code>no52gq1ZwK7Lmejv1EHz</code></td><td>radio</td></tr><tr><td>Line workers</td><td>K. V. Hagen · Shay</td><td><code>t1yzxMpe9zK42bXmI1T2</code> · <code>ZQF62XTHtHemfMB0pp0G</code></td><td>room</td></tr></tbody></table>
+<p><b>Phase 2: demographic-accurate voices.</b> The first build used one female townsperson voice for every pedestrian (including kids saying "my kid…") and a female panic voice for every car owner. Phase 2 tags every voice with a demographic (<code>adult_male</code>, <code>adult_female</code>, <code>child_boy</code>, <code>child_girl</code>, <code>skeleton</code>, plus <code>machine</code>/<code>spirit</code> for the kiosk and the Phantom). Each NPC carries a profile <code>{ ageGroup, role, voiceKey, voiceId }</code> and only draws lines from its own pool. <b>28 new lines</b> were generated through the ElevenLabs connector (eleven_v4, 1,587 characters, <b>1,796 credits</b>; total now 82 lines, 6,243 credits):</p>
+<table><thead><tr><th>New voice</th><th>ElevenLabs voice</th><th>Voice ID</th><th>Lines</th></tr></thead><tbody><tr><td>Townsman (adult male)</td><td>Roger – Laid-Back, Casual</td><td><code>CwhRBWXzGAHq8TQ4Fs17</code></td><td>4 chatter lines (double shift at the plant, the mortgage…)</td></tr><tr><td>Panicked car owner (male) / male homeowner</td><td>Chris – Charming, Down-to-Earth</td><td><code>iP95p4xoKVk53GoZ742B</code></td><td>"Hey! That's my ride! Somebody call the sheriff!" + 2 more, homeowner greet &amp; panic</td></tr><tr><td>Female homeowner</td><td>Olivia – Storytelling</td><td><code>MJw0jtAmgm4D71m0HUJU</code></td><td>homeowner greeting (female panic stays on Ayla)</td></tr><tr><td>Trick-or-treater (boy)</td><td>Teddy Twinkle – Cute Cartoon Boy</td><td><code>XjGYkUkzth8BPs29fmcV</code></td><td>"Trick or treat! Look at my candy bag…", "Whoa, cool hot-rod, mister!", superhero, scared</td></tr><tr><td>Trick-or-treater (girl)</td><td>Candy – Girly and Sweet</td><td><code>Nggzl2QAXh3OijoXD116</code></td><td>"Trick or treat, smell my feet…", witch, ghost costume, scared</td></tr><tr><td>Officer on foot</td><td>Johnny (existing)</td><td><code>R3brgFoQWI6vjwB1A4aP</code></td><td>"Stop right there! Police!", "Freeze!", "Drop the weapon! Shots fired!"</td></tr><tr><td>Dispatch</td><td>Claire (existing)</td><td><code>umwdC76NumBsGtudno3p</code></td><td>shots fired, burglary in progress</td></tr><tr><td>Vinnie the Fence</td><td>Boom Mike – Jersey Guy</td><td><code>2UyW0L6yjNuo3ZH3XnoV</code></td><td>2 lines</td></tr><tr><td>Hank (hardware clerk)</td><td>K. V. Hagen</td><td><code>t1yzxMpe9zK42bXmI1T2</code></td><td>shop greeting</td></tr><tr><td>Pump speaker</td><td>Latrice</td><td><code>tmHt9OXLAa0z2IPF4k0Y</code></td><td>"Pump's on, hon. Two bucks a gallon…"</td></tr></tbody></table>
 <p><b>Fallbacks.</b> For new or changed lines without a take, <code>npm run dialogue</code> either calls the ElevenLabs REST API (when <code>ELEVENLABS_API_KEY</code> is set) or synthesises locally with Windows SAPI. At runtime, a missing file falls back to the browser's <code>speechSynthesis</code>. Every line also shows a subtitle and a speech bubble.</p>
 <p>The rest of the sound is synthesised in WebAudio:</p>
 <ul>
@@ -109,10 +140,10 @@ npm run dev</code></pre>
 <h3 id="b-assembly-line">B. Assembly line</h3>
 <p>Each order gets an order number such as <code>MW-1031-xxxx</code> and a live progress panel. <code>V</code> cycles the station cameras, <code>F</code> follows the car, and holding <code>T</code> runs the line at 5× speed. There is an <code>E</code> info panel at every station.</p>
 <ol>
-<li><b>Stamping:</b> the press ram stamps glowing sheets, with sparks, screen shake and a growing panel stack.</li>
-<li><b>Body Shop:</b> four welding robots spark while the doors, hood and trunk are hung <b>on their hinges</b> and swing shut one by one.</li>
+<li><b>Stamping:</b> flat blanks are fed from the pallet into the press, stamped into glowing curved panels with sparks and screen shake, and pushed onto the output rack.</li>
+<li><b>Body Shop:</b> IK robots carry each door, the hood and the trunk lid from the feeder racks to their <b>hinge mounts</b>, then spot-weld them and swing them shut one by one (see §6 H).</li>
 <li><b>Paint:</b> spray robots fill the booth with paint mist while the shader blends from raw steel to your finish and livery.</li>
-<li><b>Powertrain:</b> the hood opens, the crane lowers your engine from its hook, the lift rises, and the wheels slide onto their axles.</li>
+<li><b>Powertrain:</b> the hood opens, the crane fetches the engine from the staging bay on chains and lowers it into the bay, the lift rises, and the loader arms push the wheels onto their hubs.</li>
 <li><b>Final QC:</b> the laser scanner sweeps, the lights and underglow flicker, every hinge cycles, the roll-up door opens, and the car rolls out onto the apron.</li>
 </ol>
 <p>Workers in Halloween costumes animate at each station, including <b>Bones the skeleton welder</b>. A forklift (with a driver) does laps of the aisle.</p>
@@ -148,9 +179,105 @@ npm run dev</code></pre>
 <li><b>Haunted car radio.</b> Press <code>R</code> in any car to cycle WHOO 66.6 FM and KRYP 13.13, with DJ breaks.</li>
 </ol>
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="docs/screenshots/15_phantom_hearse.png" target="_blank"><img alt="" src="docs/screenshots/15_phantom_hearse.png" loading="lazy"/></a></td><td><a href="docs/screenshots/15_monster_mash_kiosk.png" target="_blank"><img alt="" src="docs/screenshots/15_monster_mash_kiosk.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/05_dialogue_foreman.png" target="_blank"><img alt="" src="docs/screenshots/05_dialogue_foreman.png" loading="lazy"/></a></td><td><a href="docs/screenshots/04_pause_menu.png" target="_blank"><img alt="" src="docs/screenshots/04_pause_menu.png" loading="lazy"/></a></td></tr></tbody></table>
+<ol>
+<li><b>Jack-o'-Lantern Launcher.</b> Finding all five Golden Pumpkins, or beating the Phantom Hearse, unlocks weapon slot 5: a pumpkin-faced launcher that lobs exploding jack-o'-lanterns.</li>
+</ol>
+<h3 id="f-npc-demographics-phase-2-">F. NPC demographics (Phase 2)</h3>
+<ul>
+<li><b>Profiles.</b> <code>src/data/demographics.js</code> gives every spawned person a profile <code>{ ageGroup, role, voiceKey, voiceId }</code> and dresses the mesh to match:</li>
+<li><b>Women:</b> long hair or a ponytail, and sometimes a skirt.</li>
+<li><b>Men:</b> short hair, sometimes a beard or moustache.</li>
+<li><b>Kids:</b> <b>0.68× scale</b>, one of four costumes (witch hat, ghost sheet, pumpkin mask, or superhero cape with mask), and a candy pail.</li>
+<li><b>Lines.</b> Each NPC speaks only from the pool for its age group. <code>ADULT_ONLY</code> (my kid, mortgage, shift at the plant…) never reaches a child. Traffic drivers are always adults, so a kid never spawns behind a wheel.</li>
+<li><b>Staff fixes.</b> The factory crew's line pools were re-cast to match their voices (for example, the QC inspector and the bay painter are women). Porch neighbours alternate men and women with gender-matched lines.</li>
+<li><b>Audit.</b> <code>npcs.audit()</code> proves it at runtime, and the <code>npc_demographics</code> QA check runs it. Every utterance is logged with the speaker's age group and the voice's demographic.</li>
+</ul>
+<h3 id="g-enterable-buildings">G. Enterable buildings</h3>
+<ul>
+<li><b>Doors.</b> Every house (22), the diner, the gas mart, the hardware store and the police station has hinged doors. <code>E</code> opens and closes them. A locked house front door can be <b>kicked in</b> (loud, and it trips the alarm if the house has power). NPCs and officers push unlocked doors open as they walk through.</li>
+<li><b>Colliders.</b> Each wall piece is a separate collider, so the doorways are real gaps.</li>
+<li><b>Window glass.</b> About 300 window panes become one instanced, shootable glass mesh. Its emissive glow follows each building's lights and power.</li>
+<li><b>Camera.</b> The chase camera tightens up indoors, and ceiling colliders keep it inside the room.</li>
+<li><b>Stairs.</b> The foreman's office stairs (21 risers of 0.2 m) and all the porch steps are climbable thanks to the step-up assist.</li>
+</ul>
+<h3 id="h-plant-overhaul-conveyor-and-jumbotron">H. Plant overhaul, conveyor and Jumbotron</h3>
+<ul>
+<li><b>Conveyor.</b> A floor track with steel rails, scrolling chain strips and 160 instanced chain rollers that spin with the carrier. The car rides an articulated yellow <b>skillet</b> with four lift posts and guide wheels.</li>
+<li><b>Station 1: stamping.</b> A blank is lifted off the pallet, slid onto the press bed, stamped from a flat to a curved panel (with sparks and a thump), then pushed onto the output rack.</li>
+<li><b>Station 2: body shop.</b> Four IK-driven robots (an analytic 2-link solver plus base yaw) grip each real <b>door, rear door, hood and trunk</b> mesh off their feeder racks and carry it in an arc to its exact hinge mount. Each robot swaps to the welder to spot-weld while the hinge swings shut. The fourth robot seam-welds the roof line. QA checks that the gripper stays within 0.75 m of the part for the whole carry.</li>
+<li><b>Station 4: powertrain.</b> The engine waits on a red staging stand. The crane bridge dips the hook to pick it up and travels on chains to the car, while the under-lift raises and blue loader arms push each wheel from the tyre racks onto its hub.</li>
+<li><b>Jumbotron.</b> A four-sided LED box hangs from the trusses, visible from the lobby and the floor. A sweeping camera renders the active station into a 512×288 <code>WebGLRenderTarget</code> at about 16 Hz, only while you are near the plant. A shader composites the picture-in-picture feed with a 1024×576 canvas overlay: order number, customer spec, current station, the five-step checklist (Stamping → Chassis Weld → Paint Coat → Engine Marriage → Dyno &amp; Laser QC) and a progress bar, finished with an LED pixel grid.</li>
+<li><b>Office and showroom.</b> The foreman's office has a <b>Night Shift</b> switch that swaps the floodlights for purple blacklight and pulsing red emergency beacons. The delivery showroom shows your latest build on a turning podium.</li>
+</ul>
+<h3 id="i-seated-drivers-everywhere">I. Seated drivers everywhere</h3>
+<ul>
+<li><b>Cabin glass.</b> Opacity 0.38, roughness 0.1, metalness 0.2, so you can see the dashboard, seats, steering wheel and occupants.</li>
+<li><b>Who sits.</b> Every traffic car, police cruiser, the player's own car (in chase view) and the forklift has a person on the driver's seat. They use the <code>drive</code> pose: hips on the cushion, thighs about 85° forward, shins to the pedals, hands on the wheel.</li>
+<li><b>Steering.</b> The arms and the articulated <code>SteeringWheel</code> turn together. Lite civilian cars keep the wheel as its own baked node for this.</li>
+<li><b>Stealing an occupied car.</b> The driver is lifted off the seat through the open <code>Door_L</code>, turns and stands up, then flees in the <code>panic</code> run, shouting in their own gender's voice.</li>
+</ul>
+<h3 id="j-road-graph-ground-clamping-and-physics-safety">J. Road graph, ground clamping and physics safety</h3>
+<ul>
+<li><b>Road graph.</b> <code>roadGraph.js</code> builds right-hand lanes 2.6 m from the centre of Main Street, Elm Avenue, the Factory Loop (through the plant lot and the exit road) and the Hill Road.</li>
+<li><b>Junctions and dead ends.</b> Junctions get Bézier connectors, with control points where the two lane lines meet, so through-traffic keeps its lane. Dead ends get U-turn loops.</li>
+<li><b>Traffic behaviour.</b> Cars pick random turns, slow for bends and connectors, and stop at junction lines. They hold a junction reservation, and brake for cars, peds, the player and police along their path.</li>
+<li><b>Whiskers.</b> Three whisker rays (centre and ±18°, up to 12 m) catch any building or wall collider. They ignore curbs, floor slabs and the terrain.</li>
+</ul>
+<h3 id="k-police-foot-chase-and-tactics">K. Police foot chase and tactics</h3>
+<ul>
+<li><b>On foot.</b> Cruisers carry a seated officer. If the player is on foot within 14 m, is inside a building, is off the road network, or the cruiser stays blocked, the officer opens the hinged door and steps out.</li>
+<li><b>Beat cops.</b> Three of them walk Main Street and the station forecourt, and join in when a crime happens nearby.</li>
+<li><b>Wanted 1–2:</b> officers sprint along A\* paths on the nav graph (outdoor grid plus building doorway and room anchors, with doors opened on the way). They shout "Stop right there! Police!", and holding the player within <b>1.4 m for 1.8 s</b> is a tackle and cuff (<b>BUSTED</b>).</li>
+<li><b>Wanted 3–5:</b> they draw sidearms, take a firing stance and shoot. Hit chance falls with distance and your speed. Hits hurt the player on foot, or pop tyres and damage the engine of your car.</li>
+<li><b>Downed officers</b> get back up after 12 s.</li>
+</ul>
+<h3 id="l-weapons-and-shooting">L. Weapons and shooting</h3>
+<ul>
+<li><b>Slots:</b> <code>1</code> fists, <code>2</code> crowbar, <code>3</code> 9mm pistol, <code>4</code> pump shotgun, <code>5</code> Jack-o'-Lantern Launcher.</li>
+<li><b>Getting them:</b> buy at Hank's Hardware (crowbar $60, pistol $450, shotgun $950, ammo $40), steal from the police evidence room and armory, or unlock the launcher through the easter eggs.</li>
+<li><b>Aiming.</b> <code>RMB</code> (or <code>Q</code>) switches to an over-the-shoulder camera with a crosshair, and the arm rises toward the aim point. <code>LMB</code> fires, and <code>R</code> reloads on foot.</li>
+<li><b>Ballistics.</b> Shots trace from the crosshair to the muzzle, with spread and pellets. The closest hit wins among static geometry, vehicle bodies, character capsules, window panes, street and porch lights, and breaker boxes. Every shot has a muzzle flash light, smoke, an ejected brass casing, tracers, impact sparks or dust, and a synthesised gunshot.</li>
+<li><b>Damage:</b></li>
+<li><b>Tyres:</b> a flat drops grip and top speed, and the rim sparks.</li>
+<li><b>Engine:</b> white smoke below 60 %, black smoke below 30 %, and a stall with fire at 0.</li>
+<li><b>Traffic cars:</b> they stop and the driver bails out.</li>
+<li><b>Glass and lights:</b> windows shatter, streetlights and porch jack-o'-lanterns go dark, and their light sources turn off.</li>
+<li><b>Breakers:</b> cut the house's power.</li>
+<li><b>Heat.</b> Gunfire with witnesses adds 1–2 skulls and scatters bystanders. Hitting a person adds 2, and hitting police adds 2.</li>
+</ul>
+<h3 id="m-light-switches-and-power">M. Light switches and power</h3>
+<ul>
+<li><b>Switches.</b> Every enterable building has a wall switch by its door. The lever flips, it clicks, and the building's fixtures, light sources and window glow switch together.</li>
+<li><b>Breaker boxes.</b> Each house has one on its side wall. Flip it or shoot it to kill the lights, disable the burglar alarm and cut the phone line.</li>
+<li><b>Plant.</b> The Night Shift switch is in the foreman's office.</li>
+<li><b>Cars.</b> <code>L</code> toggles the headlights, tail-lights and underglow.</li>
+</ul>
+<h3 id="n-doorbells-and-burglary">N. Doorbells and burglary</h3>
+<ul>
+<li><b>Doorbells.</b> <code>E</code> on the porch button plays a two-tone chime. After 2 s the front door swings open and a homeowner (a random adult man or woman, with the matching voice) steps to the threshold:</li>
+<li><b>Friendly</b> (not aiming a weapon, low heat, or wearing the $15 pumpkin mask): you get candy and $15–$50.</li>
+<li><b>Hostile</b> (aiming, or kicking the door in): the homeowner screams in their own voice and runs for the kitchen phone. If the power is still on, the police are called (+2 skulls). If you cut the breaker first, the line is dead.</li>
+<li><b>Loot:</b></li>
+</ul>
+<p>  | Item | Value | How you carry it |   |---|---|---|   | Vintage CRT TV | $180 | both hands |   | Cash Register | $250 | both hands |   | Jewelry Box | $150 | loot bag |   | Power Tool Kit | $120 | both hands |   | Evidence Bag | $400 | loot bag |   | Giant Candy Bowl | $40 | loot bag |   | Retro Radio | $90 | loot bag |   | Cash Stash | $60–200 | loot bag |</p>
+<p>  Heavy items slow you down and block sprinting, jumping and driving until you stash them.</p>
+<ul>
+<li><b>Trunk stashing.</b> Walk to the rear of your car and press <code>E</code> to pop the hinged trunk, then <code>E</code> again to stash. Items sit in the trunk bed and show while the lid is open (pickup beds always show them).</li>
+<li><b>Fencing.</b> Vinnie the Fence works the alley behind Hank's Hardware. He buys from your hands, or from the trunk if you drive up. Busted? Your bag is confiscated.</li>
+</ul>
+<h3 id="o-fuel-and-the-gas-station">O. Fuel and the gas station</h3>
+<ul>
+<li><b>Tank.</b> Every drivable car has a 16-gallon tank (0–100 %).</li>
+<li><b>Burn rate.</b> Fuel burns with throttle and rpm. The V6 uses the least, the supercharged V8 burns 1.45× and the twin-turbo 1.75×. Stolen cars start at 25–85 %.</li>
+<li><b>Empty tank.</b> At 0 % the engine sputters, backfires and stalls. Under 4 % it splutters.</li>
+<li><b>HUD.</b> The speedo shows a fuel bar with a blinking low-fuel light under 15 %, plus damage readouts (flat tyres, engine %).</li>
+<li><b>Pumps.</b> Pull up to a Moonbeam Mart pump (or stand at it next to your car) and press <code>E</code>. The hose swings out, a "Pump 3 · Regular" counter ticks gallons and dollars at <b>$2/gal</b>, and the pump glugs until the tank is full, the cash runs out, or you drive off.</li>
+<li><b>Jerrycans.</b> They cost $25 at the mart or hardware store. Pouring one into any car adds <b>+35 %</b>, even a stalled car out in the cemetery.</li>
+</ul>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="docs/screenshots/17_trick_or_treater_kid_dialogue.png" target="_blank"><img alt="" src="docs/screenshots/17_trick_or_treater_kid_dialogue.png" loading="lazy"/></a></td><td><a href="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" target="_blank"><img alt="" src="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/18_interior_house.png" target="_blank"><img alt="" src="docs/screenshots/18_interior_house.png" loading="lazy"/></a></td><td><a href="docs/screenshots/18_interior_diner.png" target="_blank"><img alt="" src="docs/screenshots/18_interior_diner.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/18_interior_hardware.png" target="_blank"><img alt="" src="docs/screenshots/18_interior_hardware.png" loading="lazy"/></a></td><td><a href="docs/screenshots/18_interior_police.png" target="_blank"><img alt="" src="docs/screenshots/18_interior_police.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/16_bodyshop_robot_carrying_door.png" target="_blank"><img alt="" src="docs/screenshots/16_bodyshop_robot_carrying_door.png" loading="lazy"/></a></td><td><a href="docs/screenshots/16_jumbotron_live_feed.png" target="_blank"><img alt="" src="docs/screenshots/16_jumbotron_live_feed.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/16_jumbotron_closeup.png" target="_blank"><img alt="" src="docs/screenshots/16_jumbotron_closeup.png" loading="lazy"/></a></td><td><a href="docs/screenshots/16_conveyor_skillet_press_feeder.png" target="_blank"><img alt="" src="docs/screenshots/16_conveyor_skillet_press_feeder.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/18_foreman_office_observation.png" target="_blank"><img alt="" src="docs/screenshots/18_foreman_office_observation.png" loading="lazy"/></a></td><td><a href="docs/screenshots/23_motorworks_night_shift_blacklight.png" target="_blank"><img alt="" src="docs/screenshots/23_motorworks_night_shift_blacklight.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/19_seated_traffic_driver.png" target="_blank"><img alt="" src="docs/screenshots/19_seated_traffic_driver.png" loading="lazy"/></a></td><td><a href="docs/screenshots/19_seated_police_officer.png" target="_blank"><img alt="" src="docs/screenshots/19_seated_police_officer.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/19_forklift_operator.png" target="_blank"><img alt="" src="docs/screenshots/19_forklift_operator.png" loading="lazy"/></a></td><td><a href="docs/screenshots/20_pursuit_traffic_navigation.png" target="_blank"><img alt="" src="docs/screenshots/20_pursuit_traffic_navigation.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/21_officer_dismounts_cruiser.png" target="_blank"><img alt="" src="docs/screenshots/21_officer_dismounts_cruiser.png" loading="lazy"/></a></td><td><a href="docs/screenshots/21_police_foot_chase.png" target="_blank"><img alt="" src="docs/screenshots/21_police_foot_chase.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/22_aim_and_fire_pistol.png" target="_blank"><img alt="" src="docs/screenshots/22_aim_and_fire_pistol.png" loading="lazy"/></a></td><td><a href="docs/screenshots/22_jack_o_lantern_launcher.png" target="_blank"><img alt="" src="docs/screenshots/22_jack_o_lantern_launcher.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/23_house_lights_on.png" target="_blank"><img alt="" src="docs/screenshots/23_house_lights_on.png" loading="lazy"/></a></td><td><a href="docs/screenshots/23_house_lights_off.png" target="_blank"><img alt="" src="docs/screenshots/23_house_lights_off.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/24_doorbell_homeowner_greets.png" target="_blank"><img alt="" src="docs/screenshots/24_doorbell_homeowner_greets.png" loading="lazy"/></a></td><td><a href="docs/screenshots/24_carrying_stolen_tv.png" target="_blank"><img alt="" src="docs/screenshots/24_carrying_stolen_tv.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/24_tv_stashed_in_trunk.png" target="_blank"><img alt="" src="docs/screenshots/24_tv_stashed_in_trunk.png" loading="lazy"/></a></td><td><a href="docs/screenshots/25_refuelling_pump_counter.png" target="_blank"><img alt="" src="docs/screenshots/25_refuelling_pump_counter.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/25_gas_station_pump_hose.png" target="_blank"><img alt="" src="docs/screenshots/25_gas_station_pump_hose.png" loading="lazy"/></a></td><td><a href="docs/screenshots/25_out_of_fuel_stalled.png" target="_blank"><img alt="" src="docs/screenshots/25_out_of_fuel_stalled.png" loading="lazy"/></a></td></tr></tbody></table>
 <h2 id="7-automated-qa-self-test-loop">7. Automated QA self-test loop</h2>
 <p><code>npm test</code> (<code>tests/qa.mjs</code>) drives the real game in Playwright Chromium on the local GPU. It presses real keys, measures the results through <code>window.__MW</code>, captures every screenshot in this document, and writes <code>tests/qa-results.json</code> plus the <code>qa</code> section of <code>TELEMETRY.json</code>.</p>
-<p>Last run: 2026-10-23T11:38:03.952Z — <b>20/20 checks passed</b> in 179s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).</p>
+<p>Last run: 2026-10-23T13:54:40.281Z — <b>30/30 checks passed</b> in 354s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).</p>
 <ul>
 <li><span class="cb ok">✔</span> <b>boot</b> — Page loads, Blender assets stream in, zero console errors / uncaught exceptions</li>
 <li><span class="cb ok">✔</span> <b>assets</b> — All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes</li>
@@ -158,6 +285,7 @@ npm run dev</code></pre>
 <li><span class="cb ok">✔</span> <b>escape</b> — Escape/pointer-lock release clears held movement keys (no auto-walking after menu)</li>
 <li><span class="cb ok">✔</span> <b>dialogue</b> — Talking to an NPC (E) plays spoken dialogue audio with subtitles/speech bubble</li>
 <li><span class="cb ok">✔</span> <b>kiosk</b> — Kiosk opens; every customization category changes the live 3D car; order is placed</li>
+<li><span class="cb ok">✔</span> <b>factory_jumbotron_and_conveyor</b> — Live Jumbotron render-target feed updates; conveyor skillet/rollers move; robots physically carry doors/hood/trunk from racks to the chassis</li>
 <li><span class="cb ok">✔</span> <b>assembly</b> — Car progresses through all 5 assembly stations with hinge + robot animation sync, then rolls out</li>
 <li><span class="cb ok">✔</span> <b>hinges</b> — Finished car: doors, hood, trunk rotate about their Blender pivots (no floating parts)</li>
 <li><span class="cb ok">✔</span> <b>physics</b> — Vehicle physics: W accelerates; W+A turns left and W+D turns right simultaneously (heading change)</li>
@@ -166,6 +294,15 @@ npm run dev</code></pre>
 <li><span class="cb ok">✔</span> <b>cemetery</b> — Cemetery gate hinges open as the player approaches; crypts, tombstones, fog</li>
 <li><span class="cb ok">✔</span> <b>theft</b> — Car theft (E on a town car) opens the hinged door, triggers wanted level and police pursuit</li>
 <li><span class="cb ok">✔</span> <b>busted</b> — Boxed in by police for 5 s =&gt; BUSTED, fine, respawn at the Police Station</li>
+<li><span class="cb ok">✔</span> <b>npc_demographics</b> — NPC demographics: kids are 0.68x trick-or-treaters with kid-only voices; male/female NPCs only use matching voices; no child drivers</li>
+<li><span class="cb ok">✔</span> <b>enterable_buildings</b> — Walk through hinged front doors into the Diner, Hardware Store, Police Station and a House (no collider blocking)</li>
+<li><span class="cb ok">✔</span> <b>seated_drivers</b> — Traffic cars, police cruisers, the forklift (and the player) have seated drivers; arms + steering wheel follow the steering; cabin glass is see-through</li>
+<li><span class="cb ok">✔</span> <b>navigation_and_bounds</b> — 30 s of traffic + police pursuit: no vehicle leaves |x|,|z| &lt; 600 or floats (|y - ground| &lt; 0.6); traffic stays on the road graph</li>
+<li><span class="cb ok">✔</span> <b>police_foot_chase</b> — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars</li>
+<li><span class="cb ok">✔</span> <b>weapons_and_shooting</b> — Buy/equip a pistol, aim (RMB/Q) and fire at a car tyre and a streetlight: ammo decrements, tyre pops, light goes out, impact FX</li>
+<li><span class="cb ok">✔</span> <b>light_switches</b> — Interior wall switch (E) toggles the building lights (fixtures + light sources + window glow); breaker box cuts power; Night Shift switch re-lights the plant</li>
+<li><span class="cb ok">✔</span> <b>doorbell_and_burglary</b> — Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it</li>
+<li><span class="cb ok">✔</span> <b>fuel_and_gas_station</b> — Driving burns fuel (stalls when empty); refuelling at the Gas Station pumps restores 100% at $2/gal; jerrycan adds +35%</li>
 <li><span class="cb ok">✔</span> <b>pumpkins</b> — Golden Pumpkins: collecting all 5 unlocks the Monster Mash kiosk pack</li>
 <li><span class="cb ok">✔</span> <b>phantom</b> — Phantom Hearse: honking 3x at the Vlad crypt summons a ghost hearse race</li>
 <li><span class="cb ok">✔</span> <b>trial</b> — Graveyard Shift: driving through the start arch starts the timed drift trial</li>
@@ -176,124 +313,327 @@ npm run dev</code></pre>
 <details><summary>Key measurements</summary>
 <pre><code>{
  "boot": {
-  "loadMs": 9407,
+  "loadMs": 3384,
   "gpu": "ANGLE (AMD, AMD Radeon (TM) R5 M330 (0x00006660) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "consoleErrors": []
  },
- "escape": {
-  "heldBefore": [
-   "KeyW"
-  ],
-  "mode": "paused",
-  "keysAfterEscape": [],
-  "driftAfterResume": 0,
-  "clearReason": "unlock"
- },
- "assembly": {
-  "events": [
-   "order",
-   "s1_body",
-   "close_Door_L",
-   "close_Door_R",
-   "close_Hood",
-   "close_Trunk",
-   "s2_paint",
-   "s3_open",
-   "engine_in",
-   "wheel_0",
-   "wheel_1",
-   "wheel_2",
-   "wheel_3",
-   "s3_close",
-   "s4_final",
-   "qc_open",
-   "qc_close",
-   "exit_open",
-   "complete"
-  ]
+ "factory_jumbotron_and_conveyor": {
+  "factory": {
+   "ikSolves": 743,
+   "pressCycles": 1,
+   "partsCarried": 3,
+   "nightShift": false
+  },
+  "jumbotron": {
+   "before": {
+    "frames": 338,
+    "overlay": 64,
+    "faces": 4
+   },
+   "after": {
+    "frames": 501,
+    "overlay": 147,
+    "faces": 4
+   }
+  }
  },
  "physics": {
   "inCar": true,
-  "fpsDuringDrive": 18.5,
-  "speedAfterW": 9.71,
-  "leftHeadingDelta": 0.577,
-  "rightHeadingDelta": -0.372,
+  "fpsDuringDrive": 22.3,
+  "speedAfterW": 17,
+  "leftHeadingDelta": 0.841,
+  "rightHeadingDelta": -1.296,
   "braking": {
-   "before": 16.51,
-   "after": 8.7
+   "before": 26.67,
+   "after": 11.67
   },
   "highSpeed": {
-   "speed": 12.95,
-   "dHeading": -0.144
+   "speed": 24.05,
+   "dHeading": -0.563
   },
   "highSpeedTurn": {
-   "speed": 12.95,
-   "dHeading": -0.144
+   "speed": 24.05,
+   "dHeading": -0.563
   },
-  "skidMarks": 349
+  "skidMarks": 749
  },
  "theft": {
   "inStolenCar": true,
   "doorSwungOpen": 1,
   "markedStolen": true,
-  "wantedLevel": 1,
+  "wantedLevel": 3,
   "pursuit": [
    {
     "mode": "pursuit",
     "pos": [
-     187.4,
-     -4
+     160.5,
+     33.8
     ],
-    "siren": true
+    "siren": true,
+    "parked": true
    },
    {
     "mode": "pursuit",
     "pos": [
-     -193.3,
-     2.6
+     162.5,
+     31.4
     ],
-    "siren": true
+    "siren": true,
+    "parked": true
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     130.6,
+     6.7
+    ],
+    "siren": true,
+    "parked": false
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     61.8,
+     4.6
+    ],
+    "siren": true,
+    "parked": false
    }
   ],
   "police": {
-   "level": 1,
+   "level": 4,
    "cars": [
     {
      "mode": "pursuit",
      "pos": [
-      187.4,
-      -4
+      160.5,
+      33.8
      ],
-     "siren": true
+     "siren": true,
+     "parked": true
     },
     {
      "mode": "pursuit",
      "pos": [
-      -193.3,
-      2.6
+      162.5,
+      31.4
      ],
-     "siren": true
+     "siren": true,
+     "parked": true
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      130.6,
+      6.7
+     ],
+     "siren": true,
+     "parked": false
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      61.8,
+      4.6
+     ],
+     "siren": true,
+     "parked": false
+    }
+   ],
+   "officers": [
+    {
+     "state": "foot",
+     "pos": [
+      137.4,
+      0.2,
+      10.6
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      137.4,
+      0.2,
+      10.6
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      124,
+      0,
+      4.3
+     ],
+     "armed": true
+    },
+    {
+     "state": "beat",
+     "pos": [
+      -86.5,
+      0.2,
+      -8
+     ],
+     "armed": false
+    },
+    {
+     "state": "foot",
+     "pos": [
+      38.2,
+      0,
+      13.3
+     ],
+     "armed": true
+    },
+    {
+     "state": "seated",
+     "pos": [
+      0.4,
+      0,
+      0.1
+     ],
+     "armed": false
+    },
+    {
+     "state": "seated",
+     "pos": [
+      0.4,
+      0,
+      0.1
+     ],
+     "armed": false
     }
    ],
    "stats": {
     "crimes": [
      {
-      "kind": "theft",
-      "at": 131216,
+      "kind": "speeding",
+      "at": 106631,
       "level": 1
+     },
+     {
+      "kind": "rammed",
+      "at": 111692,
+      "level": 2
+     },
+     {
+      "kind": "theft",
+      "at": 141219,
+      "level": 3
+     },
+     {
+      "kind": "rammed",
+      "at": 146856,
+      "level": 4
      }
     ],
-    "maxLevel": 1,
+    "maxLevel": 4,
     "busts": 0,
-    "escapes": 0
+    "escapes": 0,
+    "dismounts": 2,
+    "footChases": 4,
+    "shotsAtPlayer": 11,
+    "resets": 0
    }
+  }
+ },
+ "navigation_and_bounds": {
+  "worst": {
+   "oob": 0,
+   "float": 0,
+   "maxDy": 0
+  },
+  "physics": {
+   "velocityClamps": 0,
+   "spinClamps": 0,
+   "outOfBounds": 0,
+   "traffic": {
+    "whiskerBrakes": 29,
+    "junctionWaits": 0,
+    "resets": 0
+   },
+   "nav": {
+    "nodes": 1378,
+    "edges": 4532,
+    "rays": 9319,
+    "buildMs": 266
+   },
+   "policeResets": 0
+  }
+ },
+ "fuel_and_gas_station": {
+  "burn": {
+   "before": 60,
+   "after": 58.98
+  },
+  "drivingConsumesFuel": {
+   "before": 60,
+   "after": 58.98
+  },
+  "stall": {
+   "speed": -0.01,
+   "fs": {
+    "fuel": 0,
+    "stalled": true,
+    "session": false,
+    "stats": {
+     "refuels": 0,
+     "gallons": 0,
+     "spent": 0,
+     "jerrycans": 0
+    }
+   }
+  },
+  "stallsWhenEmpty": {
+   "fuel": 0,
+   "stalled": true,
+   "session": false,
+   "stats": {
+    "refuels": 0,
+    "gallons": 0,
+    "spent": 0,
+    "jerrycans": 0
+   }
+  },
+  "jerrycan": {
+   "prompt": "[E] Get in your car — 0% fuel",
+   "fuel": 35
+  },
+  "jerrycanAdds35": {
+   "fuel": 35,
+   "stalled": false,
+   "session": false,
+   "stats": {
+    "refuels": 0,
+    "gallons": 0,
+    "spent": 0,
+    "jerrycans": 1
+   }
+  },
+  "refuel": {
+   "prompt": "[E] Refuel — $2/gal (35% now)",
+   "fuel": 100,
+   "cost": 20.82,
+   "stats": {
+    "refuels": 1,
+    "gallons": 10.409791596800002,
+    "spent": 20.819583193600003,
+    "jerrycans": 1
+   }
+  },
+  "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
+  "tankFull": 100,
+  "chargedTwoDollarsPerGallon": {
+   "paid": 20.81958319360274,
+   "gal": 10.409791596800002
   }
  },
  "perf": {
   "fps": 19,
-  "drawCalls": 1352,
-  "triangles": 418798,
-  "vehicles": 4
+  "drawCalls": 1673,
+  "triangles": 609368,
+  "vehicles": 6
  }
 }</code></pre>
 </details>
@@ -308,12 +648,22 @@ npm run dev</code></pre>
 <li><b>Slow-motion physics.</b> The dt clamp made physics run slowly at low frame rates. The clamp was raised, and automatic quality fallback was added.</li>
 <li><b>Lost wheel contact.</b> cannon-es heightfield raycasts miss on some grid cells, so wheels lost contact (seen on the exit road). The flat town and the cemetery plateau are now backed by exact static collision slabs.</li>
 </ul>
+<p><b>Phase 2 problems found by the QA loop and the probes, and their fixes:</b></p>
+<ul>
+<li><b>5–7 fps after interiors.</b> The cause was cannon's O(n²) SAP pass plus the N² collision matrix with about 2,400 new static colliders. The fix was the spatial-hash broadphase, the sparse matrix, sleeping parked cars and vertex-colour batching (see §1).</li>
+<li><b>Jumbotron crash at boot.</b> The overlay drew before the assembly line existed. It now draws lazily.</li>
+<li><b>Ray-hash overflow.</b> The terrain heightfield's unbounded AABB blew up the spatial hash. Huge or infinite bodies now live in an always-tested "big" list.</li>
+<li><b>Traffic frozen at the foot of the hill.</b> The whisker rays were hitting the sloped terrain heightfield. Whiskers now ignore ground, floor and curb colliders, for police cruisers too.</li>
+<li><b>Door prompts.</b> They didn't reach from the porch spot, the station's desk officer stood in the doorway, and the door prompt out-ranked the doorbell, so <code>E</code> kicked the door in instead of ringing. The interaction picker now ranks every candidate by real distance.</li>
+<li><b>Interior screenshots.</b> The camera went through ceilings. Ceiling colliders were added and the camera pulls in tighter indoors.</li>
+<li><b>Float check flagged the player's car on top of a parked car.</b> That is legitimate stacking. Floats are now measured against the actual support surface under the car.</li>
+</ul>
 <h2 id="8-controls">8. Controls</h2>
-<table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody><tr><td>W A S D</td><td>Walk / drive and steer (throttle and steering work at the same time)</td></tr><tr><td>Mouse</td><td>Orbit the camera (click the game to capture the mouse)</td></tr><tr><td>Shift / Space</td><td>Sprint / jump on foot · handbrake drift in a car</td></tr><tr><td>E</td><td>Interact, talk, use the kiosk, read info panels, enter, steal or exit a car, use the Custom Bay</td></tr><tr><td>C · H · R · L</td><td>Cockpit cam · horn · haunted radio · headlights</td></tr><tr><td>V · F · T</td><td>Station cam · follow car · fast-forward the build</td></tr><tr><td>N · Backspace</td><td>Toggle the waypoint guide · reset the car upright</td></tr><tr><td>Esc</td><td>Pause and settings: Master, Voice, SFX and Music volume, Graphics Quality and units. <b>All held keys are cleared.</b></td></tr></tbody></table>
+<table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody><tr><td>W A S D</td><td>Walk / drive and steer (throttle and steering work at the same time)</td></tr><tr><td>Mouse</td><td>Orbit the camera (click the game to capture the mouse)</td></tr><tr><td>Shift / Space</td><td>Sprint / jump on foot · handbrake drift in a car</td></tr><tr><td>E</td><td>Interact: talk, kiosk, info panels, enter/steal/exit a car, Custom Bay, <b>doors (open / kick), light switches, breaker boxes, doorbells, loot, trunks, fuel pumps, jerrycans, shop counters, the fence</b></td></tr><tr><td>1 – 5 · RMB (or Q) · LMB · R (on foot)</td><td>Fists, crowbar, pistol, shotgun, Jack-o'-Lantern Launcher · aim · fire · reload</td></tr><tr><td>G</td><td>Drop a carried item</td></tr><tr><td>C · H · R · L</td><td>Cockpit cam · horn · haunted radio (in a car) · headlights, tail-lights &amp; underglow</td></tr><tr><td>V · F · T</td><td>Station cam · follow car · fast-forward the build</td></tr><tr><td>N · Backspace</td><td>Toggle the waypoint guide · reset the car upright</td></tr><tr><td>Esc</td><td>Pause and settings: Master, Voice, SFX and Music volume, Graphics Quality and units. <b>All held keys are cleared.</b></td></tr></tbody></table>
 <h2 id="9-telemetry">9. Telemetry</h2>
 <p><code>TELEMETRY.json</code> holds the machine-readable data. The title screen shows the same numbers on the toggleable <b>Build Telemetry</b> badge.</p>
-<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Build started → finished</td><td>2026-10-23T06:41:18Z → 2026-10-23T11:38:13.196Z (<b>4h 57m</b>)</td></tr><tr><td>LLM API calls (agent turns)</td><td>~210 — approx. agent turns / tool round-trips, counted from the session</td></tr><tr><td>LLM input tokens</td><td>~60M processed (est.; overwhelmingly prompt-cache reads of a context that grew to ~620k)</td></tr><tr><td>LLM output tokens</td><td>~210k (est.; ~8.5k lines of code, scripts, HTML/CSS and docs, plus reasoning)</td></tr><tr><td>Estimated LLM cost</td><td>metered - Claude Pro subscription (session used ~60% of the 5-hour window, ~40% weekly at last check)</td></tr><tr><td>Context window at finish</td><td>~620k / 1M tokens (measured via session usage API)</td></tr><tr><td>ElevenLabs API key present</td><td>no</td></tr><tr><td>ElevenLabs API calls / characters</td><td>54 calls / 4267 chars</td></tr><tr><td>ElevenLabs voice IDs (planned per character)</td><td>foreman: <code>8vYCG1Q6bAbJWXdRuCIr</code>, skeleton: <code>RDSy0QN68yhrjuOgqzQ4</code>, groundskeeper: <code>7lJ2JuXZKHyck5zlS7XQ</code>, waitress: <code>tmHt9OXLAa0z2IPF4k0Y</code>, panic: <code>b8JMPeNuVrqqWExQc8e9</code>, civilian: <code>MJw0jtAmgm4D71m0HUJU</code>, dispatch: <code>umwdC76NumBsGtudno3p</code>, cop: <code>R3brgFoQWI6vjwB1A4aP</code>, dj: <code>CeNX9CMwmxDxUF5Q2Inm</code>, kiosk: <code>DXav2Iq8VRhoGarNlWcx</code>, phantom: <code>d3qrd1ge6zWDvUxIeXiH</code>, worker: <code>t1yzxMpe9zK42bXmI1T2</code>, worker2: <code>ZQF62XTHtHemfMB0pp0G</code>, pa: <code>no52gq1ZwK7Lmejv1EHz</code></td></tr><tr><td>Dialogue lines synthesised / characters</td><td>54 lines / 4267 chars (elevenlabs: 54)</td></tr><tr><td>Audio caching</td><td>54 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 54 cache hits this run)</td></tr><tr><td>Blender GLB assets</td><td>27 files, 47,114 triangles, 3.2 MB</td></tr><tr><td>QA self-check runs / last result</td><td>10 full runs · last 20/20 · 189 individual check passes in total</td></tr></tbody></table>
+<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Build started → finished</td><td>2026-10-23T06:41:18Z → 2026-10-23T13:55:06.632Z (<b>7h 14m</b>)</td></tr><tr><td>LLM API calls (agent turns)</td><td>~370 (phase 1 ~210 + phase 2 ~160) — approx. agent turns / tool round-trips, counted from the session</td></tr><tr><td>LLM input tokens</td><td>~180M processed (est.; prompt-cache reads; phase 2 context grew to ~960k)</td></tr><tr><td>LLM output tokens</td><td>~420k (est.; phase 2 added ~9k lines of code/scripts/docs)</td></tr><tr><td>Estimated LLM cost</td><td>metered - Claude Pro subscription (phase 2 pushed the 5-hour window to ~85%, weekly ~57%)</td></tr><tr><td>Context window at finish</td><td>~620k / 1M tokens (measured via session usage API)</td></tr><tr><td>ElevenLabs API key present</td><td>no</td></tr><tr><td>ElevenLabs API calls / characters</td><td>82 calls / 5854 chars</td></tr><tr><td>ElevenLabs voice IDs (planned per character)</td><td>foreman: <code>8vYCG1Q6bAbJWXdRuCIr</code>, skeleton: <code>RDSy0QN68yhrjuOgqzQ4</code>, groundskeeper: <code>7lJ2JuXZKHyck5zlS7XQ</code>, waitress: <code>tmHt9OXLAa0z2IPF4k0Y</code>, panic: <code>b8JMPeNuVrqqWExQc8e9</code>, civilian: <code>MJw0jtAmgm4D71m0HUJU</code>, dispatch: <code>umwdC76NumBsGtudno3p</code>, cop: <code>R3brgFoQWI6vjwB1A4aP</code>, dj: <code>CeNX9CMwmxDxUF5Q2Inm</code>, kiosk: <code>DXav2Iq8VRhoGarNlWcx</code>, phantom: <code>d3qrd1ge6zWDvUxIeXiH</code>, worker: <code>t1yzxMpe9zK42bXmI1T2</code>, worker2: <code>ZQF62XTHtHemfMB0pp0G</code>, pa: <code>no52gq1ZwK7Lmejv1EHz</code>, civ_m: <code>CwhRBWXzGAHq8TQ4Fs17</code>, panic_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_f: <code>MJw0jtAmgm4D71m0HUJU</code>, kid_b: <code>XjGYkUkzth8BPs29fmcV</code>, kid_g: <code>Nggzl2QAXh3OijoXD116</code>, fence: <code>2UyW0L6yjNuo3ZH3XnoV</code>, clerk: <code>t1yzxMpe9zK42bXmI1T2</code>, attendant: <code>tmHt9OXLAa0z2IPF4k0Y</code></td></tr><tr><td>Dialogue lines synthesised / characters</td><td>82 lines / 5854 chars (elevenlabs: 82)</td></tr><tr><td>Audio caching</td><td>82 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run)</td></tr><tr><td>Blender GLB assets</td><td>28 files, 90,350 triangles, 6.4 MB</td></tr><tr><td>QA self-check runs / last result</td><td>16 full runs · last 30/30 · 352 individual check passes in total</td></tr><tr><td>Phase 2 build window</td><td>2026-10-23T11:45:00Z → 2026-10-23T13:55:06.632Z</td></tr><tr><td>Phase 2 ElevenLabs delta</td><td>+28 lines · +1587 chars · <b>+1796 credits</b> (9 new voices)</td></tr><tr><td>Phase 2 LLM usage</td><td>~150 (est.) calls · ~120M processed (est.; prompt-cache reads of a context that grew to ~920k) input · ~190k (est.) output</td></tr><tr><td>Phase 2 performance</td><td>headless Chromium on the R5 M330: 5-7 fps -&gt; 26-37 fps after the broadphase / collision-matrix / batching pass (physics 98 -&gt; 10 ms, render 45 -&gt; 20 ms per frame)</td></tr></tbody></table>
 <p><b>Per-phase timestamps</b> (from artifact modification times)</p>
-<table><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Minutes</th></tr></thead><tbody><tr><td>Environment survey &amp; scaffold</td><td>2026-10-23T06:41:18Z</td><td>2026-10-23T06:41:29.483Z</td><td>1</td></tr><tr><td>Blender asset pipeline (27 GLBs)</td><td>2026-10-23T07:40:06.597Z</td><td>2026-10-23T08:14:54.883Z</td><td>35</td></tr><tr><td>Dialogue synthesis (54 lines)</td><td>2026-10-23T08:49:51.473Z</td><td>2026-10-23T08:50:45.217Z</td><td>1</td></tr><tr><td>Engine, world &amp; gameplay code</td><td>2026-10-23T07:50:54.739Z</td><td>2026-10-23T08:13:06.170Z</td><td>22</td></tr><tr><td>Automated QA loop</td><td>2026-10-23T08:22:41.589Z</td><td>2026-10-23T11:38:03.955Z</td><td>195</td></tr><tr><td>Documentation</td><td>2026-10-23T09:24:15.862Z</td><td>2026-10-23T11:38:13.196Z</td><td>134</td></tr></tbody></table>
+<table><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Minutes</th></tr></thead><tbody><tr><td>Environment survey &amp; scaffold</td><td>2026-10-23T06:41:18Z</td><td>2026-10-23T06:41:29.483Z</td><td>1</td></tr><tr><td>Blender asset pipeline (27 GLBs)</td><td>2026-10-23T07:40:06.597Z</td><td>2026-10-23T13:30:21.865Z</td><td>350</td></tr><tr><td>Dialogue synthesis (54 lines)</td><td>2026-10-23T12:07:37.916Z</td><td>2026-10-23T12:07:50.153Z</td><td>1</td></tr><tr><td>Engine, world &amp; gameplay code</td><td>2026-10-23T07:50:54.739Z</td><td>2026-10-23T12:59:44.235Z</td><td>309</td></tr><tr><td>Automated QA loop</td><td>2026-10-23T13:48:04.458Z</td><td>2026-10-23T13:54:40.287Z</td><td>7</td></tr><tr><td>Documentation</td><td>2026-10-23T13:08:09.660Z</td><td>2026-10-23T13:55:06.632Z</td><td>47</td></tr><tr><td>Phase 2 · Blender interiors, plant, props, characters</td><td>2026-10-23T11:45:00Z</td><td>2026-10-23T13:04:40.215Z</td><td>80</td></tr><tr><td>Phase 2 · ElevenLabs demographic voices (28 lines)</td><td>2026-10-23T12:01:50.153Z</td><td>2026-10-23T12:07:50.153Z</td><td>6</td></tr><tr><td>Phase 2 · Game systems (10 upgrades)</td><td>2026-10-23T12:09:23.348Z</td><td>2026-10-23T12:59:44.235Z</td><td>50</td></tr><tr><td>Phase 2 · QA expansion &amp; perf pass</td><td>2026-10-23T12:35:09.633Z</td><td>2026-10-23T13:54:40.287Z</td><td>80</td></tr></tbody></table>
 <h2 id="10-screenshot-gallery">10. Screenshot gallery</h2>
-<p><a href="docs/screenshots/01_title_screen.png" target="_blank"><img alt="01_title_screen" src="docs/screenshots/01_title_screen.png" loading="lazy"/></a> <a href="docs/screenshots/01b_title_telemetry_badge.png" target="_blank"><img alt="01b_title_telemetry_badge" src="docs/screenshots/01b_title_telemetry_badge.png" loading="lazy"/></a> <a href="docs/screenshots/03_player_at_plant_wall.png" target="_blank"><img alt="03_player_at_plant_wall" src="docs/screenshots/03_player_at_plant_wall.png" loading="lazy"/></a> <a href="docs/screenshots/04_pause_menu.png" target="_blank"><img alt="04_pause_menu" src="docs/screenshots/04_pause_menu.png" loading="lazy"/></a> <a href="docs/screenshots/05_dialogue_foreman.png" target="_blank"><img alt="05_dialogue_foreman" src="docs/screenshots/05_dialogue_foreman.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_body.png" target="_blank"><img alt="06_kiosk_body" src="docs/screenshots/06_kiosk_body.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_bodykit.png" target="_blank"><img alt="06_kiosk_bodykit" src="docs/screenshots/06_kiosk_bodykit.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_lighting.png" target="_blank"><img alt="06_kiosk_lighting" src="docs/screenshots/06_kiosk_lighting.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_livery.png" target="_blank"><img alt="06_kiosk_livery" src="docs/screenshots/06_kiosk_livery.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_open.png" target="_blank"><img alt="06_kiosk_open" src="docs/screenshots/06_kiosk_open.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_paint.png" target="_blank"><img alt="06_kiosk_paint" src="docs/screenshots/06_kiosk_paint.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_performance.png" target="_blank"><img alt="06_kiosk_performance" src="docs/screenshots/06_kiosk_performance.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_wheels.png" target="_blank"><img alt="06_kiosk_wheels" src="docs/screenshots/06_kiosk_wheels.png" loading="lazy"/></a> <a href="docs/screenshots/07_rollout_finished_car.png" target="_blank"><img alt="07_rollout_finished_car" src="docs/screenshots/07_rollout_finished_car.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_1_stamping.png" target="_blank"><img alt="07_station_1_stamping" src="docs/screenshots/07_station_1_stamping.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_2_bodyshop.png" target="_blank"><img alt="07_station_2_bodyshop" src="docs/screenshots/07_station_2_bodyshop.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_3_paint.png" target="_blank"><img alt="07_station_3_paint" src="docs/screenshots/07_station_3_paint.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_4_powertrain.png" target="_blank"><img alt="07_station_4_powertrain" src="docs/screenshots/07_station_4_powertrain.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_5_final_qc.png" target="_blank"><img alt="07_station_5_final_qc" src="docs/screenshots/07_station_5_final_qc.png" loading="lazy"/></a> <a href="docs/screenshots/08_hinges_open.png" target="_blank"><img alt="08_hinges_open" src="docs/screenshots/08_hinges_open.png" loading="lazy"/></a> <a href="docs/screenshots/09_driving_turn.png" target="_blank"><img alt="09_driving_turn" src="docs/screenshots/09_driving_turn.png" loading="lazy"/></a> <a href="docs/screenshots/09b_handbrake_drift.png" target="_blank"><img alt="09b_handbrake_drift" src="docs/screenshots/09b_handbrake_drift.png" loading="lazy"/></a> <a href="docs/screenshots/10_cockpit_view.png" target="_blank"><img alt="10_cockpit_view" src="docs/screenshots/10_cockpit_view.png" loading="lazy"/></a> <a href="docs/screenshots/11_diner.png" target="_blank"><img alt="11_diner" src="docs/screenshots/11_diner.png" loading="lazy"/></a> <a href="docs/screenshots/11_elm_avenue.png" target="_blank"><img alt="11_elm_avenue" src="docs/screenshots/11_elm_avenue.png" loading="lazy"/></a> <a href="docs/screenshots/11_gas_station.png" target="_blank"><img alt="11_gas_station" src="docs/screenshots/11_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/11_halloween_yard.png" target="_blank"><img alt="11_halloween_yard" src="docs/screenshots/11_halloween_yard.png" loading="lazy"/></a> <a href="docs/screenshots/11_hardware_store.png" target="_blank"><img alt="11_hardware_store" src="docs/screenshots/11_hardware_store.png" loading="lazy"/></a> <a href="docs/screenshots/11_hill_road.png" target="_blank"><img alt="11_hill_road" src="docs/screenshots/11_hill_road.png" loading="lazy"/></a> <a href="docs/screenshots/11_leaf_piles_trees.png" target="_blank"><img alt="11_leaf_piles_trees" src="docs/screenshots/11_leaf_piles_trees.png" loading="lazy"/></a> <a href="docs/screenshots/11_main_street.png" target="_blank"><img alt="11_main_street" src="docs/screenshots/11_main_street.png" loading="lazy"/></a> <a href="docs/screenshots/11_motorworks_plant.png" target="_blank"><img alt="11_motorworks_plant" src="docs/screenshots/11_motorworks_plant.png" loading="lazy"/></a> <a href="docs/screenshots/11_police_station.png" target="_blank"><img alt="11_police_station" src="docs/screenshots/11_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_crypts.png" target="_blank"><img alt="12_cemetery_crypts" src="docs/screenshots/12_cemetery_crypts.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_gates.png" target="_blank"><img alt="12_cemetery_gates" src="docs/screenshots/12_cemetery_gates.png" loading="lazy"/></a> <a href="docs/screenshots/12_vlad_crypt.png" target="_blank"><img alt="12_vlad_crypt" src="docs/screenshots/12_vlad_crypt.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_chase_overview.png" target="_blank"><img alt="13_police_chase_overview" src="docs/screenshots/13_police_chase_overview.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_pursuit.png" target="_blank"><img alt="13_police_pursuit" src="docs/screenshots/13_police_pursuit.png" loading="lazy"/></a> <a href="docs/screenshots/13_stealing_car.png" target="_blank"><img alt="13_stealing_car" src="docs/screenshots/13_stealing_car.png" loading="lazy"/></a> <a href="docs/screenshots/14_busted.png" target="_blank"><img alt="14_busted" src="docs/screenshots/14_busted.png" loading="lazy"/></a> <a href="docs/screenshots/15_graveyard_shift_trial.png" target="_blank"><img alt="15_graveyard_shift_trial" src="docs/screenshots/15_graveyard_shift_trial.png" loading="lazy"/></a> <a href="docs/screenshots/15_monster_mash_kiosk.png" target="_blank"><img alt="15_monster_mash_kiosk" src="docs/screenshots/15_monster_mash_kiosk.png" loading="lazy"/></a> <a href="docs/screenshots/15_phantom_hearse.png" target="_blank"><img alt="15_phantom_hearse" src="docs/screenshots/15_phantom_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/blender_barrier.png" target="_blank"><img alt="blender_barrier" src="docs/screenshots/blender_barrier.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_coupe.png" target="_blank"><img alt="blender_car_coupe" src="docs/screenshots/blender_car_coupe.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_hearse.png" target="_blank"><img alt="blender_car_hearse" src="docs/screenshots/blender_car_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_muscle.png" target="_blank"><img alt="blender_car_muscle" src="docs/screenshots/blender_car_muscle.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_pickup.png" target="_blank"><img alt="blender_car_pickup" src="docs/screenshots/blender_car_pickup.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_sedan.png" target="_blank"><img alt="blender_car_sedan" src="docs/screenshots/blender_car_sedan.png" loading="lazy"/></a> <a href="docs/screenshots/blender_cemetery_gate.png" target="_blank"><img alt="blender_cemetery_gate" src="docs/screenshots/blender_cemetery_gate.png" loading="lazy"/></a> <a href="docs/screenshots/blender_character.png" target="_blank"><img alt="blender_character" src="docs/screenshots/blender_character.png" loading="lazy"/></a> <a href="docs/screenshots/blender_crane.png" target="_blank"><img alt="blender_crane" src="docs/screenshots/blender_crane.png" loading="lazy"/></a> <a href="docs/screenshots/blender_diner.png" target="_blank"><img alt="blender_diner" src="docs/screenshots/blender_diner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_forklift.png" target="_blank"><img alt="blender_forklift" src="docs/screenshots/blender_forklift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_garage_door.png" target="_blank"><img alt="blender_garage_door" src="docs/screenshots/blender_garage_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_gas_station.png" target="_blank"><img alt="blender_gas_station" src="docs/screenshots/blender_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_hardware.png" target="_blank"><img alt="blender_hardware" src="docs/screenshots/blender_hardware.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_a.png" target="_blank"><img alt="blender_house_a" src="docs/screenshots/blender_house_a.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_b.png" target="_blank"><img alt="blender_house_b" src="docs/screenshots/blender_house_b.png" loading="lazy"/></a> <a href="docs/screenshots/blender_lift.png" target="_blank"><img alt="blender_lift" src="docs/screenshots/blender_lift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_parts.png" target="_blank"><img alt="blender_parts" src="docs/screenshots/blender_parts.png" loading="lazy"/></a> <a href="docs/screenshots/blender_plant.png" target="_blank"><img alt="blender_plant" src="docs/screenshots/blender_plant.png" loading="lazy"/></a> <a href="docs/screenshots/blender_police_station.png" target="_blank"><img alt="blender_police_station" src="docs/screenshots/blender_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_press.png" target="_blank"><img alt="blender_press" src="docs/screenshots/blender_press.png" loading="lazy"/></a> <a href="docs/screenshots/blender_props.png" target="_blank"><img alt="blender_props" src="docs/screenshots/blender_props.png" loading="lazy"/></a> <a href="docs/screenshots/blender_robot_arm.png" target="_blank"><img alt="blender_robot_arm" src="docs/screenshots/blender_robot_arm.png" loading="lazy"/></a> <a href="docs/screenshots/blender_scanner.png" target="_blank"><img alt="blender_scanner" src="docs/screenshots/blender_scanner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_skeleton.png" target="_blank"><img alt="blender_skeleton" src="docs/screenshots/blender_skeleton.png" loading="lazy"/></a> <a href="docs/screenshots/blender_sliding_door.png" target="_blank"><img alt="blender_sliding_door" src="docs/screenshots/blender_sliding_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_wheels.png" target="_blank"><img alt="blender_wheels" src="docs/screenshots/blender_wheels.png" loading="lazy"/></a></p></main></body></html>
+<p><a href="docs/screenshots/01_title_screen.png" target="_blank"><img alt="01_title_screen" src="docs/screenshots/01_title_screen.png" loading="lazy"/></a> <a href="docs/screenshots/01b_title_telemetry_badge.png" target="_blank"><img alt="01b_title_telemetry_badge" src="docs/screenshots/01b_title_telemetry_badge.png" loading="lazy"/></a> <a href="docs/screenshots/03_player_at_plant_wall.png" target="_blank"><img alt="03_player_at_plant_wall" src="docs/screenshots/03_player_at_plant_wall.png" loading="lazy"/></a> <a href="docs/screenshots/04_pause_menu.png" target="_blank"><img alt="04_pause_menu" src="docs/screenshots/04_pause_menu.png" loading="lazy"/></a> <a href="docs/screenshots/05_dialogue_foreman.png" target="_blank"><img alt="05_dialogue_foreman" src="docs/screenshots/05_dialogue_foreman.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_body.png" target="_blank"><img alt="06_kiosk_body" src="docs/screenshots/06_kiosk_body.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_bodykit.png" target="_blank"><img alt="06_kiosk_bodykit" src="docs/screenshots/06_kiosk_bodykit.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_lighting.png" target="_blank"><img alt="06_kiosk_lighting" src="docs/screenshots/06_kiosk_lighting.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_livery.png" target="_blank"><img alt="06_kiosk_livery" src="docs/screenshots/06_kiosk_livery.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_open.png" target="_blank"><img alt="06_kiosk_open" src="docs/screenshots/06_kiosk_open.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_paint.png" target="_blank"><img alt="06_kiosk_paint" src="docs/screenshots/06_kiosk_paint.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_performance.png" target="_blank"><img alt="06_kiosk_performance" src="docs/screenshots/06_kiosk_performance.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_wheels.png" target="_blank"><img alt="06_kiosk_wheels" src="docs/screenshots/06_kiosk_wheels.png" loading="lazy"/></a> <a href="docs/screenshots/07_rollout_finished_car.png" target="_blank"><img alt="07_rollout_finished_car" src="docs/screenshots/07_rollout_finished_car.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_1_stamping.png" target="_blank"><img alt="07_station_1_stamping" src="docs/screenshots/07_station_1_stamping.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_2_bodyshop.png" target="_blank"><img alt="07_station_2_bodyshop" src="docs/screenshots/07_station_2_bodyshop.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_3_paint.png" target="_blank"><img alt="07_station_3_paint" src="docs/screenshots/07_station_3_paint.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_4_powertrain.png" target="_blank"><img alt="07_station_4_powertrain" src="docs/screenshots/07_station_4_powertrain.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_5_final_qc.png" target="_blank"><img alt="07_station_5_final_qc" src="docs/screenshots/07_station_5_final_qc.png" loading="lazy"/></a> <a href="docs/screenshots/08_hinges_open.png" target="_blank"><img alt="08_hinges_open" src="docs/screenshots/08_hinges_open.png" loading="lazy"/></a> <a href="docs/screenshots/09_driving_turn.png" target="_blank"><img alt="09_driving_turn" src="docs/screenshots/09_driving_turn.png" loading="lazy"/></a> <a href="docs/screenshots/09b_handbrake_drift.png" target="_blank"><img alt="09b_handbrake_drift" src="docs/screenshots/09b_handbrake_drift.png" loading="lazy"/></a> <a href="docs/screenshots/10_cockpit_view.png" target="_blank"><img alt="10_cockpit_view" src="docs/screenshots/10_cockpit_view.png" loading="lazy"/></a> <a href="docs/screenshots/11_diner.png" target="_blank"><img alt="11_diner" src="docs/screenshots/11_diner.png" loading="lazy"/></a> <a href="docs/screenshots/11_elm_avenue.png" target="_blank"><img alt="11_elm_avenue" src="docs/screenshots/11_elm_avenue.png" loading="lazy"/></a> <a href="docs/screenshots/11_gas_station.png" target="_blank"><img alt="11_gas_station" src="docs/screenshots/11_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/11_halloween_yard.png" target="_blank"><img alt="11_halloween_yard" src="docs/screenshots/11_halloween_yard.png" loading="lazy"/></a> <a href="docs/screenshots/11_hardware_store.png" target="_blank"><img alt="11_hardware_store" src="docs/screenshots/11_hardware_store.png" loading="lazy"/></a> <a href="docs/screenshots/11_hill_road.png" target="_blank"><img alt="11_hill_road" src="docs/screenshots/11_hill_road.png" loading="lazy"/></a> <a href="docs/screenshots/11_leaf_piles_trees.png" target="_blank"><img alt="11_leaf_piles_trees" src="docs/screenshots/11_leaf_piles_trees.png" loading="lazy"/></a> <a href="docs/screenshots/11_main_street.png" target="_blank"><img alt="11_main_street" src="docs/screenshots/11_main_street.png" loading="lazy"/></a> <a href="docs/screenshots/11_motorworks_plant.png" target="_blank"><img alt="11_motorworks_plant" src="docs/screenshots/11_motorworks_plant.png" loading="lazy"/></a> <a href="docs/screenshots/11_police_station.png" target="_blank"><img alt="11_police_station" src="docs/screenshots/11_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_crypts.png" target="_blank"><img alt="12_cemetery_crypts" src="docs/screenshots/12_cemetery_crypts.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_gates.png" target="_blank"><img alt="12_cemetery_gates" src="docs/screenshots/12_cemetery_gates.png" loading="lazy"/></a> <a href="docs/screenshots/12_vlad_crypt.png" target="_blank"><img alt="12_vlad_crypt" src="docs/screenshots/12_vlad_crypt.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_chase_overview.png" target="_blank"><img alt="13_police_chase_overview" src="docs/screenshots/13_police_chase_overview.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_pursuit.png" target="_blank"><img alt="13_police_pursuit" src="docs/screenshots/13_police_pursuit.png" loading="lazy"/></a> <a href="docs/screenshots/13_stealing_car.png" target="_blank"><img alt="13_stealing_car" src="docs/screenshots/13_stealing_car.png" loading="lazy"/></a> <a href="docs/screenshots/14_busted.png" target="_blank"><img alt="14_busted" src="docs/screenshots/14_busted.png" loading="lazy"/></a> <a href="docs/screenshots/15_graveyard_shift_trial.png" target="_blank"><img alt="15_graveyard_shift_trial" src="docs/screenshots/15_graveyard_shift_trial.png" loading="lazy"/></a> <a href="docs/screenshots/15_monster_mash_kiosk.png" target="_blank"><img alt="15_monster_mash_kiosk" src="docs/screenshots/15_monster_mash_kiosk.png" loading="lazy"/></a> <a href="docs/screenshots/15_phantom_hearse.png" target="_blank"><img alt="15_phantom_hearse" src="docs/screenshots/15_phantom_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/16_bodyshop_robot_carrying_door.png" target="_blank"><img alt="16_bodyshop_robot_carrying_door" src="docs/screenshots/16_bodyshop_robot_carrying_door.png" loading="lazy"/></a> <a href="docs/screenshots/16_conveyor_skillet_press_feeder.png" target="_blank"><img alt="16_conveyor_skillet_press_feeder" src="docs/screenshots/16_conveyor_skillet_press_feeder.png" loading="lazy"/></a> <a href="docs/screenshots/16_jumbotron_closeup.png" target="_blank"><img alt="16_jumbotron_closeup" src="docs/screenshots/16_jumbotron_closeup.png" loading="lazy"/></a> <a href="docs/screenshots/16_jumbotron_live_feed.png" target="_blank"><img alt="16_jumbotron_live_feed" src="docs/screenshots/16_jumbotron_live_feed.png" loading="lazy"/></a> <a href="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" target="_blank"><img alt="17_kids_and_townsfolk_sidewalk" src="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" loading="lazy"/></a> <a href="docs/screenshots/17_trick_or_treater_kid_dialogue.png" target="_blank"><img alt="17_trick_or_treater_kid_dialogue" src="docs/screenshots/17_trick_or_treater_kid_dialogue.png" loading="lazy"/></a> <a href="docs/screenshots/18_foreman_office_observation.png" target="_blank"><img alt="18_foreman_office_observation" src="docs/screenshots/18_foreman_office_observation.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_diner.png" target="_blank"><img alt="18_interior_diner" src="docs/screenshots/18_interior_diner.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_hardware.png" target="_blank"><img alt="18_interior_hardware" src="docs/screenshots/18_interior_hardware.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_house.png" target="_blank"><img alt="18_interior_house" src="docs/screenshots/18_interior_house.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_police.png" target="_blank"><img alt="18_interior_police" src="docs/screenshots/18_interior_police.png" loading="lazy"/></a> <a href="docs/screenshots/19_forklift_operator.png" target="_blank"><img alt="19_forklift_operator" src="docs/screenshots/19_forklift_operator.png" loading="lazy"/></a> <a href="docs/screenshots/19_seated_police_officer.png" target="_blank"><img alt="19_seated_police_officer" src="docs/screenshots/19_seated_police_officer.png" loading="lazy"/></a> <a href="docs/screenshots/19_seated_traffic_driver.png" target="_blank"><img alt="19_seated_traffic_driver" src="docs/screenshots/19_seated_traffic_driver.png" loading="lazy"/></a> <a href="docs/screenshots/20_pursuit_traffic_navigation.png" target="_blank"><img alt="20_pursuit_traffic_navigation" src="docs/screenshots/20_pursuit_traffic_navigation.png" loading="lazy"/></a> <a href="docs/screenshots/21_armed_response.png" target="_blank"><img alt="21_armed_response" src="docs/screenshots/21_armed_response.png" loading="lazy"/></a> <a href="docs/screenshots/21_officer_dismounts_cruiser.png" target="_blank"><img alt="21_officer_dismounts_cruiser" src="docs/screenshots/21_officer_dismounts_cruiser.png" loading="lazy"/></a> <a href="docs/screenshots/21_police_foot_chase.png" target="_blank"><img alt="21_police_foot_chase" src="docs/screenshots/21_police_foot_chase.png" loading="lazy"/></a> <a href="docs/screenshots/22_aim_and_fire_pistol.png" target="_blank"><img alt="22_aim_and_fire_pistol" src="docs/screenshots/22_aim_and_fire_pistol.png" loading="lazy"/></a> <a href="docs/screenshots/22_jack_o_lantern_launcher.png" target="_blank"><img alt="22_jack_o_lantern_launcher" src="docs/screenshots/22_jack_o_lantern_launcher.png" loading="lazy"/></a> <a href="docs/screenshots/23_breaker_box_power_cut.png" target="_blank"><img alt="23_breaker_box_power_cut" src="docs/screenshots/23_breaker_box_power_cut.png" loading="lazy"/></a> <a href="docs/screenshots/23_house_lights_off.png" target="_blank"><img alt="23_house_lights_off" src="docs/screenshots/23_house_lights_off.png" loading="lazy"/></a> <a href="docs/screenshots/23_house_lights_on.png" target="_blank"><img alt="23_house_lights_on" src="docs/screenshots/23_house_lights_on.png" loading="lazy"/></a> <a href="docs/screenshots/23_motorworks_night_shift_blacklight.png" target="_blank"><img alt="23_motorworks_night_shift_blacklight" src="docs/screenshots/23_motorworks_night_shift_blacklight.png" loading="lazy"/></a> <a href="docs/screenshots/24_carrying_stolen_tv.png" target="_blank"><img alt="24_carrying_stolen_tv" src="docs/screenshots/24_carrying_stolen_tv.png" loading="lazy"/></a> <a href="docs/screenshots/24_doorbell_homeowner_greets.png" target="_blank"><img alt="24_doorbell_homeowner_greets" src="docs/screenshots/24_doorbell_homeowner_greets.png" loading="lazy"/></a> <a href="docs/screenshots/24_tv_stashed_in_trunk.png" target="_blank"><img alt="24_tv_stashed_in_trunk" src="docs/screenshots/24_tv_stashed_in_trunk.png" loading="lazy"/></a> <a href="docs/screenshots/25_gas_station_pump_hose.png" target="_blank"><img alt="25_gas_station_pump_hose" src="docs/screenshots/25_gas_station_pump_hose.png" loading="lazy"/></a> <a href="docs/screenshots/25_out_of_fuel_stalled.png" target="_blank"><img alt="25_out_of_fuel_stalled" src="docs/screenshots/25_out_of_fuel_stalled.png" loading="lazy"/></a> <a href="docs/screenshots/25_refuelling_pump_counter.png" target="_blank"><img alt="25_refuelling_pump_counter" src="docs/screenshots/25_refuelling_pump_counter.png" loading="lazy"/></a> <a href="docs/screenshots/blender_barrier.png" target="_blank"><img alt="blender_barrier" src="docs/screenshots/blender_barrier.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_coupe.png" target="_blank"><img alt="blender_car_coupe" src="docs/screenshots/blender_car_coupe.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_hearse.png" target="_blank"><img alt="blender_car_hearse" src="docs/screenshots/blender_car_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_muscle.png" target="_blank"><img alt="blender_car_muscle" src="docs/screenshots/blender_car_muscle.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_pickup.png" target="_blank"><img alt="blender_car_pickup" src="docs/screenshots/blender_car_pickup.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_sedan.png" target="_blank"><img alt="blender_car_sedan" src="docs/screenshots/blender_car_sedan.png" loading="lazy"/></a> <a href="docs/screenshots/blender_cemetery_gate.png" target="_blank"><img alt="blender_cemetery_gate" src="docs/screenshots/blender_cemetery_gate.png" loading="lazy"/></a> <a href="docs/screenshots/blender_character.png" target="_blank"><img alt="blender_character" src="docs/screenshots/blender_character.png" loading="lazy"/></a> <a href="docs/screenshots/blender_crane.png" target="_blank"><img alt="blender_crane" src="docs/screenshots/blender_crane.png" loading="lazy"/></a> <a href="docs/screenshots/blender_diner.png" target="_blank"><img alt="blender_diner" src="docs/screenshots/blender_diner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_diner_interior.png" target="_blank"><img alt="blender_diner_interior" src="docs/screenshots/blender_diner_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_forklift.png" target="_blank"><img alt="blender_forklift" src="docs/screenshots/blender_forklift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_garage_door.png" target="_blank"><img alt="blender_garage_door" src="docs/screenshots/blender_garage_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_gas_station.png" target="_blank"><img alt="blender_gas_station" src="docs/screenshots/blender_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_hardware.png" target="_blank"><img alt="blender_hardware" src="docs/screenshots/blender_hardware.png" loading="lazy"/></a> <a href="docs/screenshots/blender_hardware_interior.png" target="_blank"><img alt="blender_hardware_interior" src="docs/screenshots/blender_hardware_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_a.png" target="_blank"><img alt="blender_house_a" src="docs/screenshots/blender_house_a.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_a_interior.png" target="_blank"><img alt="blender_house_a_interior" src="docs/screenshots/blender_house_a_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_b.png" target="_blank"><img alt="blender_house_b" src="docs/screenshots/blender_house_b.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_b_interior.png" target="_blank"><img alt="blender_house_b_interior" src="docs/screenshots/blender_house_b_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_jumbotron.png" target="_blank"><img alt="blender_jumbotron" src="docs/screenshots/blender_jumbotron.png" loading="lazy"/></a> <a href="docs/screenshots/blender_lift.png" target="_blank"><img alt="blender_lift" src="docs/screenshots/blender_lift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_parts.png" target="_blank"><img alt="blender_parts" src="docs/screenshots/blender_parts.png" loading="lazy"/></a> <a href="docs/screenshots/blender_plant.png" target="_blank"><img alt="blender_plant" src="docs/screenshots/blender_plant.png" loading="lazy"/></a> <a href="docs/screenshots/blender_plant_interior.png" target="_blank"><img alt="blender_plant_interior" src="docs/screenshots/blender_plant_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_police_station.png" target="_blank"><img alt="blender_police_station" src="docs/screenshots/blender_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_police_station_interior.png" target="_blank"><img alt="blender_police_station_interior" src="docs/screenshots/blender_police_station_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_press.png" target="_blank"><img alt="blender_press" src="docs/screenshots/blender_press.png" loading="lazy"/></a> <a href="docs/screenshots/blender_props.png" target="_blank"><img alt="blender_props" src="docs/screenshots/blender_props.png" loading="lazy"/></a> <a href="docs/screenshots/blender_robot_arm.png" target="_blank"><img alt="blender_robot_arm" src="docs/screenshots/blender_robot_arm.png" loading="lazy"/></a> <a href="docs/screenshots/blender_scanner.png" target="_blank"><img alt="blender_scanner" src="docs/screenshots/blender_scanner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_skeleton.png" target="_blank"><img alt="blender_skeleton" src="docs/screenshots/blender_skeleton.png" loading="lazy"/></a> <a href="docs/screenshots/blender_sliding_door.png" target="_blank"><img alt="blender_sliding_door" src="docs/screenshots/blender_sliding_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_wheels.png" target="_blank"><img alt="blender_wheels" src="docs/screenshots/blender_wheels.png" loading="lazy"/></a></p></main></body></html>

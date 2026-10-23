@@ -27,6 +27,14 @@ export class Vehicle {
     this.flipTimer = 0;
     this.backfire = 0;
     this.lastImpact = 0;
+    // fuel tank (0-100 %), damage model
+    this.fuel = opts.fuel ?? 100;
+    this.tankGallons = 16;
+    this.stalled = false;
+    this.flats = [false, false, false, false];
+    this.engineHealth = 100;
+    this.onFire = 0;
+    this.stats = { fuelUsed: 0 };
     visual.opts.physics = true;
     visual.model.position.y = 0;
     this._build(opts.position || new THREE.Vector3(), opts.heading || 0);
@@ -64,6 +72,7 @@ export class Vehicle {
     body.addShape(new CANNON.Box(new CANNON.Vec3(s.W / 2 - 0.2, 0.2, info.length / 4)), new CANNON.Vec3(0, top + 0.2 - this.cy, (info.minZ + info.maxZ) / 2 - 0.2));
     body.angularDamping = 0.35;
     body.linearDamping = 0.02;
+    body.allowSleep = false; // raycast-vehicle chassis must never doze off mid-drive
     body.position.set(pos.x, pos.y + this.cy + 0.05, pos.z);
     body.quaternion.setFromEuler(0, heading, 0);
     body.userData = { kind: 'car', vehicle: this };
@@ -119,9 +128,39 @@ export class Vehicle {
     this.sync();
   }
 
+  /** Fuel burn per second at full throttle & redline, by engine (V8 blower and twin-turbo drink more). */
+  get burnRate() { return { v6: 0.32, v8sc: 0.46, tt: 0.56 }[this.tune.eng.id] || 0.35; }
+
+  popTire(i) {
+    if (this.flats[i]) return;
+    this.flats[i] = true;
+    const w = this.raycast.wheelInfos[i];
+    w.frictionSlip *= 0.45;
+    w.radius = this.visual.spec.r * 0.82;
+    this.game.audio.tirePop();
+    this.game.effects.dust(this.visual.wheelNodes[i].knuckle.getWorldPosition(new THREE.Vector3()), 10, '#444');
+  }
+
+  damageEngine(n) {
+    this.engineHealth = Math.max(0, this.engineHealth - n);
+    if (this.engineHealth <= 0 && !this.onFire) { this.onFire = 12; this.game.audio.sputter(); }
+  }
+
+  refuel(pct) { this.fuel = Math.min(100, this.fuel + pct); if (this.fuel > 0.5 && this.stalled && this.engineHealth > 0) this.stalled = false; }
+
   update(dt) {
     const c = this.controls, veh = this.raycast, t = this.tune;
     const speed = this.speed, abs = Math.abs(speed);
+    // fuel: drains with throttle and rpm; empty tank (or a dead engine) stalls the car with a sputter
+    if (this.kind === 'player' && !this.parkedByPlayer) {
+      const rpmK = (this.rpm - t.eng.idle) / (t.eng.redline - t.eng.idle);
+      const burn = (0.012 + Math.abs(c.throttle) * (0.35 + 0.65 * Math.max(0, rpmK))) * this.burnRate * dt;
+      if (this.game.player.vehicle === this) { this.fuel = Math.max(0, this.fuel - burn); this.stats.fuelUsed += burn; }
+      if (this.fuel <= 0 && !this.stalled) { this.stalled = true; this.game.audio.sputter(); this.backfire = 0.6; this.game.events.emit('stall', { reason: 'fuel' }); }
+      if (this.fuel > 0 && this.fuel < 4 && c.throttle > 0.3 && Math.random() < dt * 1.5) { this.backfire = 0.25; this.game.audio.sputter(); }
+    }
+    if (this.engineHealth <= 0) this.stalled = true;
+    const dead = this.stalled;
     // speed-sensitive steering with smoothing
     const maxSteer = THREE.MathUtils.lerp(0.62, 0.17, THREE.MathUtils.clamp(abs / 38, 0, 1));
     const target = THREE.MathUtils.clamp(c.steer, -1, 1) * maxSteer;
@@ -131,13 +170,16 @@ export class Vehicle {
     veh.setSteeringValue(this.steer, 1);
     // throttle / brake / reverse
     let engine = 0, brake = 0;
+    const flats = this.flats.filter(Boolean).length;
+    const top = t.top * Math.pow(0.72, flats) * (this.engineHealth < 30 ? 0.6 : 1);
     if (c.throttle > 0) {
       if (speed < -1) brake = 40 * c.throttle;
-      else engine = abs < t.top ? t.force * c.throttle * (1 - Math.pow(Math.max(0, speed) / t.top, 3) * 0.6) : 0;
+      else engine = abs < top ? t.force * c.throttle * (1 - Math.pow(Math.max(0, speed) / top, 3) * 0.6) : 0;
     } else if (c.throttle < 0) {
       if (speed > 1) brake = 75 * -c.throttle;
       else engine = speed > -12 ? -t.force * 0.55 * -c.throttle : 0;
     } else brake = 2.2;
+    if (dead) engine = 0;
     if (c.brake) brake = Math.max(brake, 50 * c.brake);
     // cannon-es drives along -forwardWS for a +Z-forward / -X-axle chassis, hence the sign flip
     veh.applyEngineForce(-engine, 2);
@@ -164,7 +206,21 @@ export class Vehicle {
     if (speed < -0.5) g = -1;
     const lo = g > 0 ? tops[g - 1] : 0, hi = g >= 0 ? tops[g] : 12;
     const frac = THREE.MathUtils.clamp((abs - lo * 0.7) / (hi - lo * 0.7), 0, 1);
-    const targetRpm = t.eng.idle + (t.eng.redline - t.eng.idle) * Math.max(frac, Math.abs(c.throttle) * (abs < 1 ? 0.45 : 0.1));
+    let targetRpm = t.eng.idle + (t.eng.redline - t.eng.idle) * Math.max(frac, Math.abs(c.throttle) * (abs < 1 ? 0.45 : 0.1));
+    if (dead) targetRpm = abs * 40;
+    // damage: smoke from the engine bay (white -> black), fire when dead; sparks from flat rims
+    const fx = this.game.effects;
+    if (fx && (this.engineHealth < 60 || this.onFire)) {
+      const bay = this.visual.n.EngineBay;
+      if (bay && Math.random() < dt * (this.engineHealth < 30 ? 14 : 7)) {
+        const p = bay.getWorldPosition(new THREE.Vector3()); p.y += 0.4;
+        if (this.engineHealth < 30) fx.emit(p, new THREE.Vector3((Math.random() - 0.5) * 0.6, 1.4, (Math.random() - 0.5) * 0.6), '#1c1a19', 0.7, 2.2, { grow: 2.2, alpha: 0.6, drag: 0.6 });
+        else fx.smoke(p);
+        if (this.onFire) fx.emit(p, new THREE.Vector3((Math.random() - 0.5), 2.2, (Math.random() - 0.5)), Math.random() < 0.5 ? '#ff7a1a' : '#ffcf40', 0.45, 0.6, { additive: true, grow: 0.8 });
+      }
+    }
+    if (this.onFire) this.onFire = Math.max(0.0001, this.onFire - dt);
+    if (fx && flats && abs > 3) this.flats.forEach((f, i) => { if (f && Math.random() < dt * 25) fx.sparks(this.raycast.wheelInfos[i].raycastResult.hitPointWorld ? new THREE.Vector3().copy(this.raycast.wheelInfos[i].raycastResult.hitPointWorld) : this.visual.wheelNodes[i].knuckle.getWorldPosition(new THREE.Vector3()), 3, '#ffd08a', 2); });
     if (this.gear !== g + 1 && c.throttle > 0.5 && this.gear > 0 && g + 1 > this.gear && this.rpm > t.eng.redline * 0.8) this.backfire = 0.25;
     this.gear = g + 1;
     this.rpm += (targetRpm - this.rpm) * Math.min(1, dt * 6);
@@ -203,7 +259,10 @@ export class Vehicle {
       }
     }
     v.update(dt, { steer: this.steer, rpm: this.rpm, brake: this.controls.throttle < 0 && this.speed > 1, backfire: this.backfire > 0,
-      throttle: this.controls.throttle, siren: this.siren, hazard: this.hazard, headlights: true });
+      throttle: this.controls.throttle, siren: this.siren, hazard: this.hazard, headlights: this.kind === 'player' ? v.lights.head : true,
+      glowFlicker: this.kind === 'player' && !v.lights.head ? 0 : undefined });
+    for (const w of this.flats.map((f, i) => (f ? i : -1)).filter((i) => i >= 0)) v.wheelNodes[w].knuckle.position.y -= 0.1;
+    if (this.driver) { this.driver.steer = THREE.MathUtils.clamp(this.steer * 2.2, -1, 1); this.driver.update(dt, 'drive'); }
   }
 
   remove() {

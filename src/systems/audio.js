@@ -222,6 +222,38 @@ export class AudioSystem {
   crow() { for (let i = 0; i < 3; i++) this.noiseBurst(0.18, 1100, 6, 0.06, 'bandpass', i * 0.32); }
   hotwire() { for (let i = 0; i < 6; i++) this.noiseBurst(0.05, 3000, 5, 0.12, 'bandpass', i * 0.15 + Math.random() * 0.08); }
 
+  // ---- weapons, burglary, fuel (all synthesised)
+  gunshot(kind = 'pistol', pos = null, listener = null) {
+    if (!this.ctx) return;
+    let v = 1;
+    if (pos && listener) v = Math.min(1, 14 / (pos.distanceTo(listener.pos) + 6));
+    if (kind === 'shotgun') { this.noiseBurst(0.45, 900, 0.6, 0.9 * v, 'lowpass'); this.tone(60, 0.35, 'sine', 0.8 * v, 0, this.sfx, 30); this.noiseBurst(0.15, 4500, 1, 0.35 * v, 'highpass'); this.noiseBurst(0.12, 1500, 3, 0.15 * v, 'bandpass', 0.45); this.noiseBurst(0.1, 900, 3, 0.15 * v, 'bandpass', 0.62); }
+    else if (kind === 'launcher') { this.tone(110, 0.25, 'sine', 0.7 * v, 0, this.sfx, 45); this.noiseBurst(0.3, 500, 0.8, 0.5 * v, 'lowpass'); }
+    else { this.noiseBurst(0.22, 1600, 0.7, 0.75 * v, 'lowpass'); this.tone(90, 0.18, 'sine', 0.55 * v, 0, this.sfx, 40); this.noiseBurst(0.08, 5500, 1, 0.3 * v, 'highpass'); }
+  }
+  reload(kind) { const n = kind === 'shotgun' ? 4 : 2; for (let i = 0; i < n; i++) this.noiseBurst(0.05, 2400, 6, 0.18, 'bandpass', i * 0.3); this.tone(300, 0.05, 'square', 0.08, n * 0.3); }
+  dryFire() { this.noiseBurst(0.03, 3500, 8, 0.15, 'bandpass'); }
+  swing() { this.noiseBurst(0.18, 700, 1.5, 0.12, 'bandpass'); }
+  ricochet() { this.tone(2400 + Math.random() * 800, 0.18, 'sine', 0.05, 0, this.sfx, 900); this.noiseBurst(0.06, 3000, 3, 0.12); }
+  tirePop() { this.noiseBurst(0.25, 800, 0.8, 0.6, 'lowpass'); this.noiseBurst(0.8, 2500, 0.5, 0.12, 'bandpass', 0.05); }
+  glass() { for (let i = 0; i < 9; i++) this.tone(2600 + Math.random() * 3000, 0.12 + Math.random() * 0.2, 'sine', 0.05, i * 0.03); this.noiseBurst(0.3, 6000, 0.7, 0.25, 'highpass'); }
+  explosion() { this.noiseBurst(1.4, 400, 0.5, 1.0, 'lowpass'); this.tone(45, 1.0, 'sine', 0.9, 0, this.sfx, 22); this.noiseBurst(0.5, 2500, 0.6, 0.3, 'bandpass', 0.05); }
+  doorbell() { this.tone(659, 0.7, 'sine', 0.3, 0); this.tone(523, 1.1, 'sine', 0.3, 0.55); this.tone(1318, 0.5, 'sine', 0.05, 0); this.tone(1046, 0.8, 'sine', 0.05, 0.55); }
+  click() { this.noiseBurst(0.025, 4000, 6, 0.25, 'bandpass'); this.tone(1800, 0.02, 'square', 0.04); }
+  kick() { this.tone(70, 0.25, 'sine', 0.8, 0, this.sfx, 35); this.noiseBurst(0.35, 600, 0.7, 0.6, 'lowpass'); this.noiseBurst(0.2, 2500, 2, 0.2, 'bandpass', 0.05); }
+  cash() { [88, 93, 100].forEach((m, i) => this.tone(mtof(m), 0.12, 'square', 0.06, i * 0.07)); this.noiseBurst(0.12, 5000, 2, 0.08, 'highpass', 0.2); }
+  sputter() { for (let i = 0; i < 5; i++) { this.tone(55 + Math.random() * 20, 0.08, 'sawtooth', 0.2, i * 0.18 + Math.random() * 0.05, this.sfx, 35); this.noiseBurst(0.08, 400, 1, 0.3, 'lowpass', i * 0.18); } this.noiseBurst(0.15, 1200, 0.8, 0.5, 'bandpass', 1.0); }
+  /** Looping fuel-pump glug while refuelling; returns stop(). */
+  pump() {
+    if (!this.ctx) return { stop() {} };
+    const id = setInterval(() => { this.noiseBurst(0.09, 300 + Math.random() * 200, 2, 0.12, 'bandpass'); this.tone(120 + Math.random() * 30, 0.07, 'sine', 0.05); }, 140);
+    const hum = this.ctx.createOscillator(); hum.type = 'sawtooth'; hum.frequency.value = 95;
+    const g = this.ctx.createGain(); g.gain.value = 0.02; const lp = this.ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 300;
+    hum.connect(lp).connect(g).connect(this.sfx); hum.start();
+    return { stop: () => { clearInterval(id); try { hum.stop(); } catch (e) { /* stopped */ } } };
+  }
+  chimeShort() { this.tone(1046, 0.15, 'sine', 0.12); this.tone(1318, 0.2, 'sine', 0.1, 0.08); }
+
   horn(on) {
     if (!this.ctx) return;
     if (on && !this.hornNodes) {

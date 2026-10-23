@@ -8,7 +8,8 @@
       "fx": "room",
       "eleven": "8vYCG1Q6bAbJWXdRuCIr",
       "elevenVoiceName": "Grits Oxley - Gritty Grandpa",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_male"
     },
     "skeleton": {
       "name": "Bones McGee (Skeleton Welder)",
@@ -18,7 +19,8 @@
       "fx": "rattle",
       "eleven": "RDSy0QN68yhrjuOgqzQ4",
       "elevenVoiceName": "Dr. Quibble - Nerdy Cartoon Scientist",
-      "elevenPitch": 1.04
+      "elevenPitch": 1.04,
+      "demo": "skeleton"
     },
     "groundskeeper": {
       "name": "Old Mortimer (Groundskeeper)",
@@ -28,7 +30,8 @@
       "fx": "ghost",
       "eleven": "7lJ2JuXZKHyck5zlS7XQ",
       "elevenVoiceName": "Romulus II Deep Mysterious",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_male"
     },
     "waitress": {
       "name": "Dolores (Diner)",
@@ -38,7 +41,8 @@
       "fx": "room",
       "eleven": "tmHt9OXLAa0z2IPF4k0Y",
       "elevenVoiceName": "Latrice - Down-To-Earth Southern",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
     },
     "panic": {
       "name": "Panicked Civilian",
@@ -48,7 +52,8 @@
       "fx": "dry",
       "eleven": "b8JMPeNuVrqqWExQc8e9",
       "elevenVoiceName": "Ayla - Bubbly, Cute & Expressive",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
     },
     "civilian": {
       "name": "Townsperson",
@@ -58,7 +63,8 @@
       "fx": "dry",
       "eleven": "MJw0jtAmgm4D71m0HUJU",
       "elevenVoiceName": "Olivia - Story-telling",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
     },
     "dispatch": {
       "name": "Police Dispatch",
@@ -68,7 +74,8 @@
       "fx": "radio",
       "eleven": "umwdC76NumBsGtudno3p",
       "elevenVoiceName": "Claire - E-Learning",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
     },
     "cop": {
       "name": "Officer Krupke",
@@ -78,7 +85,8 @@
       "fx": "dry",
       "eleven": "R3brgFoQWI6vjwB1A4aP",
       "elevenVoiceName": "Johnny Business Voice",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_male"
     },
     "dj": {
       "name": "Wolfman Jack-O (WHOO 66.6 FM)",
@@ -88,7 +96,8 @@
       "fx": "radio",
       "eleven": "CeNX9CMwmxDxUF5Q2Inm",
       "elevenVoiceName": "Johnny Dynamite - Vintage Radio DJ",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_male"
     },
     "kiosk": {
       "name": "Kiosk Assistant",
@@ -98,7 +107,8 @@
       "fx": "robot",
       "eleven": "DXav2Iq8VRhoGarNlWcx",
       "elevenVoiceName": "MegaBot",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "machine"
     },
     "phantom": {
       "name": "The Phantom",
@@ -108,7 +118,8 @@
       "fx": "ghost",
       "eleven": "d3qrd1ge6zWDvUxIeXiH",
       "elevenVoiceName": "Final Boss - Evil Villain",
-      "elevenPitch": 0.94
+      "elevenPitch": 0.94,
+      "demo": "spirit"
     },
     "worker": {
       "name": "Line Worker",
@@ -118,7 +129,8 @@
       "fx": "room",
       "eleven": "t1yzxMpe9zK42bXmI1T2",
       "elevenVoiceName": "K. V. Hagen - Deep Warm",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_male"
     },
     "worker2": {
       "name": "Line Worker",
@@ -128,7 +140,8 @@
       "fx": "room",
       "eleven": "ZQF62XTHtHemfMB0pp0G",
       "elevenVoiceName": "Shay",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
     },
     "pa": {
       "name": "Plant PA System",
@@ -138,7 +151,107 @@
       "fx": "radio",
       "eleven": "no52gq1ZwK7Lmejv1EHz",
       "elevenVoiceName": "Clara - PA Clear Voice",
-      "elevenPitch": 1
+      "elevenPitch": 1,
+      "demo": "adult_female"
+    },
+    "civ_m": {
+      "name": "Townsman",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 0.95,
+      "fx": "dry",
+      "eleven": "CwhRBWXzGAHq8TQ4Fs17",
+      "elevenVoiceName": "Roger - Laid-Back, Casual, Resonant",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "panic_m": {
+      "name": "Panicked Car Owner",
+      "sapi": "Microsoft David Desktop",
+      "rate": 4,
+      "pitch": 1.05,
+      "fx": "dry",
+      "eleven": "iP95p4xoKVk53GoZ742B",
+      "elevenVoiceName": "Chris - Charming, Down-to-Earth",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "homeowner_m": {
+      "name": "Homeowner",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "iP95p4xoKVk53GoZ742B",
+      "elevenVoiceName": "Chris - Charming, Down-to-Earth",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "homeowner_f": {
+      "name": "Homeowner",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "MJw0jtAmgm4D71m0HUJU",
+      "elevenVoiceName": "Olivia - Story-telling",
+      "elevenPitch": 1,
+      "demo": "adult_female"
+    },
+    "kid_b": {
+      "name": "Trick-or-Treater",
+      "sapi": "Microsoft David Desktop",
+      "rate": 2,
+      "pitch": 1.6,
+      "fx": "dry",
+      "eleven": "XjGYkUkzth8BPs29fmcV",
+      "elevenVoiceName": "Teddy Twinkle - Cute Cartoon Boy",
+      "elevenPitch": 1,
+      "demo": "child_boy"
+    },
+    "kid_g": {
+      "name": "Trick-or-Treater",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 2,
+      "pitch": 1.6,
+      "fx": "dry",
+      "eleven": "Nggzl2QAXh3OijoXD116",
+      "elevenVoiceName": "Candy - Girly and Sweet",
+      "elevenPitch": 1,
+      "demo": "child_girl"
+    },
+    "fence": {
+      "name": "Vinnie the Fence",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 0.9,
+      "fx": "dry",
+      "eleven": "2UyW0L6yjNuo3ZH3XnoV",
+      "elevenVoiceName": "Boom Mike",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "clerk": {
+      "name": "Hank (Hardware Clerk)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 0.95,
+      "fx": "room",
+      "eleven": "t1yzxMpe9zK42bXmI1T2",
+      "elevenVoiceName": "K. V. Hagen - Deep Warm",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "attendant": {
+      "name": "Pump Speaker",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "radio",
+      "eleven": "tmHt9OXLAa0z2IPF4k0Y",
+      "elevenVoiceName": "Latrice - Down-To-Earth Southern",
+      "elevenPitch": 1,
+      "demo": "adult_female"
     }
   },
   "lines": {
@@ -357,6 +470,118 @@
     "bay_1": [
       "worker2",
       "Fresh coat of paint and new plates. Nobody will recognize this ride now."
+    ],
+    "civm_1": [
+      "civ_m",
+      "Evening! Watch your step, half the town is dressed like zombies tonight."
+    ],
+    "civm_2": [
+      "civ_m",
+      "I just pulled a double shift at the plant, and now my wife wants me to carve twelve pumpkins."
+    ],
+    "civm_3": [
+      "civ_m",
+      "Between my mortgage and the candy bill, Halloween is scarier than any ghost."
+    ],
+    "civm_4": [
+      "civ_m",
+      "Saw a hearse doing donuts up by the cemetery. Nobody was driving it, I swear."
+    ],
+    "panicm_1": [
+      "panic_m",
+      "Hey! That's my ride! Somebody call the sheriff!"
+    ],
+    "panicm_2": [
+      "panic_m",
+      "Whoa, whoa! Get out of my truck! Help!"
+    ],
+    "panicm_3": [
+      "panic_m",
+      "My car! I just made the last payment on that thing!"
+    ],
+    "kidb_1": [
+      "kid_b",
+      "Trick or treat! Look at my candy bag, it's almost full!"
+    ],
+    "kidb_2": [
+      "kid_b",
+      "Whoa, cool hot-rod, mister! Can it go a hundred?"
+    ],
+    "kidb_3": [
+      "kid_b",
+      "I'm a superhero tonight. I can fly! Well... almost."
+    ],
+    "kidb_4": [
+      "kid_b",
+      "Aaah! A real monster! Run!"
+    ],
+    "kidg_1": [
+      "kid_g",
+      "Trick or treat, smell my feet, give me something good to eat!"
+    ],
+    "kidg_2": [
+      "kid_g",
+      "I'm a witch! I'm gonna turn you into a pumpkin!"
+    ],
+    "kidg_3": [
+      "kid_g",
+      "My ghost costume has real glow-in-the-dark eyes. Boo!"
+    ],
+    "kidg_4": [
+      "kid_g",
+      "Eek! Mommy! Somebody help!"
+    ],
+    "homem_greet": [
+      "homeowner_m",
+      "Happy Halloween! Great costume. Here, grab a handful of candy."
+    ],
+    "homem_panic": [
+      "homeowner_m",
+      "Get out of my house! I'm calling the police right now!"
+    ],
+    "homef_greet": [
+      "homeowner_f",
+      "Oh, how fun! Happy Halloween, sweetie. Take some candy, and a couple of bucks too."
+    ],
+    "homef_panic": [
+      "panic",
+      "Burglar! Get out of my house! I'm calling the police!"
+    ],
+    "cop_stop_1": [
+      "cop",
+      "Stop right there! Police!"
+    ],
+    "cop_stop_2": [
+      "cop",
+      "Freeze! Hands where I can see them!"
+    ],
+    "cop_shoot": [
+      "cop",
+      "Drop the weapon! Shots fired, shots fired!"
+    ],
+    "dispatch_8": [
+      "dispatch",
+      "All units, shots fired on Main Street. Suspect is armed and dangerous."
+    ],
+    "dispatch_9": [
+      "dispatch",
+      "Burglary in progress reported in the residential district. Units respond."
+    ],
+    "fence_1": [
+      "fence",
+      "Nice haul. No questions asked. Cash on the barrel."
+    ],
+    "fence_2": [
+      "fence",
+      "Bring me the good stuff. TVs, jewelry, whatever fell off a truck."
+    ],
+    "clerk_1": [
+      "clerk",
+      "Welcome to Hank's Hardware. Tools, ammo, jerrycans, and masks for the big night."
+    ],
+    "gas_1": [
+      "attendant",
+      "Pump's on, hon. Two bucks a gallon, and don't you drive off without paying."
     ]
   }
 }

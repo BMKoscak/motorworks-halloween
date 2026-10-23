@@ -38,12 +38,21 @@ export class CameraRig {
     this.yaw -= input.mouseDX * 0.0028;
     this.pitch = THREE.MathUtils.clamp(this.pitch + input.mouseDY * 0.0022, -0.35, 1.1);
     this.dist = THREE.MathUtils.clamp(this.dist + input.wheel * 0.5, 2.2, 9);
-    const target = player.position.clone().add(new THREE.Vector3(0, 1.55, 0));
-    const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(this.yaw) * Math.cos(this.pitch)).multiplyScalar(this.dist);
+    // aiming: tight over-the-right-shoulder framing so the crosshair (screen centre) is the bullet's aim point
+    const aim = this.game.combat && this.game.combat.aiming;
+    this.aimK = THREE.MathUtils.lerp(this.aimK || 0, aim ? 1 : 0, Math.min(1, dt * 10));
+    const k = this.aimK;
+    const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
+    const target = player.position.clone().add(new THREE.Vector3(0, 1.55 + 0.05 * k, 0)).addScaledVector(right, 0.55 * k);
+    // indoors: tighter framing so rooms and doorways stay readable
+    const inside = this.game.buildings && this.game.buildings.inside(player.position);
+    this.indoorK = THREE.MathUtils.lerp(this.indoorK || 0, inside ? 1 : 0, Math.min(1, dt * 4));
+    const dist = THREE.MathUtils.lerp(THREE.MathUtils.lerp(this.dist, Math.min(this.dist, 2.9), this.indoorK), 1.9, k);
+    const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(this.yaw) * Math.cos(this.pitch)).multiplyScalar(dist);
     const desired = this._collide(target, target.clone().add(off));
-    this.cam.position.lerp(desired, Math.min(1, dt * 14));
+    this.cam.position.lerp(desired, Math.min(1, dt * (aim ? 20 : 14)));
     this.cam.lookAt(target);
-    this._setFov(60, dt);
+    this._setFov(THREE.MathUtils.lerp(60, 48, k), dt * (1 + k * 3));
     this._applyShake();
   }
 

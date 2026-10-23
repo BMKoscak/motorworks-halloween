@@ -4,6 +4,7 @@ import { LAYOUT, PLANT } from '../config.js';
 import { terrainHeight, addRoad, addPad, addSidewalk } from './terrain.js';
 import { cobwebTexture, bannerTexture } from './atmosphere.js';
 import { G } from '../core/physics.js';
+import { bakeProp } from './buildings.js';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -20,17 +21,30 @@ export class LightPool {
     }
     this.t = 0;
   }
+  /** Returns the source so owners (switches, breakers, gunshots) can turn it off: source.on = false. */
   add(pos, color = '#ffb36b', intensity = 18, flicker = false, range = 22) {
-    this.sources.push({ pos: pos.clone(), color: new THREE.Color(color), intensity, flicker, range, ph: Math.random() * 100 });
+    const s = { pos: pos.clone(), color: new THREE.Color(color), intensity, flicker, range, ph: Math.random() * 100, on: true };
+    this.sources.push(s);
+    this.dirty = true;
+    return s;
+  }
+  setOn(s, on, color, intensity) {
+    if (!s) return;
+    s.on = on;
+    if (color) s.color.set(color);
+    if (intensity !== undefined) s.intensity = intensity;
+    this.dirty = true;
   }
   update(dt, focus) {
     this.t += dt;
-    if ((this._acc = (this._acc || 0) + dt) > 0.3) {
+    if ((this._acc = (this._acc || 0) + dt) > 0.3 || this.dirty) {
       this._acc = 0;
-      this.sources.sort((a, b) => a.pos.distanceToSquared(focus) - b.pos.distanceToSquared(focus));
+      this.dirty = false;
+      this.active = this.sources.filter((s) => s.on);
+      this.active.sort((a, b) => a.pos.distanceToSquared(focus) - b.pos.distanceToSquared(focus));
     }
     this.lights.forEach((l, i) => {
-      const s = this.sources[i];
+      const s = this.active[i];
       if (!s) { l.intensity = 0; return; }
       l.position.copy(s.pos);
       l.color.copy(s.color);
@@ -39,6 +53,34 @@ export class LightPool {
       if (s.flicker) { const f = Math.sin(this.t * 13 + s.ph) * Math.sin(this.t * 7.3 + s.ph * 2); k = f > 0.6 ? 0.15 : 0.85 + 0.15 * Math.sin(this.t * 30 + s.ph); }
       l.intensity = s.intensity * k;
     });
+  }
+}
+
+/** One InstancedMesh per sub-mesh of a prop template, so many copies cost a few draw calls but can be hidden one by one. */
+export class InstancedProp {
+  constructor(scene, template, max) {
+    template.updateMatrixWorld(true);
+    this.parts = [];
+    template.traverse((o) => {
+      if (!o.isMesh) return;
+      const im = new THREE.InstancedMesh(o.geometry, o.material, max);
+      im.count = 0;
+      im.castShadow = !(o.material.emissive && o.material.emissive.getHex() > 0);
+      im.frustumCulled = false;
+      scene.add(im);
+      this.parts.push({ im, local: o.matrixWorld.clone() });
+    });
+    this.n = 0;
+    this._m = new THREE.Matrix4();
+  }
+  add(pos, rotY) {
+    const i = this.n++;
+    const base = new THREE.Matrix4().compose(pos, new THREE.Quaternion().setFromEuler(new THREE.Euler(0, rotY, 0)), new THREE.Vector3(1, 1, 1));
+    for (const p of this.parts) { p.im.setMatrixAt(i, this._m.multiplyMatrices(base, p.local)); p.im.count = this.n; p.im.instanceMatrix.needsUpdate = true; }
+    return i;
+  }
+  hide(i) {
+    for (const p of this.parts) { p.im.setMatrixAt(i, this._m.makeScale(0, 0, 0)); p.im.instanceMatrix.needsUpdate = true; }
   }
 }
 
@@ -59,6 +101,11 @@ export class Breakables {
     b.addEventListener('collide', (e) => this._hit(item, e));
     this.game.physics.world.addBody(b);
     this.items.push(item);
+  }
+  /** Shot at: knock the prop over as if hit by a car (hydrants, mailboxes, barrels, hay bales). */
+  shoot(item, dir) {
+    if (item.broken) return;
+    this._hit(item, { body: { userData: { kind: 'car', vehicle: null }, velocity: new CANNON.Vec3(dir.x * 5, 0, dir.z * 5) } });
   }
   _hit(item, e) {
     if (item.broken) return;
@@ -202,6 +249,7 @@ export function buildTown(game) {
   out.pedestrianPaths.push([[-180, 9], [-20, 9]], [[20, 9], [180, 9]], [[-7.8, 14], [-7.8, 140]], [[7.8, 14], [7.8, 140]], [[-190, -9], [-64, -9]], [[84, -9], [190, -9]]);
 
   // ---------------------------------------------------------------- buildings
+  out.shootLights = [];
   const place = (file, x, z, rot, opts = {}) => {
     const o = file.isObject3D ? file : assets.clone(file);
     o.position.set(x, opts.y ?? terrainHeight(x, z), z);
@@ -209,10 +257,18 @@ export function buildTown(game) {
     if (opts.scale) o.scale.setScalar(opts.scale);
     scene.add(o);
     o.updateMatrixWorld(true);
-    physics.collidersFrom(o, { tag: opts.tag });
+    const cols = physics.collidersFrom(o, { tag: opts.tag });
     o.traverse((n) => {
-      if (n.name === 'LightPoint') { const p = n.getWorldPosition(new THREE.Vector3()); out.lightPoints.push(p); game.lights.add(p, opts.lightColor || '#ffb36b', opts.lightI || 16, Math.random() < 0.25); }
+      if (n.name === 'LightPoint') {
+        const p = n.getWorldPosition(new THREE.Vector3());
+        out.lightPoints.push(p);
+        const src = game.lights.add(p, opts.lightColor || '#ffb36b', opts.lightI || 16, Math.random() < 0.25);
+        if (opts.shootable) out.shootLights.push({ pos: p.clone().add(new THREE.Vector3(0, 0.15, 0)), r: 0.45, source: src, kind: opts.shootable, broken: false,
+          onBreak: () => { const cap = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.1, 0.56), (buildTown.deadMat ||= new THREE.MeshStandardMaterial({ color: '#111', roughness: 0.9 }))); cap.position.copy(p).add(new THREE.Vector3(0, 0.2, 0)); cap.rotation.y = rot; scene.add(cap); } });
+      }
     });
+    // enterable buildings: doors / switches / panes / loot points become live objects before batching
+    if (opts.building) o.userData.building = game.buildings.process(o, opts.building, { colliders: cols, name: opts.name });
     if (opts.keep) return o;
     batcher.add(o);
     scene.remove(o);
@@ -223,22 +279,26 @@ export function buildTown(game) {
   out.prop = prop;
   const bbox = (o) => { const b = new THREE.Box3().setFromObject(o); out.buildings.push({ x0: b.min.x, x1: b.max.x, z0: b.min.z, z1: b.max.z }); };
 
-  const diner = place('diner', ...[LAYOUT.diner[0], LAYOUT.diner[2]], Math.PI); bbox(diner);
-  const gas = place('gas_station', LAYOUT.gas[0], LAYOUT.gas[2], Math.PI); bbox(gas);
-  const hw = place('hardware', LAYOUT.hardware[0], LAYOUT.hardware[2], Math.PI); bbox(hw);
-  const ps = place('police_station', LAYOUT.policeStation[0], LAYOUT.policeStation[2], Math.PI); bbox(ps);
+  const diner = place('diner', ...[LAYOUT.diner[0], LAYOUT.diner[2]], Math.PI, { building: 'diner', name: 'Moonlite Diner' }); bbox(diner);
+  const gas = place('gas_station', LAYOUT.gas[0], LAYOUT.gas[2], Math.PI, { building: 'gas', name: 'Moonbeam Gas & Mart' }); bbox(gas);
+  const hw = place('hardware', LAYOUT.hardware[0], LAYOUT.hardware[2], Math.PI, { building: 'hardware', name: "Hank's Hardware" }); bbox(hw);
+  const ps = place('police_station', LAYOUT.policeStation[0], LAYOUT.policeStation[2], Math.PI, { building: 'police', name: 'Police Station' }); bbox(ps);
   out.spots.dinerDoor = new THREE.Vector3(-58.5, 0, 15.2);
   out.spots.policeDoor = new THREE.Vector3(130, 0, 11.5);
 
   const houses = [];
+  let houseN = 0;
   const addHouse = (file, x, z, rot) => {
     const h = assets.clone(file);
     const sid = new THREE.Color().setHSL(Math.random(), rnd(0.15, 0.35), rnd(0.35, 0.55));
     h.traverse((m) => { if (m.isMesh && m.material.name === 'Siding') m.material = (addHouse.mats ||= {})[sid.getHexString()] ||= Object.assign(m.material.clone(), { color: sid }); });
-    place(h, x, z, rot, { keep: true });
+    place(h, x, z, rot, { keep: true, building: 'house', name: `House #${++houseN} (${file === 'house_a' ? 'two-storey' : 'bungalow'})` });
     bbox(h);
     const porch = h.getObjectByName('Porch_Spot');
-    houses.push({ obj: h, x, z, rot, porch: porch ? porch.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(x, 0, z) });
+    const b = h.userData.building;
+    b.lightsOn = Math.random() < 0.72;
+    game.buildings.apply(b);
+    houses.push({ obj: h, x, z, rot, porch: porch ? porch.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(x, 0, z), building: b });
     batcher.add(h);
     scene.remove(h);
   };
@@ -253,14 +313,19 @@ export function buildTown(game) {
   // ---------------------------------------------------------------- Halloween yards
   const fwd = (rot) => new THREE.Vector3(Math.sin(rot), 0, Math.cos(rot));
   const side = (rot) => new THREE.Vector3(Math.cos(rot), 0, -Math.sin(rot));
+  // porch jack-o'-lanterns: instanced so each one can be shot out individually (light source goes dark with it)
+  const lanterns = (out.lanterns = new InstancedProp(scene, assets.part('props', 'Pumpkin_Lantern'), houses.length * 2));
   houses.forEach((h, i) => {
     const f = fwd(h.rot), s = side(h.rot);
     const p = h.porch;
+    const src = game.lights.add(p.clone().setY(p.y + 0.8), '#ff8a2a', 6, true, 9);
     for (let k = 0; k < 3; k++) {
       const q = p.clone().addScaledVector(s, -1.2 + k * 1.1).addScaledVector(f, 0.6 + (k % 2) * 0.3);
-      prop(k === 1 ? 'Pumpkin' : 'Pumpkin_Lantern', q.x, q.z, h.rot + rnd(-0.4, 0.4), { y: 0.68 });
+      if (k === 1) { prop('Pumpkin', q.x, q.z, h.rot + rnd(-0.4, 0.4), { y: p.y }); continue; }
+      const idx = lanterns.add(new THREE.Vector3(q.x, p.y, q.z), h.rot + rnd(-0.4, 0.4));
+      const L = { pos: new THREE.Vector3(q.x, p.y + 0.2, q.z), r: 0.36, source: src, kind: 'lantern', broken: false, onBreak: () => lanterns.hide(idx) };
+      out.shootLights.push(L);
     }
-    game.lights.add(p.clone().setY(1.2), '#ff8a2a', 6, true, 9);
     const yard = new THREE.Vector3(h.x, 0, h.z).addScaledVector(f, 9.5);
     const deco = i % 5;
     if (deco === 0) { prop('Tombstone_Round', yard.x + s.x * 3, yard.z + s.z * 3, h.rot + 0.2); prop('Tombstone_Cross', yard.x - s.x * 2, yard.z - s.z * 2, h.rot - 0.15); }
@@ -282,10 +347,10 @@ export function buildTown(game) {
 
   // ---------------------------------------------------------------- street furniture
   for (let x = -185; x <= 185; x += 32) {
-    if (Math.abs(x) > 8) prop('Streetlight', x, 12, Math.PI);
-    if (!(x > -62 && x < 62) && Math.abs(x - 76) > 6) prop('Streetlight', x + 16, -12, 0);
+    if (Math.abs(x) > 8) prop('Streetlight', x, 12, Math.PI, { shootable: 'streetlight' });
+    if (!(x > -62 && x < 62) && Math.abs(x - 76) > 6) prop('Streetlight', x + 16, -12, 0, { shootable: 'streetlight' });
   }
-  for (let z = 22; z <= 140; z += 30) { prop('Streetlight', -10.8, z, Math.PI / 2); prop('Streetlight', 10.8, z + 15, -Math.PI / 2); }
+  for (let z = 22; z <= 140; z += 30) { prop('Streetlight', -10.8, z, Math.PI / 2, { shootable: 'streetlight' }); prop('Streetlight', 10.8, z + 15, -Math.PI / 2, { shootable: 'streetlight' }); }
   for (let i = 1; i < out.hillLine.length - 1; i += 10) {
     const p = out.hillLine[i];
     prop('Lantern_Post', p.x + 6.2, p.z, 0, { lightColor: '#ffa040', lightI: 10 });
@@ -302,6 +367,7 @@ export function buildTown(game) {
     o.position.set(x, terrainHeight(x, z), z);
     o.rotation.y = rot;
     scene.add(o);
+    bakeProp(o);
     const half = { Hydrant: [0.2, 0.42, 0.2], Mailbox: [0.15, 0.65, 0.3], Barrel: [0.33, 0.45, 0.33], HayBale: [0.6, 0.3, 0.35] }[name];
     game.breakables.add(o, { x: half[0], y: half[1], z: half[2] }, name);
     const it = game.breakables.items.at(-1);

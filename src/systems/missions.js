@@ -209,7 +209,7 @@ export class Missions {
     const g = this.game;
     g.say(won ? 'phantom_win' : 'phantom_lose');
     g.hud.toast(won ? 'You beat the Phantom Hearse! +$6,666' : 'The Phantom wins… this time.', won ? 'good' : 'bad', 5000);
-    if (won) g.state.money += 6666;
+    if (won) { g.state.money += 6666; this.unlockLauncher('beating the Phantom Hearse'); }
     g.events.emit('phantomResult', { won });
     const vis = this.race.visual;
     setTimeout(() => vis.dispose(), 1500);
@@ -259,7 +259,18 @@ export class Missions {
       g.state.monsterMash = true;
       g.say('kiosk_unlock');
       g.hud.toast('🧟 MONSTER MASH PACK UNLOCKED at the kiosk & custom bay!', 'good', 6000);
+      this.unlockLauncher('finding every Golden Pumpkin');
     }
     g.save();
+  }
+
+  /** Halloween easter-egg reward: the Jack-o'-Lantern Launcher (weapon slot 5). */
+  unlockLauncher(why) {
+    const g = this.game;
+    if (!g.combat || g.combat.owned.launcher) return;
+    g.combat.give('launcher', 6);
+    g.state.launcher = true;
+    g.save();
+    g.hud.toast(`🎃 Jack-o'-Lantern Launcher unlocked for ${why}! (key 5)`, 'good', 5000);
   }
 }

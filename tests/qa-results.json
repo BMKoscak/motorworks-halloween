@@ -1,15 +1,15 @@
 {
- "ranAt": "2026-10-23T11:38:03.952Z",
- "durationSec": 179,
- "passed": 20,
- "total": 20,
+ "ranAt": "2026-10-23T13:54:40.281Z",
+ "durationSec": 354,
+ "passed": 30,
+ "total": 30,
  "results": [
   {
    "id": "boot",
    "title": "Page loads, Blender assets stream in, zero console errors / uncaught exceptions",
    "pass": true,
    "details": {
-    "loadMs": 9407,
+    "loadMs": 3384,
     "gpu": "ANGLE (AMD, AMD Radeon (TM) R5 M330 (0x00006660) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "consoleErrors": []
    },
@@ -17,64 +17,65 @@
     "public/docs/screenshots/01_title_screen.png",
     "public/docs/screenshots/01b_title_telemetry_badge.png"
    ],
-   "ms": 13343
+   "ms": 13325
   },
   {
    "id": "assets",
    "title": "All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes",
    "pass": true,
    "details": {
-    "files": 27,
+    "files": 28,
     "invalidBoxes": [],
     "missingHinges": [],
     "hingeCounts": {
      "car_muscle": 13,
-     "car_pickup": 13,
      "car_coupe": 13,
-     "parts": 1,
      "car_hearse": 13,
-     "car_sedan": 15,
-     "crane": 3,
-     "robot_arm": 4,
-     "garage_door": 8,
-     "press": 1,
-     "wheels": 0,
-     "sliding_door": 2,
-     "barrier": 1,
      "cemetery_gate": 2,
+     "car_sedan": 15,
+     "parts": 1,
+     "wheels": 0,
+     "robot_arm": 4,
+     "car_pickup": 13,
+     "press": 1,
+     "crane": 3,
+     "sliding_door": 2,
+     "garage_door": 8,
+     "barrier": 1,
      "forklift": 5,
-     "scanner": 1,
-     "plant": 1,
      "lift": 1,
-     "gas_station": 0,
-     "diner": 0,
-     "hardware": 0,
-     "police_station": 0,
-     "house_a": 0,
-     "house_b": 0,
+     "scanner": 1,
+     "plant": 2,
+     "jumbotron": 0,
+     "diner": 3,
+     "gas_station": 10,
+     "hardware": 3,
+     "police_station": 5,
+     "house_a": 4,
+     "house_b": 4,
      "props": 2,
      "character": 16,
      "skeleton": 16
     },
-    "meshes": 782
+    "meshes": 1727
    },
    "screenshots": [],
-   "ms": 127
+   "ms": 126
   },
   {
    "id": "walk",
    "title": "Player walks with WASD and collides with walls and cars (no clipping)",
    "pass": true,
    "details": {
-    "walkedMeters": 2.51,
+    "walkedMeters": 5.47,
     "stoppedAtWallZ": -59.38,
-    "distanceFromCarCenter": 2.78,
+    "distanceFromCarCenter": 2.53,
     "parkedCars": 16
    },
    "screenshots": [
     "public/docs/screenshots/03_player_at_plant_wall.png"
    ],
-   "ms": 9901
+   "ms": 8678
   },
   {
    "id": "escape",
@@ -92,7 +93,7 @@
    "screenshots": [
     "public/docs/screenshots/04_pause_menu.png"
    ],
-   "ms": 2581
+   "ms": 2350
   },
   {
    "id": "dialogue",
@@ -103,22 +104,26 @@
     "lastLine": {
      "id": "foreman_greet",
      "voice": "foreman",
+     "demo": "adult_male",
+     "speaker": "adult_male",
      "duration": 8.8,
      "source": "file",
-     "at": 26786
+     "at": 25299
     },
     "dispatchLine": {
      "id": "dispatch_2",
      "voice": "dispatch",
+     "demo": "adult_female",
+     "speaker": null,
      "duration": 6,
      "source": "file",
-     "at": 29022
+     "at": 27410
     }
    },
    "screenshots": [
     "public/docs/screenshots/05_dialogue_foreman.png"
    ],
-   "ms": 3927
+   "ms": 3781
   },
   {
    "id": "kiosk",
@@ -150,8 +155,8 @@
     "orderRunning": {
      "running": true,
      "stage": 0,
-     "stageT": 0.052,
-     "number": "MW-1031-5775"
+     "stageT": 0.053,
+     "number": "MW-1031-9461"
     },
     "charged": 103650
    },
@@ -165,7 +170,75 @@
     "public/docs/screenshots/06_kiosk_lighting.png",
     "public/docs/screenshots/06_kiosk_performance.png"
    ],
-   "ms": 20246
+   "ms": 21682
+  },
+  {
+   "id": "factory_jumbotron_and_conveyor",
+   "title": "Live Jumbotron render-target feed updates; conveyor skillet/rollers move; robots physically carry doors/hood/trunk from racks to the chassis",
+   "pass": true,
+   "details": {
+    "carries": [
+     {
+      "name": "Door_L",
+      "phase": "attached",
+      "maxGap": 0.15,
+      "visible": false
+     },
+     {
+      "name": "Door_R",
+      "phase": "attached",
+      "maxGap": 0.22,
+      "visible": false
+     },
+     {
+      "name": "Trunk",
+      "phase": "carry",
+      "maxGap": null,
+      "visible": true
+     },
+     {
+      "name": "Hood",
+      "phase": "attached",
+      "maxGap": 0.17,
+      "visible": false
+     }
+    ],
+    "factory": {
+     "ikSolves": 743,
+     "pressCycles": 1,
+     "partsCarried": 3,
+     "nightShift": false
+    },
+    "partsCarriedToChassis": 3,
+    "gripperStaysOnPart_m": [
+     0.15,
+     0.22,
+     0.17
+    ],
+    "ikSolves": 743,
+    "jumbotron": {
+     "before": {
+      "frames": 338,
+      "overlay": 64,
+      "faces": 4
+     },
+     "after": {
+      "frames": 501,
+      "overlay": 147,
+      "faces": 4
+     }
+    },
+    "renderTargetFramesUpdated": 163,
+    "overlayCanvasRedrawn": 83,
+    "rollerSpin": 429.85
+   },
+   "screenshots": [
+    "public/docs/screenshots/16_bodyshop_robot_carrying_door.png",
+    "public/docs/screenshots/16_jumbotron_live_feed.png",
+    "public/docs/screenshots/16_jumbotron_closeup.png",
+    "public/docs/screenshots/16_conveyor_skillet_press_feeder.png"
+   ],
+   "ms": 18202
   },
   {
    "id": "assembly",
@@ -174,46 +247,78 @@
    "details": {
     "stations": [
      {
-      "stage": 0,
-      "stageT": 0.55,
-      "hinges": {
-       "Door_L": 1,
-       "Door_R": 1,
-       "Hood": 1,
-       "Trunk": 1
-      },
-      "ram": 5.8,
-      "hoist": -0.3,
-      "laser": 2,
-      "robots": [],
-      "reveal": 0,
-      "log": [
-       "order"
-      ]
-     },
-     {
       "stage": 1,
-      "stageT": 0.57,
+      "stageT": 0.95,
       "hinges": {
-       "Door_L": 0.22,
-       "Door_R": 1,
-       "Hood": 1,
-       "Trunk": 1
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
       },
-      "ram": 5.76,
+      "ram": 4.67,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.548,
-       -0.774,
-       -0.747,
-       -0.752
+       -0.392,
+       -0.464,
+       -0.404,
+       -0.213
       ],
       "reveal": 0,
       "log": [
        "order",
        "s1_body",
-       "close_Door_L"
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
+       "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
+       "close_Hood",
+       "close_Trunk"
+      ]
+     },
+     {
+      "stage": 2,
+      "stageT": 0.03,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
+      },
+      "ram": 5.53,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [
+       -0.393,
+       -0.335,
+       -0.315,
+       -0.375
+      ],
+      "reveal": 0,
+      "log": [
+       "order",
+       "s1_body",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
+       "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
+       "close_Hood",
+       "close_Trunk",
+       "s2_paint"
       ]
      },
      {
@@ -225,21 +330,30 @@
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.03,
+      "ram": 4.75,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.575,
-       -0.547,
-       -0.458,
-       -0.432
+       -0.607,
+       -0.725,
+       -0.651,
+       -0.499
       ],
       "reveal": 0.63,
       "log": [
        "order",
        "s1_body",
-       "close_Door_L",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
        "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
        "close_Hood",
        "close_Trunk",
        "s2_paint"
@@ -254,22 +368,32 @@
        "Hood": 1,
        "Trunk": 0
       },
-      "ram": 4.44,
-      "hoist": -6.4,
+      "ram": 5.8,
+      "hoist": -2.35,
       "laser": 2,
       "robots": [
-       -0.777
+       -0.537
       ],
       "reveal": 1,
       "log": [
        "order",
        "s1_body",
-       "close_Door_L",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
        "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
        "close_Hood",
        "close_Trunk",
        "s2_paint",
        "s3_open",
+       "engine_pick",
        "engine_in"
       ]
      },
@@ -282,7 +406,7 @@
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.26,
+      "ram": 5.71,
       "hoist": -0.3,
       "laser": 2,
       "robots": [],
@@ -290,12 +414,22 @@
       "log": [
        "order",
        "s1_body",
-       "close_Door_L",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
        "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
        "close_Hood",
        "close_Trunk",
        "s2_paint",
        "s3_open",
+       "engine_pick",
        "engine_in",
        "wheel_0",
        "wheel_1",
@@ -309,12 +443,22 @@
     "events": [
      "order",
      "s1_body",
-     "close_Door_L",
+     "s1_plan",
+     "pick_Door_L",
+     "pick_Door_R",
+     "pick_Hood",
+     "attach_Door_R",
      "close_Door_R",
+     "pick_Trunk",
+     "attach_Door_L",
+     "attach_Hood",
+     "attach_Trunk",
+     "close_Door_L",
      "close_Hood",
      "close_Trunk",
      "s2_paint",
      "s3_open",
+     "engine_pick",
      "engine_in",
      "wheel_0",
      "wheel_1",
@@ -352,7 +496,7 @@
     "public/docs/screenshots/07_station_5_final_qc.png",
     "public/docs/screenshots/07_rollout_finished_car.png"
    ],
-   "ms": 27998
+   "ms": 21583
   },
   {
    "id": "hinges",
@@ -453,7 +597,7 @@
    "screenshots": [
     "public/docs/screenshots/08_hinges_open.png"
    ],
-   "ms": 2773
+   "ms": 2881
   },
   {
    "id": "physics",
@@ -461,37 +605,37 @@
    "pass": true,
    "details": {
     "inCar": true,
-    "fpsDuringDrive": 18.5,
-    "speedAfterW": 9.71,
-    "leftHeadingDelta": 0.577,
-    "rightHeadingDelta": -0.372,
+    "fpsDuringDrive": 22.3,
+    "speedAfterW": 17,
+    "leftHeadingDelta": 0.841,
+    "rightHeadingDelta": -1.296,
     "braking": {
-     "before": 16.51,
-     "after": 8.7
+     "before": 26.67,
+     "after": 11.67
     },
     "highSpeed": {
-     "speed": 12.95,
-     "dHeading": -0.144
+     "speed": 24.05,
+     "dHeading": -0.563
     },
     "highSpeedTurn": {
-     "speed": 12.95,
-     "dHeading": -0.144
+     "speed": 24.05,
+     "dHeading": -0.563
     },
-    "skidMarks": 349
+    "skidMarks": 749
    },
    "screenshots": [
     "public/docs/screenshots/09_driving_turn.png",
     "public/docs/screenshots/09b_handbrake_drift.png"
    ],
-   "_t0": 1792755390152,
-   "ms": 18715
+   "_t0": 1792763422873,
+   "ms": 18687
   },
   {
    "id": "cockpit",
    "title": "First-person cockpit camera shows hands on the animated steering wheel; R toggles the haunted radio",
    "pass": true,
    "details": {
-    "steeringWheelRotation": -3.356,
+    "steeringWheelRotation": -2.153,
     "radio": {
      "on": true,
      "name": "WHOO 66.6 FM · Synthwave from Beyond"
@@ -500,7 +644,7 @@
    "screenshots": [
     "public/docs/screenshots/10_cockpit_view.png"
    ],
-   "ms": 3754
+   "ms": 3627
   },
   {
    "id": "town",
@@ -521,7 +665,7 @@
     "public/docs/screenshots/11_leaf_piles_trees.png",
     "public/docs/screenshots/11_hill_road.png"
    ],
-   "ms": 17074
+   "ms": 16168
   },
   {
    "id": "cemetery",
@@ -529,18 +673,18 @@
    "pass": true,
    "details": {
     "gateOpen": {
-     "closed": 0.19,
+     "closed": 0.2,
      "open": 1
     },
     "leafRotation": 1.45,
-    "tombstones": 282
+    "tombstones": 271
    },
    "screenshots": [
     "public/docs/screenshots/12_cemetery_gates.png",
     "public/docs/screenshots/12_cemetery_crypts.png",
     "public/docs/screenshots/12_vlad_crypt.png"
    ],
-   "ms": 8172
+   "ms": 7630
   },
   {
    "id": "theft",
@@ -550,56 +694,180 @@
     "inStolenCar": true,
     "doorSwungOpen": 1,
     "markedStolen": true,
-    "wantedLevel": 1,
+    "wantedLevel": 3,
     "pursuit": [
      {
       "mode": "pursuit",
       "pos": [
-       187.4,
-       -4
+       160.5,
+       33.8
       ],
-      "siren": true
+      "siren": true,
+      "parked": true
      },
      {
       "mode": "pursuit",
       "pos": [
-       -193.3,
-       2.6
+       162.5,
+       31.4
       ],
-      "siren": true
+      "siren": true,
+      "parked": true
+     },
+     {
+      "mode": "pursuit",
+      "pos": [
+       130.6,
+       6.7
+      ],
+      "siren": true,
+      "parked": false
+     },
+     {
+      "mode": "pursuit",
+      "pos": [
+       61.8,
+       4.6
+      ],
+      "siren": true,
+      "parked": false
      }
     ],
     "police": {
-     "level": 1,
+     "level": 4,
      "cars": [
       {
        "mode": "pursuit",
        "pos": [
-        187.4,
-        -4
+        160.5,
+        33.8
        ],
-       "siren": true
+       "siren": true,
+       "parked": true
       },
       {
        "mode": "pursuit",
        "pos": [
-        -193.3,
-        2.6
+        162.5,
+        31.4
        ],
-       "siren": true
+       "siren": true,
+       "parked": true
+      },
+      {
+       "mode": "pursuit",
+       "pos": [
+        130.6,
+        6.7
+       ],
+       "siren": true,
+       "parked": false
+      },
+      {
+       "mode": "pursuit",
+       "pos": [
+        61.8,
+        4.6
+       ],
+       "siren": true,
+       "parked": false
+      }
+     ],
+     "officers": [
+      {
+       "state": "foot",
+       "pos": [
+        137.4,
+        0.2,
+        10.6
+       ],
+       "armed": true
+      },
+      {
+       "state": "foot",
+       "pos": [
+        137.4,
+        0.2,
+        10.6
+       ],
+       "armed": true
+      },
+      {
+       "state": "foot",
+       "pos": [
+        124,
+        0,
+        4.3
+       ],
+       "armed": true
+      },
+      {
+       "state": "beat",
+       "pos": [
+        -86.5,
+        0.2,
+        -8
+       ],
+       "armed": false
+      },
+      {
+       "state": "foot",
+       "pos": [
+        38.2,
+        0,
+        13.3
+       ],
+       "armed": true
+      },
+      {
+       "state": "seated",
+       "pos": [
+        0.4,
+        0,
+        0.1
+       ],
+       "armed": false
+      },
+      {
+       "state": "seated",
+       "pos": [
+        0.4,
+        0,
+        0.1
+       ],
+       "armed": false
       }
      ],
      "stats": {
       "crimes": [
        {
-        "kind": "theft",
-        "at": 131216,
+        "kind": "speeding",
+        "at": 106631,
         "level": 1
+       },
+       {
+        "kind": "rammed",
+        "at": 111692,
+        "level": 2
+       },
+       {
+        "kind": "theft",
+        "at": 141219,
+        "level": 3
+       },
+       {
+        "kind": "rammed",
+        "at": 146856,
+        "level": 4
        }
       ],
-      "maxLevel": 1,
+      "maxLevel": 4,
       "busts": 0,
-      "escapes": 0
+      "escapes": 0,
+      "dismounts": 2,
+      "footChases": 4,
+      "shotsAtPlayer": 11,
+      "resets": 0
      }
     }
    },
@@ -608,7 +876,7 @@
     "public/docs/screenshots/13_police_pursuit.png",
     "public/docs/screenshots/13_police_chase_overview.png"
    ],
-   "ms": 13972
+   "ms": 13495
   },
   {
    "id": "busted",
@@ -619,17 +887,1003 @@
      "wanted": 0,
      "inCar": false
     },
-    "fined": 1250,
+    "fined": 4250,
     "respawnAtPoliceStation": [
      124,
-     0.11,
+     0.08,
      9
     ]
    },
    "screenshots": [
     "public/docs/screenshots/14_busted.png"
    ],
-   "ms": 8813
+   "ms": 6223
+  },
+  {
+   "id": "npc_demographics",
+   "title": "NPC demographics: kids are 0.68x trick-or-treaters with kid-only voices; male/female NPCs only use matching voices; no child drivers",
+   "pass": true,
+   "details": {
+    "auditViolations": [],
+    "census": {
+     "adult_male": 13,
+     "skeleton": 1,
+     "adult_female": 8,
+     "child_girl": 6,
+     "child_boy": 6
+    },
+    "kidsScaledAndCostumed": [
+     {
+      "scale": 0.68,
+      "costume": "pumpkin",
+      "acc": [
+       "Mask_Pumpkin",
+       "Hold_CandyBag",
+       "Hair_Ponytail"
+      ]
+     },
+     {
+      "scale": 0.68,
+      "costume": "superhero",
+      "acc": [
+       "Costume_Cape",
+       "Mask_Super",
+       "Hold_CandyBag"
+      ]
+     },
+     {
+      "scale": 0.68,
+      "costume": "pumpkin",
+      "acc": [
+       "Mask_Pumpkin",
+       "Hold_CandyBag",
+       "Hair_Ponytail"
+      ]
+     },
+     {
+      "scale": 0.68,
+      "costume": "superhero",
+      "acc": [
+       "Costume_Cape",
+       "Mask_Super",
+       "Hold_CandyBag"
+      ]
+     }
+    ],
+    "driversAllAdults": [
+     "adult_female",
+     "adult_female",
+     "adult_male",
+     "adult_female",
+     "adult_female",
+     "adult_female",
+     "adult_male",
+     "adult_male",
+     "adult_male"
+    ],
+    "bothGenders": {
+     "adult_male": 13,
+     "skeleton": 1,
+     "adult_female": 8,
+     "child_girl": 6,
+     "child_boy": 6
+    },
+    "spoken": [
+     {
+      "kind": "child_boy",
+      "line": "kidb_1",
+      "voiceDemo": "child_boy",
+      "speaker": "child_boy"
+     },
+     {
+      "kind": "child_girl",
+      "line": "kidg_1",
+      "voiceDemo": "child_girl",
+      "speaker": "child_girl"
+     },
+     {
+      "kind": "adult_male",
+      "line": "civm_1",
+      "voiceDemo": "adult_male",
+      "speaker": "adult_male"
+     },
+     {
+      "kind": "adult_female",
+      "line": "civilian_2",
+      "voiceDemo": "adult_female",
+      "speaker": "adult_female"
+     }
+    ],
+    "voiceMatchesSpeaker": [
+     {
+      "kind": "child_boy",
+      "line": "kidb_1",
+      "voiceDemo": "child_boy",
+      "speaker": "child_boy"
+     },
+     {
+      "kind": "child_girl",
+      "line": "kidg_1",
+      "voiceDemo": "child_girl",
+      "speaker": "child_girl"
+     },
+     {
+      "kind": "adult_male",
+      "line": "civm_1",
+      "voiceDemo": "adult_male",
+      "speaker": "adult_male"
+     },
+     {
+      "kind": "adult_female",
+      "line": "civilian_2",
+      "voiceDemo": "adult_female",
+      "speaker": "adult_female"
+     }
+    ],
+    "noAdultLinesFromKids": [
+     "Trick or treat! Look at my candy bag, it's almost full!",
+     "Trick or treat, smell my feet, give me something good to eat!"
+    ]
+   },
+   "screenshots": [
+    "public/docs/screenshots/17_trick_or_treater_kid_dialogue.png",
+    "public/docs/screenshots/17_kids_and_townsfolk_sidewalk.png"
+   ],
+   "ms": 7732
+  },
+  {
+   "id": "enterable_buildings",
+   "title": "Walk through hinged front doors into the Diner, Hardware Store, Police Station and a House (no collider blocking)",
+   "pass": true,
+   "details": {
+    "visits": [
+     {
+      "kind": "diner",
+      "prompt": "[E] Open door",
+      "door": 1,
+      "inside": "diner",
+      "deeper": "diner",
+      "pos": [
+       -61.2,
+       0.3,
+       18.88
+      ]
+     },
+     {
+      "kind": "hardware",
+      "prompt": "[E] Open door",
+      "door": 1,
+      "inside": "hardware",
+      "deeper": "hardware",
+      "pos": [
+       -130,
+       0.15,
+       17.31
+      ]
+     },
+     {
+      "kind": "police",
+      "prompt": "[E] Close door",
+      "door": 1,
+      "inside": "police",
+      "deeper": "police",
+      "pos": [
+       130,
+       0.15,
+       16.52
+      ]
+     },
+     {
+      "kind": "house",
+      "prompt": "[E] Open door",
+      "door": 1,
+      "inside": "house",
+      "deeper": "house",
+      "pos": [
+       -89,
+       0.45,
+       -26.55
+      ]
+     }
+    ],
+    "diner_doorSwungOpen": {
+     "t": 1,
+     "target": 1,
+     "locked": false,
+     "center": [
+      -61.2,
+      1.5,
+      17.5
+     ]
+    },
+    "diner_walkedInside": {
+     "inside": {
+      "id": 0,
+      "kind": "diner"
+     },
+     "inside2": {
+      "id": 0,
+      "kind": "diner"
+     },
+     "pos": [
+      -61.2,
+      0.3,
+      18.88
+     ]
+    },
+    "hardware_doorSwungOpen": {
+     "t": 1,
+     "target": 1,
+     "locked": false,
+     "center": [
+      -130,
+      1.4,
+      16
+     ]
+    },
+    "hardware_walkedInside": {
+     "inside": {
+      "id": 2,
+      "kind": "hardware"
+     },
+     "inside2": {
+      "id": 2,
+      "kind": "hardware"
+     },
+     "pos": [
+      -130,
+      0.15,
+      17.31
+     ]
+    },
+    "police_doorSwungOpen": {
+     "t": 1,
+     "target": 1,
+     "locked": false,
+     "center": [
+      130,
+      1.4,
+      15
+     ]
+    },
+    "police_walkedInside": {
+     "inside": {
+      "id": 3,
+      "kind": "police"
+     },
+     "inside2": {
+      "id": 3,
+      "kind": "police"
+     },
+     "pos": [
+      130,
+      0.15,
+      16.52
+     ]
+    },
+    "house_doorSwungOpen": {
+     "t": 1,
+     "target": 1,
+     "locked": false,
+     "center": [
+      -89,
+      1.55,
+      -25.5
+     ]
+    },
+    "house_walkedInside": {
+     "inside": {
+      "id": 7,
+      "kind": "house"
+     },
+     "inside2": {
+      "id": 7,
+      "kind": "house"
+     },
+     "pos": [
+      -89,
+      0.45,
+      -26.55
+     ]
+    },
+    "stairs": [
+     5.42,
+     4.2,
+     -72.7
+    ],
+    "climbedOfficeStairs_y": 4.2
+   },
+   "screenshots": [
+    "public/docs/screenshots/18_interior_diner.png",
+    "public/docs/screenshots/18_interior_hardware.png",
+    "public/docs/screenshots/18_interior_police.png",
+    "public/docs/screenshots/18_interior_house.png",
+    "public/docs/screenshots/18_foreman_office_observation.png"
+   ],
+   "ms": 33326
+  },
+  {
+   "id": "seated_drivers",
+   "title": "Traffic cars, police cruisers, the forklift (and the player) have seated drivers; arms + steering wheel follow the steering; cabin glass is see-through",
+   "pass": true,
+   "details": {
+    "seated": {
+     "traffic": [
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      },
+      {
+       "seated": true,
+       "anim": "drive",
+       "scale": 0.76
+      }
+     ],
+     "police": [
+      {
+       "seated": true
+      },
+      {
+       "seated": true
+      }
+     ],
+     "forklift": true,
+     "glass": {
+      "opacity": 0.38,
+      "roughness": 0.1,
+      "metalness": 0.2
+     }
+    },
+    "trafficDriversSeated": 9,
+    "policeOfficersSeated": [
+     {
+      "seated": true
+     },
+     {
+      "seated": true
+     }
+    ],
+    "forkliftOperatorSeated": true,
+    "cabinGlass": {
+     "opacity": 0.38,
+     "roughness": 0.1,
+     "metalness": 0.2
+    },
+    "turning": {
+     "steer": -0.9262761801634816,
+     "wheel": 2.547259495449574,
+     "armL": -1.5093573304457748,
+     "armR": -0.9906426695542252
+    },
+    "armsAndWheelTurnTogether": {
+     "steer": -0.9262761801634816,
+     "wheel": 2.547259495449574,
+     "armL": -1.5093573304457748,
+     "armR": -0.9906426695542252
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/19_seated_traffic_driver.png",
+    "public/docs/screenshots/19_seated_police_officer.png",
+    "public/docs/screenshots/19_forklift_operator.png"
+   ],
+   "ms": 3077
+  },
+  {
+   "id": "navigation_and_bounds",
+   "title": "30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - ground| < 0.6); traffic stays on the road graph",
+   "pass": true,
+   "details": {
+    "worst": {
+     "oob": 0,
+     "float": 0,
+     "maxDy": 0
+    },
+    "physics": {
+     "velocityClamps": 0,
+     "spinClamps": 0,
+     "outOfBounds": 0,
+     "traffic": {
+      "whiskerBrakes": 29,
+      "junctionWaits": 0,
+      "resets": 0
+     },
+     "nav": {
+      "nodes": 1378,
+      "edges": 4532,
+      "rays": 9319,
+      "buildMs": 266
+     },
+     "policeResets": 0
+    },
+    "samples": [
+     [
+      {
+       "x": 2.6,
+       "y": 0,
+       "z": 138.2,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 6.8
+      },
+      {
+       "x": -3.6,
+       "y": 9.41,
+       "z": 204.3,
+       "ground": 9.41,
+       "seg": "lane",
+       "speed": 4
+      },
+      {
+       "x": -116.2,
+       "y": 0,
+       "z": -2.6,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 12
+      }
+     ],
+     [
+      {
+       "x": 2.6,
+       "y": 0,
+       "z": 12.1,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 4.6
+      },
+      {
+       "x": -4.7,
+       "y": 6.58,
+       "z": 188.1,
+       "ground": 6.58,
+       "seg": "lane",
+       "speed": 8.7
+      },
+      {
+       "x": -153,
+       "y": 0,
+       "z": 2.6,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 12
+      }
+     ],
+     [
+      {
+       "x": -42,
+       "y": 0,
+       "z": -2.6,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 0.2
+      },
+      {
+       "x": 2.6,
+       "y": 0,
+       "z": 127.8,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 9.3
+      },
+      {
+       "x": -57.1,
+       "y": 0,
+       "z": 2.6,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 2.1
+      }
+     ]
+    ],
+    "outOfBoundsVehicles": 0,
+    "floatingVehicles": {
+     "oob": 0,
+     "float": 0,
+     "maxDy": 0
+    },
+    "trafficOnRoadGraph_maxDev": 1.42,
+    "trafficMoving": 8
+   },
+   "screenshots": [
+    "public/docs/screenshots/20_pursuit_traffic_navigation.png"
+   ],
+   "ms": 38189
+  },
+  {
+   "id": "police_foot_chase",
+   "title": "Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars",
+   "pass": true,
+   "details": {
+    "dismounts": 4,
+    "footChases": 10,
+    "officers": [
+     {
+      "state": "foot",
+      "pos": [
+       -53.4,
+       0,
+       3
+      ],
+      "armed": false
+     },
+     {
+      "state": "foot",
+      "pos": [
+       76,
+       0,
+       -17.3
+      ],
+      "armed": false
+     },
+     {
+      "state": "beat",
+      "pos": [
+       129.1,
+       0,
+       13.3
+      ],
+      "armed": true
+     },
+     {
+      "state": "foot",
+      "pos": [
+       -76,
+       0.2,
+       -7
+      ],
+      "armed": false
+     },
+     {
+      "state": "foot",
+      "pos": [
+       -32.8,
+       0.2,
+       9.3
+      ],
+      "armed": false
+     },
+     {
+      "state": "seated",
+      "pos": [
+       0.4,
+       0,
+       0.1
+      ],
+      "armed": false
+     }
+    ],
+    "d0": 34.01003809638588,
+    "d1": {
+     "d": 6.800369491574566,
+     "anim": "run"
+    },
+    "dismounted": 4,
+    "caughtDuringChase": false,
+    "officerPursuesOnFoot (closes in or tackles)": {
+     "d1": {
+      "d": 6.800369491574566,
+      "anim": "run"
+     },
+     "caught": false
+    },
+    "armed": {
+     "armed": true,
+     "shots": 51,
+     "health": 64
+    },
+    "officersDrawSidearms": {
+     "armed": true,
+     "shots": 51,
+     "health": 64
+    },
+    "tackles": 1
+   },
+   "screenshots": [
+    "public/docs/screenshots/21_officer_dismounts_cruiser.png",
+    "public/docs/screenshots/21_police_foot_chase.png",
+    "public/docs/screenshots/21_armed_response.png"
+   ],
+   "ms": 17569
+  },
+  {
+   "id": "weapons_and_shooting",
+   "title": "Buy/equip a pistol, aim (RMB/Q) and fire at a car tyre and a streetlight: ammo decrements, tyre pops, light goes out, impact FX",
+   "pass": true,
+   "details": {
+    "shopPrompt": "[E] Buy 9mm Pistol (+24 rounds) — $450",
+    "ammo": {
+     "before": [
+      12,
+      24
+     ],
+     "after": [
+      11,
+      24
+     ]
+    },
+    "ammoDecrement": {
+     "before": [
+      12,
+      24
+     ],
+     "after": [
+      11,
+      24
+     ]
+    },
+    "tyrePopped": {
+     "shotsFired": 1,
+     "hits": {
+      "car": 1
+     },
+     "tiresPopped": 1,
+     "panesBroken": 0,
+     "lightsShot": 0
+    },
+    "impactOnCar": [
+     {
+      "kind": "car",
+      "weapon": "pistol",
+      "t": 261009
+     }
+    ],
+    "streetlightShotOut": {
+     "shotsFired": 2,
+     "hits": {
+      "car": 1,
+      "light": 1
+     },
+     "tiresPopped": 1,
+     "panesBroken": 0,
+     "lightsShot": 1
+    },
+    "reloaded": 12,
+    "wanted": 2
+   },
+   "screenshots": [
+    "public/docs/screenshots/22_aim_and_fire_pistol.png",
+    "public/docs/screenshots/22_jack_o_lantern_launcher.png"
+   ],
+   "ms": 9239
+  },
+  {
+   "id": "light_switches",
+   "title": "Interior wall switch (E) toggles the building lights (fixtures + light sources + window glow); breaker box cuts power; Night Shift switch re-lights the plant",
+   "pass": true,
+   "details": {
+    "prompt": "[E] Toggle lights (on)",
+    "levels": {
+     "before": {
+      "lightsOn": true,
+      "power": true,
+      "fixture": 3,
+      "sources": [
+       9,
+       9,
+       9
+      ]
+     },
+     "after": {
+      "lightsOn": false,
+      "power": true,
+      "fixture": 0,
+      "sources": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "switchPrompt": "[E] Toggle lights (on)",
+    "interiorLightIntensityChanged": {
+     "before": {
+      "lightsOn": true,
+      "power": true,
+      "fixture": 3,
+      "sources": [
+       9,
+       9,
+       9
+      ]
+     },
+     "after": {
+      "lightsOn": false,
+      "power": true,
+      "fixture": 0,
+      "sources": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "breaker": {
+     "prompt": "[E] Flip the breaker — cut power, lights & alarm",
+     "after": {
+      "lightsOn": true,
+      "power": false,
+      "fixture": 0,
+      "sources": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "breakerCutsPower": {
+     "lightsOn": true,
+     "power": false,
+     "fixture": 0,
+     "sources": [
+      0,
+      0,
+      0
+     ]
+    },
+    "nightShift": {
+     "prompt": "[E] Night Shift lighting: switch to blacklight / emergency",
+     "ns": {
+      "ikSolves": 937,
+      "pressCycles": 1,
+      "partsCarried": 4,
+      "nightShift": true
+     }
+    },
+    "nightShiftOn": {
+     "ikSolves": 937,
+     "pressCycles": 1,
+     "partsCarried": 4,
+     "nightShift": true
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/23_house_lights_on.png",
+    "public/docs/screenshots/23_house_lights_off.png",
+    "public/docs/screenshots/23_breaker_box_power_cut.png",
+    "public/docs/screenshots/23_motorworks_night_shift_blacklight.png"
+   ],
+   "ms": 8390
+  },
+  {
+   "id": "doorbell_and_burglary",
+   "title": "Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it",
+   "pass": true,
+   "details": {
+    "doorbell": {
+     "prompt": "[E] Ring doorbell",
+     "door": {
+      "t": 1,
+      "target": 1,
+      "locked": false,
+      "center": [
+       -147,
+       1.55,
+       -25.5
+      ]
+     },
+     "homeowners": [
+      {
+       "state": "greet",
+       "ageGroup": "adult_female",
+       "pos": [
+        -147,
+        0.45,
+        -26.17
+       ]
+      }
+     ],
+     "tip": 45,
+     "rings": 1
+    },
+    "doorbellPrompt": "[E] Ring doorbell",
+    "frontDoorHingeOpened": {
+     "t": 1,
+     "target": 1,
+     "locked": false,
+     "center": [
+      -147,
+      1.55,
+      -25.5
+     ]
+    },
+    "homeownerGreetedAndTipped": {
+     "ho": [
+      {
+       "state": "greet",
+       "ageGroup": "adult_female",
+       "pos": [
+        -147,
+        0.45,
+        -26.17
+       ]
+      }
+     ],
+     "tip": 45
+    },
+    "homeownerVoiceMatchesGender": {
+     "id": "homef_greet",
+     "voice": "homeowner_f",
+     "demo": "adult_female",
+     "speaker": "adult_female",
+     "duration": 5.92,
+     "source": "file",
+     "at": 279463
+    },
+    "steal": {
+     "prompt": "[E] Steal Vintage CRT TV ($180) — two hands",
+     "carrying": "Vintage CRT TV"
+    },
+    "carryingTV": {
+     "rings": 1,
+     "treats": 1,
+     "kicks": 0,
+     "stolen": 1,
+     "stashed": 0,
+     "fenced": 0,
+     "fencedValue": 0,
+     "policeCalls": 0,
+     "deadPhones": 0,
+     "alarms": 0,
+     "bag": 0,
+     "carrying": "Vintage CRT TV",
+     "trunks": []
+    },
+    "trunk": {
+     "open": "[E] Open trunk",
+     "stash": "[E] Stash Vintage CRT TV in the trunk",
+     "trunks": [
+      {
+       "id": 13,
+       "items": [
+        "TV"
+       ],
+       "visible": [
+        true
+       ]
+      }
+     ]
+    },
+    "tvInOpenTrunkVisible": [
+     {
+      "id": 13,
+      "items": [
+       "TV"
+      ],
+      "visible": [
+       true
+      ]
+     }
+    ],
+    "fence": {
+     "prompt": "[E] Sell trunk loot to Vinnie ($180)",
+     "earned": 180
+    },
+    "fencedLoot": {
+     "prompt": "[E] Sell trunk loot to Vinnie ($180)",
+     "earned": 180
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/24_doorbell_homeowner_greets.png",
+    "public/docs/screenshots/24_carrying_stolen_tv.png",
+    "public/docs/screenshots/24_tv_stashed_in_trunk.png"
+   ],
+   "ms": 25108
+  },
+  {
+   "id": "fuel_and_gas_station",
+   "title": "Driving burns fuel (stalls when empty); refuelling at the Gas Station pumps restores 100% at $2/gal; jerrycan adds +35%",
+   "pass": true,
+   "details": {
+    "burn": {
+     "before": 60,
+     "after": 58.98
+    },
+    "drivingConsumesFuel": {
+     "before": 60,
+     "after": 58.98
+    },
+    "stall": {
+     "speed": -0.01,
+     "fs": {
+      "fuel": 0,
+      "stalled": true,
+      "session": false,
+      "stats": {
+       "refuels": 0,
+       "gallons": 0,
+       "spent": 0,
+       "jerrycans": 0
+      }
+     }
+    },
+    "stallsWhenEmpty": {
+     "fuel": 0,
+     "stalled": true,
+     "session": false,
+     "stats": {
+      "refuels": 0,
+      "gallons": 0,
+      "spent": 0,
+      "jerrycans": 0
+     }
+    },
+    "jerrycan": {
+     "prompt": "[E] Get in your car — 0% fuel",
+     "fuel": 35
+    },
+    "jerrycanAdds35": {
+     "fuel": 35,
+     "stalled": false,
+     "session": false,
+     "stats": {
+      "refuels": 0,
+      "gallons": 0,
+      "spent": 0,
+      "jerrycans": 1
+     }
+    },
+    "refuel": {
+     "prompt": "[E] Refuel — $2/gal (35% now)",
+     "fuel": 100,
+     "cost": 20.82,
+     "stats": {
+      "refuels": 1,
+      "gallons": 10.409791596800002,
+      "spent": 20.819583193600003,
+      "jerrycans": 1
+     }
+    },
+    "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
+    "tankFull": 100,
+    "chargedTwoDollarsPerGallon": {
+     "paid": 20.81958319360274,
+     "gal": 10.409791596800002
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/25_out_of_fuel_stalled.png",
+    "public/docs/screenshots/25_refuelling_pump_counter.png",
+    "public/docs/screenshots/25_gas_station_pump_hose.png"
+   ],
+   "ms": 23706
   },
   {
    "id": "pumpkins",
@@ -642,7 +1896,7 @@
    "screenshots": [
     "public/docs/screenshots/15_monster_mash_kiosk.png"
    ],
-   "ms": 12337
+   "ms": 14216
   },
   {
    "id": "phantom",
@@ -654,7 +1908,7 @@
    "screenshots": [
     "public/docs/screenshots/15_phantom_hearse.png"
    ],
-   "ms": 6921
+   "ms": 6890
   },
   {
    "id": "trial",
@@ -663,30 +1917,30 @@
    "details": {
     "trialRunning": {
      "running": true,
-     "t": 0.5392999999970198,
+     "t": 1.1462999999970203,
      "next": 0,
      "inCar": true,
      "pos": [
-      0,
+      0.3,
       10.4,
-      234.2
+      244.5
      ]
     }
    },
    "screenshots": [
     "public/docs/screenshots/15_graveyard_shift_trial.png"
    ],
-   "ms": 3606
+   "ms": 3398
   },
   {
    "id": "radio_audio",
    "title": "Spoken dialogue audio + radio DJ use the cached local audio files (no TTS fallback needed)",
    "pass": true,
    "details": {
-    "linesPlayed": 14,
+    "linesPlayed": 60,
     "ttsFallbacks": 0,
     "audio": {
-     "linesPlayed": 14,
+     "linesPlayed": 60,
      "linesFailed": 0,
      "fallbackTTS": 0,
      "lastLine": "gy_start",
@@ -694,7 +1948,7 @@
     }
    },
    "screenshots": [],
-   "ms": 45
+   "ms": 85
   },
   {
    "id": "perf",
@@ -702,12 +1956,12 @@
    "pass": true,
    "details": {
     "fps": 19,
-    "drawCalls": 1352,
-    "triangles": 418798,
-    "vehicles": 4
+    "drawCalls": 1673,
+    "triangles": 609368,
+    "vehicles": 6
    },
    "screenshots": [],
-   "ms": 3273
+   "ms": 3330
   },
   {
    "id": "final_errors",
@@ -720,7 +1974,7 @@
     }
    },
    "screenshots": [],
-   "ms": 53
+   "ms": 147
   }
  ]
 }

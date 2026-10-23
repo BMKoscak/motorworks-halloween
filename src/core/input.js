@@ -43,8 +43,11 @@ export class Input {
         this.mouseDY += e.movementY || 0;
       }
     });
-    canvas.addEventListener('mousedown', () => (this.mouseDown = true));
-    addEventListener('mouseup', () => (this.mouseDown = false));
+    // mouse buttons: 0 = left (fire), 2 = right (aim)
+    this.buttons = new Set();
+    canvas.addEventListener('mousedown', (e) => { this.mouseDown = true; this.buttons.add(e.button); });
+    addEventListener('mouseup', (e) => { this.mouseDown = false; this.buttons.delete(e.button); });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     addEventListener('wheel', (e) => (this.wheel += Math.sign(e.deltaY)), { passive: true });
   }
 
@@ -54,6 +57,7 @@ export class Input {
     this.justPressed.clear();
     this.mouseDX = this.mouseDY = 0;
     this.mouseDown = false;
+    if (this.buttons) this.buttons.clear();
     this.clearCount++;
     this.lastClearReason = reason;
   }
@@ -72,6 +76,8 @@ export class Input {
   }
 
   down(code) { return this.keys.has(code); }
+  mouseDown1() { return this.buttons.has(0) && this.locked; }
+  mouseDown2() { return this.buttons.has(2) || this.keys.has('KeyQ'); }
   pressed(code) { return this.justPressed.has(code); }
   axis(neg, pos) { return (this.down(pos) ? 1 : 0) - (this.down(neg) ? 1 : 0); }
 

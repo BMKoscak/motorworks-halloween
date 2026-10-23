@@ -21,6 +21,13 @@ const phases = [
   ['Automated QA loop', mtime('tests/qa.mjs'), mtime('tests/qa-results.json')],
   ['Documentation', mtime('scripts/build-docs.mjs'), now],
 ];
+const P2_START = new Date('2026-10-23T11:45:00Z');
+const phases2 = [
+  ['Phase 2 · Blender interiors, plant, props, characters', P2_START, mtime('blender/build_world.py')],
+  ['Phase 2 · ElevenLabs demographic voices (28 lines)', mtime('scripts/import-elevenlabs.mjs') && new Date(Math.min(+mtime('public/audio/dialogue/manifest.json'), +now) - 6 * 60000), mtime('public/audio/dialogue/manifest.json')],
+  ['Phase 2 · Game systems (10 upgrades)', mtime('src/data/demographics.js'), mtime('src/main.js')],
+  ['Phase 2 · QA expansion & perf pass', mtime('tests/views.mjs'), mtime('tests/qa-results.json')],
+];
 const prevT = readTelemetry();
 const tel = updateTelemetry({
   summary: {
@@ -29,7 +36,7 @@ const tel = updateTelemetry({
     estimatedCost: prevT.llm ? prevT.llm.estimatedCostDisplay : '—', glbAssets: manifest.assets.length,
     qaPasses: qa ? `${qa.passed}/${qa.total}` : '—',
   },
-  phases: phases.map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
+  phases: [...phases, ...phases2].map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
   assets: { glbFiles: manifest.assets.length, totalTriangles: manifest.assets.reduce((s, a) => s + a.tris, 0), totalBytes: manifest.assets.reduce((s, a) => s + a.bytes, 0),
     blenderRuns: manifest.runs },
 });
@@ -48,6 +55,12 @@ const telemetryMd = [
   `| Audio caching | ${E.cacheStatus ?? '—'} |`,
   `| Blender GLB assets | ${tel.assets.glbFiles} files, ${tel.assets.totalTriangles.toLocaleString()} triangles, ${(tel.assets.totalBytes / 1048576).toFixed(1)} MB |`,
   `| QA self-check runs / last result | ${Q.runs ?? 0} full runs · last ${Q.lastPassed ?? '—'}/${Q.lastTotal ?? '—'} · ${Q.totalChecksPassed ?? 0} individual check passes in total |`,
+  ...(tel.phase2 ? [
+    `| Phase 2 build window | ${tel.phase2.startedAt} → ${tel.summary.finishedAt} |`,
+    `| Phase 2 ElevenLabs delta | +${tel.phase2.elevenlabs.lines} lines · +${tel.phase2.elevenlabs.characters} chars · **+${tel.phase2.elevenlabs.credits} credits** (${tel.phase2.elevenlabs.voicesAdded} new voices) |`,
+    `| Phase 2 LLM usage | ${tel.phase2.llm.calls} calls · ${tel.phase2.llm.inputTokens} input · ${tel.phase2.llm.outputTokens} output |`,
+    `| Phase 2 performance | ${tel.phase2.perf} |`,
+  ] : []),
   '', '**Per-phase timestamps** (from artifact modification times)', '', '| Phase | Start | End | Minutes |', '|---|---|---|---|',
   ...tel.phases.map((p) => `| ${p.name} | ${p.start} | ${p.end} | ${p.minutes ?? '—'} |`),
 ].join('\n');
@@ -56,7 +69,7 @@ const qaMd = qa ? [
   `Last run: ${qa.ranAt} — **${qa.passed}/${qa.total} checks passed** in ${qa.durationSec}s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).`, '',
   ...qa.results.map((r) => `- [${r.pass ? 'x' : ' '}] **${r.id}** — ${r.title}${r.pass ? '' : ' ⚠️ ' + JSON.stringify(r.details).slice(0, 220)}`),
   '', '<details><summary>Key measurements</summary>', '', '```json',
-  JSON.stringify(Object.fromEntries(qa.results.filter((r) => ['boot', 'physics', 'perf', 'assembly', 'theft', 'escape'].includes(r.id)).map((r) => [r.id, r.id === 'assembly' ? { events: r.details.events } : r.details])), null, 1).slice(0, 3500),
+  JSON.stringify(Object.fromEntries(qa.results.filter((r) => ['boot', 'physics', 'perf', 'theft', 'navigation_and_bounds', 'factory_jumbotron_and_conveyor', 'fuel_and_gas_station'].includes(r.id)).map((r) => [r.id, r.id === 'factory_jumbotron_and_conveyor' ? { factory: r.details.factory, jumbotron: r.details.jumbotron } : r.id === 'navigation_and_bounds' ? { worst: r.details.worst, physics: r.details.physics } : r.details])), null, 1).slice(0, 6000),
   '```', '</details>',
 ].join('\n') : '_QA has not been run yet._';
 

@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export const MODEL_FILES = [
   'car_muscle', 'car_pickup', 'car_coupe', 'car_hearse', 'car_sedan', 'parts', 'wheels',
   'robot_arm', 'press', 'crane', 'garage_door', 'sliding_door', 'barrier', 'cemetery_gate', 'forklift', 'lift', 'scanner',
-  'plant', 'diner', 'gas_station', 'hardware', 'police_station', 'house_a', 'house_b', 'props',
+  'plant', 'jumbotron', 'diner', 'gas_station', 'hardware', 'police_station', 'house_a', 'house_b', 'props',
   'character', 'skeleton',
 ];
 
@@ -28,14 +28,17 @@ export class Assets {
           if (o.name.startsWith('COL_')) o.visible = false;
           const m = o.material;
           if (m && m.name === 'Glass') {
+            // cabin glass: see-through so dashboards, seats, wheels and seated occupants read from outside
             m.transparent = true;
-            m.opacity = 0.32;
+            m.opacity = 0.38;
             m.depthWrite = false;
             m.side = THREE.DoubleSide;
-            m.roughness = 0.05;
+            m.roughness = 0.1;
             m.metalness = 0.2;
             o.castShadow = false;
+            o.renderOrder = 2;
           }
+          if (m && (m.name === 'PaneGlass' || m.name === 'ChainLink' || m.name === 'EvidenceBag' || m.name === 'FX_LightShaft')) { m.transparent = true; m.depthWrite = false; o.castShadow = false; }
           if (m && m.emissive && m.emissiveIntensity !== undefined && m.emissive.getHex() !== 0) {
             o.castShadow = false;
           }

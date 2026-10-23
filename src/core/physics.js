@@ -1,14 +1,22 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
+import { StaticGridBroadphase } from './broadphase.js';
 
 export const G = { STATIC: 1, CAR: 2, PLAYER: 4, PROP: 8, NPC: 16 };
+export const MAX_SPEED = 45; // m/s linear velocity cap for every vehicle body
+export const MAX_SPIN = 12; // rad/s angular velocity cap
+export const BOUNDS = 600; // |x|, |z| beyond this => watchdog reset onto the road network
 
 export class Physics {
   constructor() {
     const w = (this.world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) }));
-    w.broadphase = new CANNON.SAPBroadphase(w);
+    w.broadphase = new StaticGridBroadphase(w);
+    // sparse pair bookkeeping: the default dense matrix resets an N²/2 array every sub-step (~4.5 M entries here)
+    w.collisionMatrix = new CANNON.ObjectCollisionMatrix();
+    w.collisionMatrixPrevious = new CANNON.ObjectCollisionMatrix();
     w.solver.iterations = 10;
-    w.allowSleep = false;
+    // resting bodies (parked cars, knocked-over props) sleep until something hits them; driven vehicles opt out
+    w.allowSleep = true;
     w.defaultContactMaterial.friction = 0.3;
     this.mat = {
       ground: new CANNON.Material('ground'),
@@ -25,6 +33,28 @@ export class Physics {
     cm(this.mat.prop, this.mat.car, 0.3, 0.3);
     this.statics = [];
     this._v = new CANNON.Vec3();
+    this.stats = { velocityClamps: 0, spinClamps: 0, outOfBounds: 0 };
+    this.onOutOfBounds = null;
+    // safety clamps on every internal sub-step: no vehicle may exceed 45 m/s or spin faster than 12 rad/s
+    w.addEventListener('postStep', () => this._clamp());
+  }
+
+  _clamp() {
+    for (const b of this.world.bodies) {
+      const ud = b.userData;
+      if (!ud || ud.kind !== 'car' || b.type !== CANNON.Body.DYNAMIC) continue;
+      const v = b.velocity, w = b.angularVelocity;
+      const l = v.length();
+      if (l > MAX_SPEED) { v.scale(MAX_SPEED / l, v); this.stats.velocityClamps++; }
+      const a = w.length();
+      if (a > MAX_SPIN) { w.scale(MAX_SPIN / a, w); this.stats.spinClamps++; }
+      const p = b.position;
+      if (!Number.isFinite(p.x + p.y + p.z + l + a) || Math.abs(p.x) > BOUNDS || Math.abs(p.z) > BOUNDS || p.y < -20 || p.y > 150) {
+        this.stats.outOfBounds++;
+        if (!Number.isFinite(l + a)) { v.setZero(); w.setZero(); }
+        if (this.onOutOfBounds) this.onOutOfBounds(b);
+      }
+    }
   }
 
   addStaticBox(center, half, quat, opts = {}) {
@@ -68,6 +98,7 @@ export class Physics {
     o.matrixWorld.decompose(new THREE.Vector3(), q, new THREE.Vector3());
     body.position.set(c.x, c.y, c.z);
     body.quaternion.set(q.x, q.y, q.z, q.w);
+    body.aabbNeedsUpdate = true;
   }
 
   addHeightfield(heightFn, x0, x1, z0, z1, es) {
@@ -106,7 +137,7 @@ export class Physics {
   }
 
   step(dt) {
-    this.world.step(1 / 60, dt, 12);
+    this.world.step(1 / 60, dt, 8); // capped sub-steps: a slow frame never snowballs into a slower one
   }
 }
 

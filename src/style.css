@@ -122,6 +122,29 @@ select { background: #24122e; color: var(--ink); border: 1px solid rgba(255,122,
 .k-foot .btn { min-width: 0; flex: 1; padding: 10px; }
 input[type=range] { accent-color: var(--orange); }
 .slider-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
+/* Phase 2 HUD: fuel, weapons, crosshair, pump */
+.fuel { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: var(--dim); }
+.fuel-ic { filter: grayscale(1) brightness(.6); }
+.fuel-ic.low { filter: none; animation: pulse .5s infinite alternate; }
+.fuel-bar { flex: 1; height: 7px; background: #2a1830; border-radius: 4px; overflow: hidden; }
+#fuel-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #ff2a3a, #ffb000 25%, #39ff14 60%); }
+#car-dmg { margin-top: 4px; text-align: left; min-height: 0; }
+#crosshair { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; transform: translate(-50%, -50%); }
+#crosshair i { position: absolute; background: #fff; box-shadow: 0 0 3px #000; }
+#crosshair i:nth-child(1) { left: 14px; top: 0; width: 2px; height: 9px; } #crosshair i:nth-child(2) { left: 14px; bottom: 0; width: 2px; height: 9px; }
+#crosshair i:nth-child(3) { top: 14px; left: 0; width: 9px; height: 2px; } #crosshair i:nth-child(4) { top: 14px; right: 0; width: 9px; height: 2px; }
+#crosshair.fire i { background: var(--orange2); }
+#weapon-panel { position: absolute; left: 16px; bottom: 18px; background: var(--bg); border-radius: 12px; padding: 8px 12px; width: 240px; border: 1px solid rgba(255,122,26,.3); font-size: 13px; }
+#wp-health { height: 6px; background: #2a1830; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+#wp-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #ff2a3a, #39ff14); transition: width .2s; }
+.wp-row { display: flex; justify-content: space-between; font-weight: 700; }
+#wp-ammo { color: var(--orange2); }
+#wp-slots { display: flex; gap: 4px; margin-top: 5px; }
+#wp-slots span { width: 22px; height: 18px; border-radius: 4px; font-size: 11px; text-align: center; line-height: 18px; background: rgba(255,255,255,.06); color: #555; }
+#wp-slots span.own { color: var(--ink); } #wp-slots span.cur { background: var(--orange); color: #1a0800; }
+#pump-panel { top: auto; bottom: 140px; left: 50%; transform: translateX(-50%); width: 230px; }
+.pump-row { display: flex; justify-content: space-between; font-family: 'Bebas Neue', monospace; font-size: 22px; letter-spacing: 2px; }
+.pump-row b { color: #39ff14; text-shadow: 0 0 6px #39ff14; }
 @media (max-width: 700px) {
   #kiosk { left: 8px; right: 8px; width: auto; top: auto; height: 55vh; }
   #minimap { width: 120px; height: 120px; }

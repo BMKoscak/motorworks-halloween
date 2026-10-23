@@ -70,6 +70,33 @@ export class HUD {
     $('spd-rpm').style.width = Math.round(Math.min(1, rpmFrac) * 100) + '%';
   }
 
+  fuel(pct, stalled, dmg) {
+    $('fuel-fill').style.width = Math.max(0, Math.min(100, pct)) + '%';
+    $('fuel-pct').textContent = stalled ? (pct <= 0.5 ? 'EMPTY' : 'STALLED') : Math.round(pct) + '%';
+    $('fuel-light').classList.toggle('low', pct < 15);
+    $('car-dmg').textContent = dmg || '';
+  }
+
+  weapon(s, show) {
+    $('weapon-panel').classList.toggle('hidden', !show);
+    $('crosshair').classList.toggle('hidden', !(show && s.aiming));
+    if (!show) return;
+    $('wp-name').textContent = s.name + (s.reloading ? ' · reloading…' : '');
+    $('wp-ammo').textContent = s.mag === null ? '' : `${s.mag} / ${s.reserve}`;
+    $('wp-health-fill').style.width = s.health + '%';
+    const key = s.owned.join() + '|' + s.slot;
+    if (key !== this._slots) { this._slots = key; $('wp-slots').innerHTML = [1, 2, 3, 4, 5].map((n) => `<span class="${s.owned.includes(n) ? 'own' : ''} ${n === s.slot ? 'cur' : ''}">${n}</span>`).join(''); }
+    $('wp-bag').textContent = s.bag || '';
+  }
+
+  pump(p) {
+    $('pump-panel').classList.toggle('hidden', !p);
+    if (!p) return;
+    $('pump-gal').textContent = p.gallons.toFixed(3);
+    $('pump-cost').textContent = p.cost.toFixed(2);
+    $('pump-bar').style.width = Math.round(p.fuel) + '%';
+  }
+
   order(o) {
     const p = $('order-panel');
     if (!o) { p.classList.add('hidden'); return; }

@@ -14,7 +14,7 @@ A third-person 3D car factory, customization and open-town action game that runs
 ![cannon-es](https://img.shields.io/badge/physics-cannon--es-2f6db5?style=flat-square)
 ![Blender](https://img.shields.io/badge/models-Blender_5.2-e87d0d?style=flat-square&logo=blender&logoColor=white)
 ![ElevenLabs](https://img.shields.io/badge/voices-ElevenLabs-000?style=flat-square)
-![QA](https://img.shields.io/badge/automated_QA-20%2F20_passing-39ff14?style=flat-square)
+![QA](https://img.shields.io/badge/automated_QA-30%2F30_passing-39ff14?style=flat-square)
 
 <img src="public/docs/screenshots/01_title_screen.png" alt="Motorworks title screen" width="100%"/>
 
