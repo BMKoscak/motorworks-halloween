@@ -6,8 +6,8 @@
 
 A third-person 3D car factory, customization and open-town action game that runs in the browser.
 
-[![Play in browser](https://img.shields.io/badge/▶_PLAY-in_your_browser-ff7a1a?style=for-the-badge)](https://bmkoscak.github.io/motorworks-halloween/)
-[![Dev docs](https://img.shields.io/badge/📖_DEV_DOCS-%26_QA_report-5b1a8c?style=for-the-badge)](https://bmkoscak.github.io/motorworks-halloween/docs.html)
+[![Play in browser](https://img.shields.io/badge/▶_PLAY-in_your_browser-ff7a1a?style=for-the-badge)](https://thebenn.me/motorworks-halloween/)
+[![Dev docs](https://img.shields.io/badge/📖_DEV_DOCS-%26_QA_report-5b1a8c?style=for-the-badge)](https://thebenn.me/motorworks-halloween/docs.html)
 
 ![Status](https://img.shields.io/badge/status-work_in_progress-ffb000?style=flat-square)
 ![Three.js](https://img.shields.io/badge/Three.js-r170-black?style=flat-square&logo=three.js)
