@@ -1,0 +1,189 @@
+[
+ {
+  "file": "robot_arm.glb",
+  "objects": 19,
+  "meshes": 12,
+  "tris": 536,
+  "hinges": [
+   "Base",
+   "Elbow",
+   "Shoulder",
+   "Wrist"
+  ],
+  "bytes": 43508
+ },
+ {
+  "file": "press.glb",
+  "objects": 9,
+  "meshes": 8,
+  "tris": 300,
+  "hinges": [
+   "Ram"
+  ],
+  "bytes": 28220
+ },
+ {
+  "file": "crane.glb",
+  "objects": 9,
+  "meshes": 6,
+  "tris": 128,
+  "hinges": [
+   "Bridge",
+   "Hoist",
+   "Trolley"
+  ],
+  "bytes": 14436
+ },
+ {
+  "file": "garage_door.glb",
+  "objects": 20,
+  "meshes": 19,
+  "tris": 288,
+  "hinges": [
+   "Slat_0",
+   "Slat_1",
+   "Slat_2",
+   "Slat_3",
+   "Slat_4",
+   "Slat_5",
+   "Slat_6",
+   "Slat_7"
+  ],
+  "bytes": 32496
+ },
+ {
+  "file": "sliding_door.glb",
+  "objects": 8,
+  "meshes": 7,
+  "tris": 180,
+  "hinges": [
+   "Panel_L",
+   "Panel_R"
+  ],
+  "bytes": 18116
+ },
+ {
+  "file": "barrier.glb",
+  "objects": 4,
+  "meshes": 3,
+  "tris": 84,
+  "hinges": [
+   "Arm"
+  ],
+  "bytes": 8900
+ },
+ {
+  "file": "cemetery_gate.glb",
+  "objects": 26,
+  "meshes": 23,
+  "tris": 4476,
+  "hinges": [
+   "Gate_L",
+   "Gate_R"
+  ],
+  "bytes": 284632
+ },
+ {
+  "file": "forklift.glb",
+  "objects": 12,
+  "meshes": 10,
+  "tris": 412,
+  "hinges": [
+   "Forks",
+   "ForkWheel_FL",
+   "ForkWheel_FR",
+   "ForkWheel_RL",
+   "ForkWheel_RR"
+  ],
+  "bytes": 34128
+ },
+ {
+  "file": "lift.glb",
+  "objects": 4,
+  "meshes": 3,
+  "tris": 108,
+  "hinges": [
+   "Platform"
+  ],
+  "bytes": 10312
+ },
+ {
+  "file": "scanner.glb",
+  "objects": 4,
+  "meshes": 3,
+  "tris": 72,
+  "hinges": [
+   "Laser_Bar"
+  ],
+  "bytes": 8240
+ },
+ {
+  "file": "plant.glb",
+  "objects": 78,
+  "meshes": 76,
+  "tris": 6960,
+  "hinges": [
+   "GiantSpider"
+  ],
+  "bytes": 451752
+ },
+ {
+  "file": "diner.glb",
+  "objects": 16,
+  "meshes": 14,
+  "tris": 1596,
+  "hinges": [],
+  "bytes": 97428
+ },
+ {
+  "file": "gas_station.glb",
+  "objects": 26,
+  "meshes": 25,
+  "tris": 1392,
+  "hinges": [],
+  "bytes": 96108
+ },
+ {
+  "file": "hardware.glb",
+  "objects": 11,
+  "meshes": 10,
+  "tris": 844,
+  "hinges": [],
+  "bytes": 56280
+ },
+ {
+  "file": "police_station.glb",
+  "objects": 21,
+  "meshes": 20,
+  "tris": 1028,
+  "hinges": [],
+  "bytes": 79380
+ },
+ {
+  "file": "house_a.glb",
+  "objects": 28,
+  "meshes": 26,
+  "tris": 1116,
+  "hinges": [],
+  "bytes": 94776
+ },
+ {
+  "file": "house_b.glb",
+  "objects": 22,
+  "meshes": 20,
+  "tris": 636,
+  "hinges": [],
+  "bytes": 58604
+ },
+ {
+  "file": "props.glb",
+  "objects": 103,
+  "meshes": 75,
+  "tris": 5818,
+  "hinges": [
+   "CryptDoor",
+   "Turntable_Top"
+  ],
+  "bytes": 408356
+ }
+]

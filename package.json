@@ -1,0 +1,23 @@
+{
+  "name": "motorworks-halloween",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Motorworks — Halloween Edition: 3D open-town car factory, customization & action game",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 3000",
+    "assets": "node scripts/build-assets.mjs",
+    "dialogue": "node scripts/gen-dialogue.mjs",
+    "test": "node tests/qa.mjs"
+  },
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1",
+    "vite": "^6.0.0"
+  }
+}

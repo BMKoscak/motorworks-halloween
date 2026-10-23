@@ -1,0 +1,362 @@
+{
+  "voices": {
+    "foreman": {
+      "name": "Big Sal (Foreman)",
+      "sapi": "Microsoft David Desktop",
+      "rate": -1,
+      "pitch": 0.86,
+      "fx": "room",
+      "eleven": "8vYCG1Q6bAbJWXdRuCIr",
+      "elevenVoiceName": "Grits Oxley - Gritty Grandpa",
+      "elevenPitch": 1
+    },
+    "skeleton": {
+      "name": "Bones McGee (Skeleton Welder)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 1,
+      "pitch": 1.32,
+      "fx": "rattle",
+      "eleven": "RDSy0QN68yhrjuOgqzQ4",
+      "elevenVoiceName": "Dr. Quibble - Nerdy Cartoon Scientist",
+      "elevenPitch": 1.04
+    },
+    "groundskeeper": {
+      "name": "Old Mortimer (Groundskeeper)",
+      "sapi": "Microsoft David Desktop",
+      "rate": -4,
+      "pitch": 0.74,
+      "fx": "ghost",
+      "eleven": "7lJ2JuXZKHyck5zlS7XQ",
+      "elevenVoiceName": "Romulus II Deep Mysterious",
+      "elevenPitch": 1
+    },
+    "waitress": {
+      "name": "Dolores (Diner)",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1.05,
+      "fx": "room",
+      "eleven": "tmHt9OXLAa0z2IPF4k0Y",
+      "elevenVoiceName": "Latrice - Down-To-Earth Southern",
+      "elevenPitch": 1
+    },
+    "panic": {
+      "name": "Panicked Civilian",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 4,
+      "pitch": 1.18,
+      "fx": "dry",
+      "eleven": "b8JMPeNuVrqqWExQc8e9",
+      "elevenVoiceName": "Ayla - Bubbly, Cute & Expressive",
+      "elevenPitch": 1
+    },
+    "civilian": {
+      "name": "Townsperson",
+      "sapi": "Microsoft Hazel Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "dry",
+      "eleven": "MJw0jtAmgm4D71m0HUJU",
+      "elevenVoiceName": "Olivia - Story-telling",
+      "elevenPitch": 1
+    },
+    "dispatch": {
+      "name": "Police Dispatch",
+      "sapi": "Microsoft Hazel Desktop",
+      "rate": 2,
+      "pitch": 0.97,
+      "fx": "radio",
+      "eleven": "umwdC76NumBsGtudno3p",
+      "elevenVoiceName": "Claire - E-Learning",
+      "elevenPitch": 1
+    },
+    "cop": {
+      "name": "Officer Krupke",
+      "sapi": "Microsoft David Desktop",
+      "rate": 1,
+      "pitch": 0.95,
+      "fx": "dry",
+      "eleven": "R3brgFoQWI6vjwB1A4aP",
+      "elevenVoiceName": "Johnny Business Voice",
+      "elevenPitch": 1
+    },
+    "dj": {
+      "name": "Wolfman Jack-O (WHOO 66.6 FM)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 0.9,
+      "fx": "radio",
+      "eleven": "CeNX9CMwmxDxUF5Q2Inm",
+      "elevenVoiceName": "Johnny Dynamite - Vintage Radio DJ",
+      "elevenPitch": 1
+    },
+    "kiosk": {
+      "name": "Kiosk Assistant",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "robot",
+      "eleven": "DXav2Iq8VRhoGarNlWcx",
+      "elevenVoiceName": "MegaBot",
+      "elevenPitch": 1
+    },
+    "phantom": {
+      "name": "The Phantom",
+      "sapi": "Microsoft David Desktop",
+      "rate": -3,
+      "pitch": 0.66,
+      "fx": "ghost",
+      "eleven": "d3qrd1ge6zWDvUxIeXiH",
+      "elevenVoiceName": "Final Boss - Evil Villain",
+      "elevenPitch": 0.94
+    },
+    "worker": {
+      "name": "Line Worker",
+      "sapi": "Microsoft David Desktop",
+      "rate": 1,
+      "pitch": 1.04,
+      "fx": "room",
+      "eleven": "t1yzxMpe9zK42bXmI1T2",
+      "elevenVoiceName": "K. V. Hagen - Deep Warm",
+      "elevenPitch": 1
+    },
+    "worker2": {
+      "name": "Line Worker",
+      "sapi": "Microsoft Hazel Desktop",
+      "rate": 1,
+      "pitch": 1.08,
+      "fx": "room",
+      "eleven": "ZQF62XTHtHemfMB0pp0G",
+      "elevenVoiceName": "Shay",
+      "elevenPitch": 1
+    },
+    "pa": {
+      "name": "Plant PA System",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 0.98,
+      "fx": "radio",
+      "eleven": "no52gq1ZwK7Lmejv1EHz",
+      "elevenVoiceName": "Clara - PA Clear Voice",
+      "elevenPitch": 1
+    }
+  },
+  "lines": {
+    "foreman_greet": [
+      "foreman",
+      "Welcome to Motorworks, kid. Name's Sal. Walk up to that kiosk, build yourself a monster, and my crew will bolt it together before the moon is up."
+    ],
+    "foreman_2": [
+      "foreman",
+      "Careful on the line. The robots don't stop for trick-or-treaters."
+    ],
+    "foreman_3": [
+      "foreman",
+      "Twenty two years I've run this floor. Never seen a hearse come through with a supercharger. Until tonight."
+    ],
+    "foreman_order": [
+      "foreman",
+      "Order received! The line is rolling. Walk along the conveyor, or hit V for the station cameras."
+    ],
+    "foreman_done": [
+      "foreman",
+      "She's done, kid. Keys are in it. Take her up to the old cemetery and see what she can do."
+    ],
+    "skeleton_1": [
+      "skeleton",
+      "Hey there! I'm Bones. I'd shake your hand, but I'm a little short handed. Get it? Ha!"
+    ],
+    "skeleton_2": [
+      "skeleton",
+      "I love welding. It really gets me right in the funny bone."
+    ],
+    "skeleton_3": [
+      "skeleton",
+      "Why didn't the skeleton go to the Halloween party? He had no body to go with! Except you, pal."
+    ],
+    "skeleton_4": [
+      "skeleton",
+      "I've been on this line so long, I'm practically skin and bones. Well. Mostly bones."
+    ],
+    "skeleton_5": [
+      "skeleton",
+      "Safety glasses? Nah. I've got nothing to lose. No eyes, see?"
+    ],
+    "groundskeeper_1": [
+      "groundskeeper",
+      "Turn back, traveler. The fog is thick tonight, and the dead are restless."
+    ],
+    "groundskeeper_2": [
+      "groundskeeper",
+      "They say if you honk three times at the old Vlad crypt, the Phantom Hearse comes calling."
+    ],
+    "groundskeeper_3": [
+      "groundskeeper",
+      "The Graveyard Shift trial starts at the gates. Drift through the stones, if you dare."
+    ],
+    "groundskeeper_4": [
+      "groundskeeper",
+      "The police won't follow you far into this fog. Even the law fears this place after dark."
+    ],
+    "gy_start": [
+      "groundskeeper",
+      "The Graveyard Shift begins. Now!"
+    ],
+    "gy_finish": [
+      "groundskeeper",
+      "You survived the Graveyard Shift. The dead applaud you."
+    ],
+    "waitress_1": [
+      "waitress",
+      "Hiya hon! Pumpkin pie is fresh and the coffee is hot. Anything else, you'll have to ask the ghost in booth four."
+    ],
+    "waitress_2": [
+      "waitress",
+      "We're open all night. Especially tonight. Especially for the regulars."
+    ],
+    "waitress_3": [
+      "waitress",
+      "Somebody said there are five golden pumpkins hidden around town. Find them all and Sal's shop gives you something special."
+    ],
+    "panic_1": [
+      "panic",
+      "Hey! That's my car! Somebody call the cops!"
+    ],
+    "panic_2": [
+      "panic",
+      "No no no! Not my car! I just washed it!"
+    ],
+    "panic_3": [
+      "panic",
+      "Thief! Stop! Police! Police!"
+    ],
+    "civilian_1": [
+      "civilian",
+      "Happy Halloween! Watch out for the cops, they're itching for a chase tonight."
+    ],
+    "civilian_2": [
+      "civilian",
+      "Have you seen the spider on the Motorworks sign? I swear it moved."
+    ],
+    "civilian_3": [
+      "civilian",
+      "My kid wants to be a hot rod for Halloween. Can you believe that?"
+    ],
+    "civilian_4": [
+      "civilian",
+      "The hardware store sold out of fake cobwebs. Turns out the real ones were free."
+    ],
+    "dispatch_1": [
+      "dispatch",
+      "All units, all units. Reported vehicle theft on Main Street. Suspect is armed with a very nice paint job."
+    ],
+    "dispatch_2": [
+      "dispatch",
+      "Dispatch to all cars. Suspect is fleeing at high speed. Pursue and intercept."
+    ],
+    "dispatch_3": [
+      "dispatch",
+      "Code three. Suspect vehicle heading toward the cemetery. Be advised, visibility is near zero."
+    ],
+    "dispatch_4": [
+      "dispatch",
+      "All units, we have lost visual on the suspect. Resume patrol."
+    ],
+    "dispatch_5": [
+      "dispatch",
+      "Suspect is in custody. Nice work everybody. Somebody bring donuts."
+    ],
+    "dispatch_6": [
+      "dispatch",
+      "Units be advised, reckless driving reported in town. Multiple mailboxes down."
+    ],
+    "dispatch_7": [
+      "dispatch",
+      "Officer reports suspect rammed a patrol car. Escalating response. All available units."
+    ],
+    "cop_busted": [
+      "cop",
+      "Busted! Out of the car, nice and slow. That is going to cost you."
+    ],
+    "cop_1": [
+      "cop",
+      "Evening, citizen. Keep it under the speed limit. It's a busy night for ghouls."
+    ],
+    "dj_intro": [
+      "dj",
+      "You're tuned to W H O O, sixty six point six F M. The only station broadcasting live from beyond the grave. Here's some synthwave to haunt your highway."
+    ],
+    "dj_2": [
+      "dj",
+      "This is the Wolfman Jack O Lantern, spinning tunes all night long. If you see a hearse with no driver, do not, I repeat, do not race it."
+    ],
+    "dj_3": [
+      "dj",
+      "Weather tonight. Fog, more fog, and a ninety percent chance of screaming. Back to the music."
+    ],
+    "dj_4": [
+      "dj",
+      "Big shout out to the night crew at Motorworks. Keep those robots oiled, and keep your doors locked."
+    ],
+    "kiosk_welcome": [
+      "kiosk",
+      "Welcome to the Motorworks configurator. Choose your chassis, your paint, and your poison."
+    ],
+    "kiosk_order": [
+      "kiosk",
+      "Order confirmed. Your build has entered the assembly line."
+    ],
+    "kiosk_unlock": [
+      "kiosk",
+      "Monster Mash pack unlocked. It's alive! It's alive!"
+    ],
+    "kiosk_bay": [
+      "kiosk",
+      "Custom bay ready. Fresh paint and new plates will clear any heat on this vehicle."
+    ],
+    "phantom_1": [
+      "phantom",
+      "Who dares summon me? Race me to the town gas station, mortal. If you can keep up."
+    ],
+    "phantom_win": [
+      "phantom",
+      "Impossible. You have beaten the Phantom. The road is yours, tonight."
+    ],
+    "phantom_lose": [
+      "phantom",
+      "Too slow, mortal. Your soul, and your pink slip, belong to the night."
+    ],
+    "pa_1": [
+      "pa",
+      "Attention Motorworks staff. Station two, please stop feeding the skeleton. He has no stomach for it."
+    ],
+    "pa_2": [
+      "pa",
+      "Reminder. The employee costume contest is at midnight. Masks must not obstruct welding visors."
+    ],
+    "worker_1": [
+      "worker",
+      "Stamping thirty tons a hit. Stand back, it gets loud."
+    ],
+    "worker_2": [
+      "worker2",
+      "Paint booth is running hot tonight. Midnight pearl is the big seller."
+    ],
+    "worker_3": [
+      "worker",
+      "Engine marriage is the best part. The crane drops the heart right into the body."
+    ],
+    "worker_4": [
+      "worker2",
+      "Final check. Lights, doors, hood, trunk. If it opens and shuts, it ships."
+    ],
+    "worker_5": [
+      "worker",
+      "Boo! Ha, got you. It's the mask, right?"
+    ],
+    "bay_1": [
+      "worker2",
+      "Fresh coat of paint and new plates. Nobody will recognize this ride now."
+    ]
+  }
+}

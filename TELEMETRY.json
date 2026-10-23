@@ -1,0 +1,144 @@
+{
+  "elevenlabs": {
+    "apiKeyPresent": false,
+    "apiCalls": 54,
+    "charactersSynthesized": 4267,
+    "voiceIdsUsed": [
+      "8vYCG1Q6bAbJWXdRuCIr",
+      "RDSy0QN68yhrjuOgqzQ4",
+      "7lJ2JuXZKHyck5zlS7XQ",
+      "tmHt9OXLAa0z2IPF4k0Y",
+      "b8JMPeNuVrqqWExQc8e9",
+      "MJw0jtAmgm4D71m0HUJU",
+      "umwdC76NumBsGtudno3p",
+      "R3brgFoQWI6vjwB1A4aP",
+      "CeNX9CMwmxDxUF5Q2Inm",
+      "DXav2Iq8VRhoGarNlWcx",
+      "d3qrd1ge6zWDvUxIeXiH",
+      "no52gq1ZwK7Lmejv1EHz",
+      "t1yzxMpe9zK42bXmI1T2",
+      "ZQF62XTHtHemfMB0pp0G"
+    ],
+    "plannedVoiceIds": {
+      "foreman": "8vYCG1Q6bAbJWXdRuCIr",
+      "skeleton": "RDSy0QN68yhrjuOgqzQ4",
+      "groundskeeper": "7lJ2JuXZKHyck5zlS7XQ",
+      "waitress": "tmHt9OXLAa0z2IPF4k0Y",
+      "panic": "b8JMPeNuVrqqWExQc8e9",
+      "civilian": "MJw0jtAmgm4D71m0HUJU",
+      "dispatch": "umwdC76NumBsGtudno3p",
+      "cop": "R3brgFoQWI6vjwB1A4aP",
+      "dj": "CeNX9CMwmxDxUF5Q2Inm",
+      "kiosk": "DXav2Iq8VRhoGarNlWcx",
+      "phantom": "d3qrd1ge6zWDvUxIeXiH",
+      "worker": "t1yzxMpe9zK42bXmI1T2",
+      "worker2": "ZQF62XTHtHemfMB0pp0G",
+      "pa": "no52gq1ZwK7Lmejv1EHz"
+    },
+    "quotaHit": false,
+    "cacheStatus": "54 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 54 cache hits this run)",
+    "note": "Generated through the ElevenLabs connector (Flows, eleven_v4); the local SAPI pipeline stays as the fallback for new or changed lines",
+    "connector": "ElevenLabs MCP connector (Flows, eleven_v4)",
+    "creditsSpent": 4447,
+    "flowId": "fj08eJgNX2F3WEMKUxW8",
+    "model": "eleven_v4",
+    "estimateBeforeSpend": "145 credits / .026 for one line; total run ~4,700 credits"
+  },
+  "dialogue": {
+    "lines": 54,
+    "totalCharacters": 4267,
+    "engines": {
+      "elevenlabs": 54
+    },
+    "totalBytes": 6121501
+  },
+  "qa": {
+    "runs": 10,
+    "lastRun": "2026-10-23T11:38:03.952Z",
+    "lastPassed": 20,
+    "lastTotal": 20,
+    "allPassRuns": 4,
+    "totalChecksPassed": 189
+  },
+  "llm": {
+    "model": "claude-opus-5-5 (Claude Code desktop agent)",
+    "apiCalls": "~210",
+    "callsNote": "approx. agent turns / tool round-trips, counted from the session",
+    "inputTokensDisplay": "~60M processed (est.; overwhelmingly prompt-cache reads of a context that grew to ~620k)",
+    "outputTokensDisplay": "~210k (est.; ~8.5k lines of code, scripts, HTML/CSS and docs, plus reasoning)",
+    "estimatedCostDisplay": " metered - Claude Pro subscription (session used ~60% of the 5-hour window, ~40% weekly at last check)",
+    "contextAtFinish": "~620k / 1M tokens (measured via session usage API)",
+    "note": "The agent cannot read exact per-call token counters; figures marked est. are estimates, the context size and plan usage were measured."
+  },
+  "summary": {
+    "buildTime": "4h 57m",
+    "startedAt": "2026-10-23T06:41:18Z",
+    "finishedAt": "2026-10-23T11:38:13.196Z",
+    "llmCalls": "~210",
+    "inputTokens": "~60M processed (est.; overwhelmingly prompt-cache reads of a context that grew to ~620k)",
+    "outputTokens": "~210k (est.; ~8.5k lines of code, scripts, HTML/CSS and docs, plus reasoning)",
+    "estimatedCost": " metered - Claude Pro subscription (session used ~60% of the 5-hour window, ~40% weekly at last check)",
+    "glbAssets": 27,
+    "qaPasses": "20/20"
+  },
+  "phases": [
+    {
+      "name": "Environment survey & scaffold",
+      "start": "2026-10-23T06:41:18Z",
+      "end": "2026-10-23T06:41:29.483Z",
+      "minutes": 1
+    },
+    {
+      "name": "Blender asset pipeline (27 GLBs)",
+      "start": "2026-10-23T07:40:06.597Z",
+      "end": "2026-10-23T08:14:54.883Z",
+      "minutes": 35
+    },
+    {
+      "name": "Dialogue synthesis (54 lines)",
+      "start": "2026-10-23T08:49:51.473Z",
+      "end": "2026-10-23T08:50:45.217Z",
+      "minutes": 1
+    },
+    {
+      "name": "Engine, world & gameplay code",
+      "start": "2026-10-23T07:50:54.739Z",
+      "end": "2026-10-23T08:13:06.170Z",
+      "minutes": 22
+    },
+    {
+      "name": "Automated QA loop",
+      "start": "2026-10-23T08:22:41.589Z",
+      "end": "2026-10-23T11:38:03.955Z",
+      "minutes": 195
+    },
+    {
+      "name": "Documentation",
+      "start": "2026-10-23T09:24:15.862Z",
+      "end": "2026-10-23T11:38:13.196Z",
+      "minutes": 134
+    }
+  ],
+  "assets": {
+    "glbFiles": 27,
+    "totalTriangles": 47114,
+    "totalBytes": 3338656,
+    "blenderRuns": [
+      {
+        "script": "build_vehicles.py",
+        "ok": true,
+        "seconds": 9.2
+      },
+      {
+        "script": "build_world.py",
+        "ok": true,
+        "seconds": 13.4
+      },
+      {
+        "script": "build_chars.py",
+        "ok": true,
+        "seconds": 5.4
+      }
+    ]
+  }
+}

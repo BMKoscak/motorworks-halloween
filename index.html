@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Motorworks — Halloween Edition</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎃</text></svg>" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="loading" class="screen">
+    <div class="logo">MOTOR<span>WORKS</span></div>
+    <div class="sub">Halloween Edition</div>
+    <div class="bar"><div id="loadbar"></div></div>
+    <div id="loadtext">Loading Blender assets…</div>
+  </div>
+
+  <div id="title" class="screen hidden">
+    <div class="title-inner">
+      <div class="logo big">MOTOR<span>WORKS</span></div>
+      <div class="sub">🎃 Halloween Edition 🎃</div>
+      <p class="tag">Build it on the line. Drive it through the fog. Outrun the law.</p>
+      <div class="menu">
+        <button id="btn-start" class="btn primary">Start Night Shift</button>
+        <button id="btn-controls" class="btn">Controls</button>
+        <a class="btn" href="docs.html" target="_blank">Dev Docs &amp; QA Report</a>
+      </div>
+      <div id="controls-card" class="card hidden">
+        <h3>Controls</h3>
+        <div class="grid2">
+          <span>W A S D</span><span>Walk / Drive &amp; steer</span>
+          <span>Mouse</span><span>Orbit camera</span>
+          <span>Shift</span><span>Sprint</span>
+          <span>Space</span><span>Jump / Handbrake drift</span>
+          <span>E</span><span>Interact · Talk · Enter / Steal / Exit car</span>
+          <span>C</span><span>Chase ⇄ cockpit camera</span>
+          <span>H</span><span>Horn</span>
+          <span>R</span><span>Haunted car radio</span>
+          <span>L</span><span>Headlights</span>
+          <span>V / F / T</span><span>Station cam / Follow car / Fast-forward build</span>
+          <span>N</span><span>Toggle waypoint guide</span>
+          <span>Backspace</span><span>Reset car upright</span>
+          <span>Esc</span><span>Pause &amp; settings</span>
+        </div>
+      </div>
+    </div>
+    <div id="telemetry-badge" class="badge collapsed" title="Build telemetry">
+      <div class="badge-head"><span class="dot"></span>Build Telemetry <span id="tb-toggle">▸</span></div>
+      <div id="tb-body" class="badge-body"></div>
+    </div>
+    <div class="lan" id="lan-url"></div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div id="hud-tl">
+      <div class="pill"><span class="ic">💵</span><span id="hud-money">$0</span></div>
+      <div class="pill"><span class="ic">🎃</span><span id="hud-pumpkins">0/5</span> golden pumpkins</div>
+      <div class="pill dim" id="hud-radio"></div>
+    </div>
+    <div id="hud-objective"><div id="obj-arrow">➤</div><div><div id="obj-text"></div><div id="obj-dist"></div></div></div>
+    <div id="hud-tr">
+      <div id="wanted"></div>
+      <canvas id="minimap" width="220" height="220"></canvas>
+    </div>
+    <div id="order-panel" class="panel hidden">
+      <div class="ph">ORDER <span id="order-no"></span></div>
+      <div id="order-car"></div>
+      <div id="order-stations"></div>
+      <div class="bar small"><div id="order-bar"></div></div>
+      <div class="hint">V station cam · F follow car · hold T fast-forward</div>
+    </div>
+    <div id="trial-panel" class="panel hidden"></div>
+    <div id="speedo" class="hidden">
+      <div id="spd-val">0</div><div class="unit">MPH</div>
+      <div id="spd-gear">N</div>
+      <div class="rpm"><div id="spd-rpm"></div></div>
+    </div>
+    <div id="prompt" class="hidden"></div>
+    <div id="toasts"></div>
+    <div id="subtitle" class="hidden"><b id="sub-name"></b><span id="sub-text"></span></div>
+    <div id="bubbles"></div>
+    <div id="bust-meter" class="hidden"><div id="bust-fill"></div><span>BEING BOXED IN</span></div>
+  </div>
+
+  <div id="kiosk" class="hidden">
+    <div class="k-head">
+      <div><div class="k-title" id="k-title">MOTORWORKS CONFIGURATOR</div><div class="k-sub" id="k-sub">Drag to orbit · scroll to zoom</div></div>
+      <div class="k-price"><span>TOTAL</span><b id="k-total">$0</b></div>
+    </div>
+    <div class="k-tabs" id="k-tabs"></div>
+    <div class="k-body" id="k-body"></div>
+    <div class="k-foot">
+      <button class="btn" id="k-cancel">Leave</button>
+      <button class="btn" id="k-random">🎲 Randomize</button>
+      <button class="btn primary" id="k-order">Place Order</button>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="card wide">
+      <h2>Paused</h2>
+      <div class="settings">
+        <label>Master Volume <input type="range" id="vol-master" min="0" max="1" step="0.05" /></label>
+        <label>Voice / Dialogue <input type="range" id="vol-voice" min="0" max="1" step="0.05" /></label>
+        <label>SFX <input type="range" id="vol-sfx" min="0" max="1" step="0.05" /></label>
+        <label>Music / Radio <input type="range" id="vol-music" min="0" max="1" step="0.05" /></label>
+        <label>Graphics Quality
+          <select id="quality"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
+        </label>
+        <label>Speed Units
+          <select id="units"><option value="mph">MPH</option><option value="kmh">KM/H</option></select>
+        </label>
+      </div>
+      <p class="hint">Movement keys are cleared whenever the menu opens — no more stuck walking.</p>
+      <div class="menu row">
+        <button class="btn primary" id="btn-resume">Resume</button>
+        <a class="btn" href="docs.html" target="_blank">Docs</a>
+        <button class="btn" id="btn-title">Title Screen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="busted" class="screen hidden"><div class="busted-text">BUSTED</div><div id="busted-sub"></div></div>
+  <div id="flash"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

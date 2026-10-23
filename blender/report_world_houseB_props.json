@@ -1,0 +1,21 @@
+[
+ {
+  "file": "house_b.glb",
+  "objects": 22,
+  "meshes": 20,
+  "tris": 636,
+  "hinges": [],
+  "bytes": 58380
+ },
+ {
+  "file": "props.glb",
+  "objects": 103,
+  "meshes": 75,
+  "tris": 14546,
+  "hinges": [
+   "CryptDoor",
+   "Turntable_Top"
+  ],
+  "bytes": 661132
+ }
+]

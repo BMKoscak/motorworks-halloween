@@ -1,0 +1,726 @@
+{
+ "ranAt": "2026-10-23T11:38:03.952Z",
+ "durationSec": 179,
+ "passed": 20,
+ "total": 20,
+ "results": [
+  {
+   "id": "boot",
+   "title": "Page loads, Blender assets stream in, zero console errors / uncaught exceptions",
+   "pass": true,
+   "details": {
+    "loadMs": 9407,
+    "gpu": "ANGLE (AMD, AMD Radeon (TM) R5 M330 (0x00006660) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "consoleErrors": []
+   },
+   "screenshots": [
+    "public/docs/screenshots/01_title_screen.png",
+    "public/docs/screenshots/01b_title_telemetry_badge.png"
+   ],
+   "ms": 13343
+  },
+  {
+   "id": "assets",
+   "title": "All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes",
+   "pass": true,
+   "details": {
+    "files": 27,
+    "invalidBoxes": [],
+    "missingHinges": [],
+    "hingeCounts": {
+     "car_muscle": 13,
+     "car_pickup": 13,
+     "car_coupe": 13,
+     "parts": 1,
+     "car_hearse": 13,
+     "car_sedan": 15,
+     "crane": 3,
+     "robot_arm": 4,
+     "garage_door": 8,
+     "press": 1,
+     "wheels": 0,
+     "sliding_door": 2,
+     "barrier": 1,
+     "cemetery_gate": 2,
+     "forklift": 5,
+     "scanner": 1,
+     "plant": 1,
+     "lift": 1,
+     "gas_station": 0,
+     "diner": 0,
+     "hardware": 0,
+     "police_station": 0,
+     "house_a": 0,
+     "house_b": 0,
+     "props": 2,
+     "character": 16,
+     "skeleton": 16
+    },
+    "meshes": 782
+   },
+   "screenshots": [],
+   "ms": 127
+  },
+  {
+   "id": "walk",
+   "title": "Player walks with WASD and collides with walls and cars (no clipping)",
+   "pass": true,
+   "details": {
+    "walkedMeters": 2.51,
+    "stoppedAtWallZ": -59.38,
+    "distanceFromCarCenter": 2.78,
+    "parkedCars": 16
+   },
+   "screenshots": [
+    "public/docs/screenshots/03_player_at_plant_wall.png"
+   ],
+   "ms": 9901
+  },
+  {
+   "id": "escape",
+   "title": "Escape/pointer-lock release clears held movement keys (no auto-walking after menu)",
+   "pass": true,
+   "details": {
+    "heldBefore": [
+     "KeyW"
+    ],
+    "mode": "paused",
+    "keysAfterEscape": [],
+    "driftAfterResume": 0,
+    "clearReason": "unlock"
+   },
+   "screenshots": [
+    "public/docs/screenshots/04_pause_menu.png"
+   ],
+   "ms": 2581
+  },
+  {
+   "id": "dialogue",
+   "title": "Talking to an NPC (E) plays spoken dialogue audio with subtitles/speech bubble",
+   "pass": true,
+   "details": {
+    "linesPlayed": 1,
+    "lastLine": {
+     "id": "foreman_greet",
+     "voice": "foreman",
+     "duration": 8.8,
+     "source": "file",
+     "at": 26786
+    },
+    "dispatchLine": {
+     "id": "dispatch_2",
+     "voice": "dispatch",
+     "duration": 6,
+     "source": "file",
+     "at": 29022
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/05_dialogue_foreman.png"
+   ],
+   "ms": 3927
+  },
+  {
+   "id": "kiosk",
+   "title": "Kiosk opens; every customization category changes the live 3D car; order is placed",
+   "pass": true,
+   "details": {
+    "configMismatches": [],
+    "config": {
+     "body": "hearse",
+     "color": "#5b1a8c",
+     "color2": "#39ff14",
+     "finish": "pearl",
+     "livery": "flames",
+     "rim": "Sawblade",
+     "lettering": "whitewall",
+     "caliper": "#39ff14",
+     "ride": -0.5,
+     "camber": 6,
+     "front": "Front_Splitter",
+     "hood": "Hood_Blower",
+     "roof": "Roof_Rack",
+     "spoiler": "Spoiler_GT",
+     "exhaust": "Exhaust_Flame",
+     "underglow": "purple",
+     "engine": "tt",
+     "trans": "short",
+     "tires": "drift"
+    },
+    "orderRunning": {
+     "running": true,
+     "stage": 0,
+     "stageT": 0.052,
+     "number": "MW-1031-5775"
+    },
+    "charged": 103650
+   },
+   "screenshots": [
+    "public/docs/screenshots/06_kiosk_open.png",
+    "public/docs/screenshots/06_kiosk_body.png",
+    "public/docs/screenshots/06_kiosk_paint.png",
+    "public/docs/screenshots/06_kiosk_livery.png",
+    "public/docs/screenshots/06_kiosk_wheels.png",
+    "public/docs/screenshots/06_kiosk_bodykit.png",
+    "public/docs/screenshots/06_kiosk_lighting.png",
+    "public/docs/screenshots/06_kiosk_performance.png"
+   ],
+   "ms": 20246
+  },
+  {
+   "id": "assembly",
+   "title": "Car progresses through all 5 assembly stations with hinge + robot animation sync, then rolls out",
+   "pass": true,
+   "details": {
+    "stations": [
+     {
+      "stage": 0,
+      "stageT": 0.55,
+      "hinges": {
+       "Door_L": 1,
+       "Door_R": 1,
+       "Hood": 1,
+       "Trunk": 1
+      },
+      "ram": 5.8,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [],
+      "reveal": 0,
+      "log": [
+       "order"
+      ]
+     },
+     {
+      "stage": 1,
+      "stageT": 0.57,
+      "hinges": {
+       "Door_L": 0.22,
+       "Door_R": 1,
+       "Hood": 1,
+       "Trunk": 1
+      },
+      "ram": 5.76,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [
+       -0.548,
+       -0.774,
+       -0.747,
+       -0.752
+      ],
+      "reveal": 0,
+      "log": [
+       "order",
+       "s1_body",
+       "close_Door_L"
+      ]
+     },
+     {
+      "stage": 2,
+      "stageT": 0.56,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
+      },
+      "ram": 5.03,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [
+       -0.575,
+       -0.547,
+       -0.458,
+       -0.432
+      ],
+      "reveal": 0.63,
+      "log": [
+       "order",
+       "s1_body",
+       "close_Door_L",
+       "close_Door_R",
+       "close_Hood",
+       "close_Trunk",
+       "s2_paint"
+      ]
+     },
+     {
+      "stage": 3,
+      "stageT": 0.56,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 1,
+       "Trunk": 0
+      },
+      "ram": 4.44,
+      "hoist": -6.4,
+      "laser": 2,
+      "robots": [
+       -0.777
+      ],
+      "reveal": 1,
+      "log": [
+       "order",
+       "s1_body",
+       "close_Door_L",
+       "close_Door_R",
+       "close_Hood",
+       "close_Trunk",
+       "s2_paint",
+       "s3_open",
+       "engine_in"
+      ]
+     },
+     {
+      "stage": 4,
+      "stageT": 0.56,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
+      },
+      "ram": 5.26,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [],
+      "reveal": 1,
+      "log": [
+       "order",
+       "s1_body",
+       "close_Door_L",
+       "close_Door_R",
+       "close_Hood",
+       "close_Trunk",
+       "s2_paint",
+       "s3_open",
+       "engine_in",
+       "wheel_0",
+       "wheel_1",
+       "wheel_2",
+       "wheel_3",
+       "s3_close",
+       "s4_final"
+      ]
+     }
+    ],
+    "events": [
+     "order",
+     "s1_body",
+     "close_Door_L",
+     "close_Door_R",
+     "close_Hood",
+     "close_Trunk",
+     "s2_paint",
+     "s3_open",
+     "engine_in",
+     "wheel_0",
+     "wheel_1",
+     "wheel_2",
+     "wheel_3",
+     "s3_close",
+     "s4_final",
+     "qc_open",
+     "qc_close",
+     "exit_open",
+     "complete"
+    ],
+    "event_s1_body": true,
+    "event_close_Door_L": true,
+    "event_close_Hood": true,
+    "event_close_Trunk": true,
+    "event_s2_paint": true,
+    "event_s3_open": true,
+    "event_engine_in": true,
+    "event_wheel_3": true,
+    "event_s3_close": true,
+    "event_s4_final": true,
+    "event_qc_open": true,
+    "event_qc_close": true,
+    "event_exit_open": true,
+    "event_complete": true,
+    "bodyShopRobots": 4,
+    "paintReveal": 0.63
+   },
+   "screenshots": [
+    "public/docs/screenshots/07_station_1_stamping.png",
+    "public/docs/screenshots/07_station_2_bodyshop.png",
+    "public/docs/screenshots/07_station_3_paint.png",
+    "public/docs/screenshots/07_station_4_powertrain.png",
+    "public/docs/screenshots/07_station_5_final_qc.png",
+    "public/docs/screenshots/07_rollout_finished_car.png"
+   ],
+   "ms": 27998
+  },
+  {
+   "id": "hinges",
+   "title": "Finished car: doors, hood, trunk rotate about their Blender pivots (no floating parts)",
+   "pass": true,
+   "details": {
+    "hinges": {
+     "Door_L": {
+      "axis": "y",
+      "open": -1.1,
+      "rotated": -1.1,
+      "parent": "Body",
+      "pivotWorld": [
+       70.95,
+       0.62,
+       -92
+      ]
+     },
+     "Door_R": {
+      "axis": "y",
+      "open": 1.1,
+      "rotated": 1.1,
+      "parent": "Body",
+      "pivotWorld": [
+       70.95,
+       0.62,
+       -90
+      ]
+     },
+     "Hood": {
+      "axis": "x",
+      "open": -0.95,
+      "rotated": -0.95,
+      "parent": "Body",
+      "pivotWorld": [
+       71.03,
+       0.93,
+       -91
+      ]
+     },
+     "Trunk": {
+      "axis": "x",
+      "open": 1.3,
+      "rotated": 1.3,
+      "parent": "Body",
+      "pivotWorld": [
+       67.07,
+       1.4,
+       -91
+      ]
+     }
+    },
+    "Door_L": {
+     "axis": "y",
+     "open": -1.1,
+     "rotated": -1.1,
+     "parent": "Body",
+     "pivotWorld": [
+      70.95,
+      0.62,
+      -92
+     ]
+    },
+    "Door_R": {
+     "axis": "y",
+     "open": 1.1,
+     "rotated": 1.1,
+     "parent": "Body",
+     "pivotWorld": [
+      70.95,
+      0.62,
+      -90
+     ]
+    },
+    "Hood": {
+     "axis": "x",
+     "open": -0.95,
+     "rotated": -0.95,
+     "parent": "Body",
+     "pivotWorld": [
+      71.03,
+      0.93,
+      -91
+     ]
+    },
+    "Trunk": {
+     "axis": "x",
+     "open": 1.3,
+     "rotated": 1.3,
+     "parent": "Body",
+     "pivotWorld": [
+      67.07,
+      1.4,
+      -91
+     ]
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/08_hinges_open.png"
+   ],
+   "ms": 2773
+  },
+  {
+   "id": "physics",
+   "title": "Vehicle physics: W accelerates; W+A turns left and W+D turns right simultaneously (heading change)",
+   "pass": true,
+   "details": {
+    "inCar": true,
+    "fpsDuringDrive": 18.5,
+    "speedAfterW": 9.71,
+    "leftHeadingDelta": 0.577,
+    "rightHeadingDelta": -0.372,
+    "braking": {
+     "before": 16.51,
+     "after": 8.7
+    },
+    "highSpeed": {
+     "speed": 12.95,
+     "dHeading": -0.144
+    },
+    "highSpeedTurn": {
+     "speed": 12.95,
+     "dHeading": -0.144
+    },
+    "skidMarks": 349
+   },
+   "screenshots": [
+    "public/docs/screenshots/09_driving_turn.png",
+    "public/docs/screenshots/09b_handbrake_drift.png"
+   ],
+   "_t0": 1792755390152,
+   "ms": 18715
+  },
+  {
+   "id": "cockpit",
+   "title": "First-person cockpit camera shows hands on the animated steering wheel; R toggles the haunted radio",
+   "pass": true,
+   "details": {
+    "steeringWheelRotation": -3.356,
+    "radio": {
+     "on": true,
+     "name": "WHOO 66.6 FM · Synthwave from Beyond"
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/10_cockpit_view.png"
+   ],
+   "ms": 3754
+  },
+  {
+   "id": "town",
+   "title": "Town, autumn/Halloween decorations, Main Street businesses render (screenshots)",
+   "pass": true,
+   "details": {
+    "views": 10
+   },
+   "screenshots": [
+    "public/docs/screenshots/11_main_street.png",
+    "public/docs/screenshots/11_diner.png",
+    "public/docs/screenshots/11_gas_station.png",
+    "public/docs/screenshots/11_police_station.png",
+    "public/docs/screenshots/11_hardware_store.png",
+    "public/docs/screenshots/11_halloween_yard.png",
+    "public/docs/screenshots/11_elm_avenue.png",
+    "public/docs/screenshots/11_motorworks_plant.png",
+    "public/docs/screenshots/11_leaf_piles_trees.png",
+    "public/docs/screenshots/11_hill_road.png"
+   ],
+   "ms": 17074
+  },
+  {
+   "id": "cemetery",
+   "title": "Cemetery gate hinges open as the player approaches; crypts, tombstones, fog",
+   "pass": true,
+   "details": {
+    "gateOpen": {
+     "closed": 0.19,
+     "open": 1
+    },
+    "leafRotation": 1.45,
+    "tombstones": 282
+   },
+   "screenshots": [
+    "public/docs/screenshots/12_cemetery_gates.png",
+    "public/docs/screenshots/12_cemetery_crypts.png",
+    "public/docs/screenshots/12_vlad_crypt.png"
+   ],
+   "ms": 8172
+  },
+  {
+   "id": "theft",
+   "title": "Car theft (E on a town car) opens the hinged door, triggers wanted level and police pursuit",
+   "pass": true,
+   "details": {
+    "inStolenCar": true,
+    "doorSwungOpen": 1,
+    "markedStolen": true,
+    "wantedLevel": 1,
+    "pursuit": [
+     {
+      "mode": "pursuit",
+      "pos": [
+       187.4,
+       -4
+      ],
+      "siren": true
+     },
+     {
+      "mode": "pursuit",
+      "pos": [
+       -193.3,
+       2.6
+      ],
+      "siren": true
+     }
+    ],
+    "police": {
+     "level": 1,
+     "cars": [
+      {
+       "mode": "pursuit",
+       "pos": [
+        187.4,
+        -4
+       ],
+       "siren": true
+      },
+      {
+       "mode": "pursuit",
+       "pos": [
+        -193.3,
+        2.6
+       ],
+       "siren": true
+      }
+     ],
+     "stats": {
+      "crimes": [
+       {
+        "kind": "theft",
+        "at": 131216,
+        "level": 1
+       }
+      ],
+      "maxLevel": 1,
+      "busts": 0,
+      "escapes": 0
+     }
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/13_stealing_car.png",
+    "public/docs/screenshots/13_police_pursuit.png",
+    "public/docs/screenshots/13_police_chase_overview.png"
+   ],
+   "ms": 13972
+  },
+  {
+   "id": "busted",
+   "title": "Boxed in by police for 5 s => BUSTED, fine, respawn at the Police Station",
+   "pass": true,
+   "details": {
+    "cleared": {
+     "wanted": 0,
+     "inCar": false
+    },
+    "fined": 1250,
+    "respawnAtPoliceStation": [
+     124,
+     0.11,
+     9
+    ]
+   },
+   "screenshots": [
+    "public/docs/screenshots/14_busted.png"
+   ],
+   "ms": 8813
+  },
+  {
+   "id": "pumpkins",
+   "title": "Golden Pumpkins: collecting all 5 unlocks the Monster Mash kiosk pack",
+   "pass": true,
+   "details": {
+    "collected": 5,
+    "unlocked": true
+   },
+   "screenshots": [
+    "public/docs/screenshots/15_monster_mash_kiosk.png"
+   ],
+   "ms": 12337
+  },
+  {
+   "id": "phantom",
+   "title": "Phantom Hearse: honking 3x at the Vlad crypt summons a ghost hearse race",
+   "pass": true,
+   "details": {
+    "raceStarted": true
+   },
+   "screenshots": [
+    "public/docs/screenshots/15_phantom_hearse.png"
+   ],
+   "ms": 6921
+  },
+  {
+   "id": "trial",
+   "title": "Graveyard Shift: driving through the start arch starts the timed drift trial",
+   "pass": true,
+   "details": {
+    "trialRunning": {
+     "running": true,
+     "t": 0.5392999999970198,
+     "next": 0,
+     "inCar": true,
+     "pos": [
+      0,
+      10.4,
+      234.2
+     ]
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/15_graveyard_shift_trial.png"
+   ],
+   "ms": 3606
+  },
+  {
+   "id": "radio_audio",
+   "title": "Spoken dialogue audio + radio DJ use the cached local audio files (no TTS fallback needed)",
+   "pass": true,
+   "details": {
+    "linesPlayed": 14,
+    "ttsFallbacks": 0,
+    "audio": {
+     "linesPlayed": 14,
+     "linesFailed": 0,
+     "fallbackTTS": 0,
+     "lastLine": "gy_start",
+     "lastDuration": 3.2
+    }
+   },
+   "screenshots": [],
+   "ms": 45
+  },
+  {
+   "id": "perf",
+   "title": "Performance snapshot (draw calls, triangles, FPS on this GPU)",
+   "pass": true,
+   "details": {
+    "fps": 19,
+    "drawCalls": 1352,
+    "triangles": 418798,
+    "vehicles": 4
+   },
+   "screenshots": [],
+   "ms": 3273
+  },
+  {
+   "id": "final_errors",
+   "title": "Zero console errors or uncaught exceptions during the whole QA run",
+   "pass": true,
+   "details": {
+    "errors": {
+     "console": [],
+     "game": []
+    }
+   },
+   "screenshots": [],
+   "ms": 53
+  }
+ ]
+}

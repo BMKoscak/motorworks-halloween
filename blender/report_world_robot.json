@@ -1,0 +1,15 @@
+[
+ {
+  "file": "robot_arm.glb",
+  "objects": 19,
+  "meshes": 12,
+  "tris": 536,
+  "hinges": [
+   "Base",
+   "Elbow",
+   "Shoulder",
+   "Wrist"
+  ],
+  "bytes": 43508
+ }
+]

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+docs/probe.png
+docs/drive.png
+docs/*.png
+scripts/.sapi_job.ps1
+*.blend1
+.DS_Store
+Thumbs.db
+__pycache__/

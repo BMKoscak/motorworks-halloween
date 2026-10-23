@@ -1,0 +1,52 @@
+[
+ {
+  "file": "character.glb",
+  "objects": 67,
+  "meshes": 49,
+  "tris": 1676,
+  "hinges": [
+   "Foot_L",
+   "Foot_R",
+   "Hand_L",
+   "Hand_R",
+   "Head",
+   "Hips",
+   "Jaw",
+   "LowerArm_L",
+   "LowerArm_R",
+   "LowerLeg_L",
+   "LowerLeg_R",
+   "Torso",
+   "UpperArm_L",
+   "UpperArm_R",
+   "UpperLeg_L",
+   "UpperLeg_R"
+  ],
+  "bytes": 127056
+ },
+ {
+  "file": "skeleton.glb",
+  "objects": 72,
+  "meshes": 54,
+  "tris": 2180,
+  "hinges": [
+   "Foot_L",
+   "Foot_R",
+   "Hand_L",
+   "Hand_R",
+   "Head",
+   "Hips",
+   "Jaw",
+   "LowerArm_L",
+   "LowerArm_R",
+   "LowerLeg_L",
+   "LowerLeg_R",
+   "Torso",
+   "UpperArm_L",
+   "UpperArm_R",
+   "UpperLeg_L",
+   "UpperLeg_R"
+  ],
+  "bytes": 165328
+ }
+]

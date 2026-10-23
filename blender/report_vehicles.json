@@ -1,0 +1,132 @@
+[
+ {
+  "file": "car_muscle.glb",
+  "objects": 62,
+  "meshes": 44,
+  "tris": 2080,
+  "hinges": [
+   "Axle_FL",
+   "Axle_FR",
+   "Axle_RL",
+   "Axle_RR",
+   "Door_L",
+   "Door_R",
+   "Hood",
+   "Knuckle_FL",
+   "Knuckle_FR",
+   "Knuckle_RL",
+   "Knuckle_RR",
+   "SteeringWheel",
+   "Trunk"
+  ],
+  "bytes": 163520
+ },
+ {
+  "file": "car_pickup.glb",
+  "objects": 59,
+  "meshes": 41,
+  "tris": 1864,
+  "hinges": [
+   "Axle_FL",
+   "Axle_FR",
+   "Axle_RL",
+   "Axle_RR",
+   "Door_L",
+   "Door_R",
+   "Hood",
+   "Knuckle_FL",
+   "Knuckle_FR",
+   "Knuckle_RL",
+   "Knuckle_RR",
+   "SteeringWheel",
+   "Trunk"
+  ],
+  "bytes": 150620
+ },
+ {
+  "file": "car_coupe.glb",
+  "objects": 53,
+  "meshes": 35,
+  "tris": 1552,
+  "hinges": [
+   "Axle_FL",
+   "Axle_FR",
+   "Axle_RL",
+   "Axle_RR",
+   "Door_L",
+   "Door_R",
+   "Hood",
+   "Knuckle_FL",
+   "Knuckle_FR",
+   "Knuckle_RL",
+   "Knuckle_RR",
+   "SteeringWheel",
+   "Trunk"
+  ],
+  "bytes": 128812
+ },
+ {
+  "file": "car_hearse.glb",
+  "objects": 63,
+  "meshes": 45,
+  "tris": 2032,
+  "hinges": [
+   "Axle_FL",
+   "Axle_FR",
+   "Axle_RL",
+   "Axle_RR",
+   "Door_L",
+   "Door_R",
+   "Hood",
+   "Knuckle_FL",
+   "Knuckle_FR",
+   "Knuckle_RL",
+   "Knuckle_RR",
+   "SteeringWheel",
+   "Trunk"
+  ],
+  "bytes": 165560
+ },
+ {
+  "file": "car_sedan.glb",
+  "objects": 58,
+  "meshes": 40,
+  "tris": 1684,
+  "hinges": [
+   "Axle_FL",
+   "Axle_FR",
+   "Axle_RL",
+   "Axle_RR",
+   "Door_L",
+   "Door_R",
+   "DoorRear_L",
+   "DoorRear_R",
+   "Hood",
+   "Knuckle_FL",
+   "Knuckle_FR",
+   "Knuckle_RL",
+   "Knuckle_RR",
+   "SteeringWheel",
+   "Trunk"
+  ],
+  "bytes": 140764
+ },
+ {
+  "file": "parts.glb",
+  "objects": 109,
+  "meshes": 87,
+  "tris": 2612,
+  "hinges": [
+   "Blower_Pulley"
+  ],
+  "bytes": 222760
+ },
+ {
+  "file": "wheels.glb",
+  "objects": 36,
+  "meshes": 27,
+  "tris": 5460,
+  "hinges": [],
+  "bytes": 248564
+ }
+]
