@@ -1,9 +1,9 @@
 [
  {
   "file": "car_muscle.glb",
-  "objects": 62,
-  "meshes": 44,
-  "tris": 2080,
+  "objects": 81,
+  "meshes": 63,
+  "tris": 2676,
   "hinges": [
    "Axle_FL",
    "Axle_FR",
@@ -19,13 +19,13 @@
    "SteeringWheel",
    "Trunk"
   ],
-  "bytes": 163520
+  "bytes": 214796
  },
  {
   "file": "car_pickup.glb",
-  "objects": 59,
-  "meshes": 41,
-  "tris": 1864,
+  "objects": 78,
+  "meshes": 60,
+  "tris": 2460,
   "hinges": [
    "Axle_FL",
    "Axle_FR",
@@ -41,13 +41,13 @@
    "SteeringWheel",
    "Trunk"
   ],
-  "bytes": 150620
+  "bytes": 201888
  },
  {
   "file": "car_coupe.glb",
-  "objects": 53,
-  "meshes": 35,
-  "tris": 1552,
+  "objects": 71,
+  "meshes": 53,
+  "tris": 2136,
   "hinges": [
    "Axle_FL",
    "Axle_FR",
@@ -63,13 +63,13 @@
    "SteeringWheel",
    "Trunk"
   ],
-  "bytes": 128812
+  "bytes": 178528
  },
  {
   "file": "car_hearse.glb",
-  "objects": 63,
-  "meshes": 45,
-  "tris": 2032,
+  "objects": 82,
+  "meshes": 64,
+  "tris": 2628,
   "hinges": [
    "Axle_FL",
    "Axle_FR",
@@ -85,13 +85,13 @@
    "SteeringWheel",
    "Trunk"
   ],
-  "bytes": 165560
+  "bytes": 216392
  },
  {
   "file": "car_sedan.glb",
-  "objects": 58,
-  "meshes": 40,
-  "tris": 1684,
+  "objects": 79,
+  "meshes": 61,
+  "tris": 2328,
   "hinges": [
    "Axle_FL",
    "Axle_FR",
@@ -109,17 +109,17 @@
    "SteeringWheel",
    "Trunk"
   ],
-  "bytes": 140764
+  "bytes": 196348
  },
  {
   "file": "parts.glb",
-  "objects": 109,
-  "meshes": 87,
-  "tris": 2612,
+  "objects": 132,
+  "meshes": 110,
+  "tris": 3608,
   "hinges": [
    "Blower_Pulley"
   ],
-  "bytes": 222760
+  "bytes": 293576
  },
  {
   "file": "wheels.glb",

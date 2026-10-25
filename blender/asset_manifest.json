@@ -1,28 +1,33 @@
 {
- "generated": "2026-10-23T13:30:21.863Z",
+ "generated": "2026-10-24T16:01:13.398Z",
  "runs": [
   {
    "script": "build_vehicles.py",
    "ok": true,
-   "seconds": 8.9
+   "seconds": 12.2
   },
   {
    "script": "build_world.py",
    "ok": true,
-   "seconds": 23.6
+   "seconds": 35.5
   },
   {
    "script": "build_chars.py",
    "ok": true,
-   "seconds": 5.1
+   "seconds": 6.5
+  },
+  {
+   "script": "build_roads.py",
+   "ok": true,
+   "seconds": 11
   }
  ],
  "assets": [
   {
    "file": "car_muscle.glb",
-   "objects": 62,
-   "meshes": 44,
-   "tris": 2080,
+   "objects": 81,
+   "meshes": 63,
+   "tris": 2676,
    "hinges": [
     "Axle_FL",
     "Axle_FR",
@@ -38,13 +43,13 @@
     "SteeringWheel",
     "Trunk"
    ],
-   "bytes": 163520
+   "bytes": 214796
   },
   {
    "file": "car_pickup.glb",
-   "objects": 59,
-   "meshes": 41,
-   "tris": 1864,
+   "objects": 78,
+   "meshes": 60,
+   "tris": 2460,
    "hinges": [
     "Axle_FL",
     "Axle_FR",
@@ -60,13 +65,13 @@
     "SteeringWheel",
     "Trunk"
    ],
-   "bytes": 150620
+   "bytes": 201888
   },
   {
    "file": "car_coupe.glb",
-   "objects": 53,
-   "meshes": 35,
-   "tris": 1552,
+   "objects": 71,
+   "meshes": 53,
+   "tris": 2136,
    "hinges": [
     "Axle_FL",
     "Axle_FR",
@@ -82,13 +87,13 @@
     "SteeringWheel",
     "Trunk"
    ],
-   "bytes": 128812
+   "bytes": 178528
   },
   {
    "file": "car_hearse.glb",
-   "objects": 63,
-   "meshes": 45,
-   "tris": 2032,
+   "objects": 82,
+   "meshes": 64,
+   "tris": 2628,
    "hinges": [
     "Axle_FL",
     "Axle_FR",
@@ -104,13 +109,13 @@
     "SteeringWheel",
     "Trunk"
    ],
-   "bytes": 165560
+   "bytes": 216392
   },
   {
    "file": "car_sedan.glb",
-   "objects": 58,
-   "meshes": 40,
-   "tris": 1684,
+   "objects": 79,
+   "meshes": 61,
+   "tris": 2328,
    "hinges": [
     "Axle_FL",
     "Axle_FR",
@@ -128,17 +133,17 @@
     "SteeringWheel",
     "Trunk"
    ],
-   "bytes": 140764
+   "bytes": 196348
   },
   {
    "file": "parts.glb",
-   "objects": 109,
-   "meshes": 87,
-   "tris": 2612,
+   "objects": 132,
+   "meshes": 110,
+   "tris": 3608,
    "hinges": [
     "Blower_Pulley"
    ],
-   "bytes": 222760
+   "bytes": 293576
   },
   {
    "file": "wheels.glb",
@@ -230,7 +235,7 @@
     "Gate_L",
     "Gate_R"
    ],
-   "bytes": 284632
+   "bytes": 284660
   },
   {
    "file": "forklift.glb",
@@ -268,32 +273,36 @@
   },
   {
    "file": "plant.glb",
-   "objects": 255,
-   "meshes": 242,
-   "tris": 21804,
+   "objects": 403,
+   "meshes": 380,
+   "tris": 31316,
    "hinges": [
+    "Door_Secret",
+    "Dyno_Fan",
+    "Dyno_Roller_F",
+    "Dyno_Roller_R",
     "GiantSpider",
     "SwitchLever_NightShift"
    ],
-   "bytes": 1544804
+   "bytes": 2156288
   },
   {
    "file": "diner.glb",
-   "objects": 176,
-   "meshes": 159,
-   "tris": 6632,
+   "objects": 178,
+   "meshes": 161,
+   "tris": 6784,
    "hinges": [
     "Door_Back",
     "Door_Front",
     "SwitchLever_Main"
    ],
-   "bytes": 504948
+   "bytes": 512808
   },
   {
    "file": "gas_station.glb",
-   "objects": 122,
-   "meshes": 99,
-   "tris": 5396,
+   "objects": 123,
+   "meshes": 100,
+   "tris": 5408,
    "hinges": [
     "Door_Front",
     "Hose_0_0",
@@ -306,7 +315,7 @@
     "Nozzle_1_1",
     "SwitchLever_Main"
    ],
-   "bytes": 402964
+   "bytes": 404428
   },
   {
    "file": "hardware.glb",
@@ -318,7 +327,7 @@
     "Door_Front",
     "SwitchLever_Main"
    ],
-   "bytes": 405964
+   "bytes": 405584
   },
   {
    "file": "police_station.glb",
@@ -332,7 +341,7 @@
     "Door_Front",
     "SwitchLever_Main"
    ],
-   "bytes": 400540
+   "bytes": 400568
   },
   {
    "file": "jumbotron.glb",
@@ -344,40 +353,52 @@
   },
   {
    "file": "house_a.glb",
-   "objects": 184,
-   "meshes": 163,
-   "tris": 4776,
+   "objects": 190,
+   "meshes": 169,
+   "tris": 5016,
    "hinges": [
     "BreakerLever",
     "Door_Back",
     "Door_Front",
     "SwitchLever_Main"
    ],
-   "bytes": 435216
+   "bytes": 456152
   },
   {
    "file": "house_b.glb",
    "objects": 149,
    "meshes": 128,
-   "tris": 3240,
+   "tris": 3264,
    "hinges": [
     "BreakerLever",
     "Door_Back",
     "Door_Front",
     "SwitchLever_Main"
    ],
-   "bytes": 305456
+   "bytes": 307272
   },
   {
    "file": "props.glb",
-   "objects": 185,
-   "meshes": 138,
-   "tris": 8528,
+   "objects": 314,
+   "meshes": 247,
+   "tris": 22706,
    "hinges": [
     "CryptDoor",
     "Turntable_Top"
    ],
-   "bytes": 602076
+   "bytes": 1449820
+  },
+  {
+   "file": "cinema.glb",
+   "objects": 423,
+   "meshes": 211,
+   "tris": 17096,
+   "hinges": [
+    "Door_Back",
+    "Door_Front",
+    "SwitchLever_Main"
+   ],
+   "bytes": 1193728
   },
   {
    "file": "character.glb",
@@ -428,6 +449,14 @@
     "UpperLeg_R"
    ],
    "bytes": 204040
+  },
+  {
+   "file": "roads.glb",
+   "objects": 319,
+   "meshes": 272,
+   "tris": 29620,
+   "hinges": [],
+   "bytes": 1761384
   }
  ]
 }

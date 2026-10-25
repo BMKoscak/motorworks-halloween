@@ -252,6 +252,127 @@
       "elevenVoiceName": "Latrice - Down-To-Earth Southern",
       "elevenPitch": 1,
       "demo": "adult_female"
+    },
+    "boxoffice": {
+      "name": "Dusty (Palace Box Office)",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "EMYWJ6jws25NB7xJgDxG",
+      "elevenVoiceName": "Dusty Garner",
+      "elevenPitch": 1,
+      "demo": "adult_female"
+    },
+    "usher": {
+      "name": "Theo (Palace Usher)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "RhcROc65RG054lfxtUIT",
+      "elevenVoiceName": "Rocky - Storyteller",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "vendor": {
+      "name": "Concession Stand",
+      "sapi": "Microsoft Hazel Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "ZQF62XTHtHemfMB0pp0G",
+      "elevenVoiceName": "Shay",
+      "elevenPitch": 1,
+      "demo": "adult_female"
+    },
+    "projectionist": {
+      "name": "The Projectionist",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "ghost",
+      "eleven": "1BfrkuYXmEwp8AWqSLWk",
+      "elevenVoiceName": "Declan Graves - Haunted Rasps",
+      "elevenPitch": 1,
+      "demo": "spirit"
+    },
+    "narrator": {
+      "name": "Trailer Narrator",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "film",
+      "eleven": "9GVWvaD23xXLseHJlxy8",
+      "elevenVoiceName": "Movie Trailer Voice",
+      "elevenPitch": 1,
+      "demo": "film"
+    },
+    "hero": {
+      "name": "Roxy Steel (Night of the V8)",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "film",
+      "eleven": "W3C2vBPukr5b5jvoXhPK",
+      "elevenVoiceName": "Kira X - Video Game, Bold & Cinematic",
+      "elevenPitch": 1,
+      "demo": "film"
+    },
+    "villain": {
+      "name": "Count Carburetor (Night of the V8)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "film",
+      "eleven": "Vs5CmVCVJwW4odQS2pVf",
+      "elevenVoiceName": "Branok - Evil and Villainous",
+      "elevenPitch": 1,
+      "demo": "film"
+    },
+    "dynotech": {
+      "name": "Gina (Dyno Tech)",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "room",
+      "eleven": "o9B86nZP8mMLaT5FBEzP",
+      "elevenVoiceName": "Kathie - Sassy & Playful",
+      "elevenPitch": 1,
+      "demo": "adult_female"
+    },
+    "marshal": {
+      "name": "Race Marshal",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "radio",
+      "eleven": "DduhIyyKkOosbP8VefhP",
+      "elevenVoiceName": "David - Sports Arena Announcer",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "rival": {
+      "name": "Vic Vapor (Rival Racer)",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "dry",
+      "eleven": "sfb7P99ZKEnBPrm3Hqam",
+      "elevenVoiceName": "Rocky Wilson",
+      "elevenPitch": 1,
+      "demo": "adult_male"
+    },
+    "payphone": {
+      "name": "Voice on the Line",
+      "sapi": "Microsoft David Desktop",
+      "rate": 0,
+      "pitch": 1,
+      "fx": "radio",
+      "eleven": "qhH5VOAvpCwvNpmn2srO",
+      "elevenVoiceName": "Feagol Dollum - Raspy Whisper",
+      "elevenPitch": 1,
+      "demo": "spirit"
     }
   },
   "lines": {
@@ -582,6 +703,202 @@
     "gas_1": [
       "attendant",
       "Pump's on, hon. Two bucks a gallon, and don't you drive off without paying."
+    ],
+    "boxoffice_1": [
+      "boxoffice",
+      "Welcome to the Palace! One ticket for Night of the V8? That's eight bucks, hon."
+    ],
+    "boxoffice_2": [
+      "boxoffice",
+      "Enjoy the show. No talking, no texting, and absolutely no revving."
+    ],
+    "boxoffice_broke": [
+      "boxoffice",
+      "Eight dollars, sweetie. Come back when your pockets aren't haunted."
+    ],
+    "usher_1": [
+      "usher",
+      "Ticket? Perfect. Find any seat you like. Mind the steps, they're darker than they look."
+    ],
+    "usher_stop": [
+      "usher",
+      "Whoa, whoa. No ticket, no movie. Box office is out front."
+    ],
+    "usher_shh": [
+      "usher",
+      "Shhh! The movie's starting."
+    ],
+    "concession_1": [
+      "vendor",
+      "One popcorn, extra butter. Careful, it's hot."
+    ],
+    "projectionist_1": [
+      "projectionist",
+      "Forty years I ran this projector. Dying was no reason to stop. Enjoy the picture, friend."
+    ],
+    "projectionist_2": [
+      "projectionist",
+      "Do not touch the reels. The last fellow who touched the reels is in row G now. Forever."
+    ],
+    "movie_narr_1": [
+      "narrator",
+      "In a town where the factory never sleeps... one car refused to die."
+    ],
+    "movie_hero_1": [
+      "hero",
+      "Something's out there on Hollow Hill Road. And it runs on eight cylinders of pure evil."
+    ],
+    "movie_villain_1": [
+      "villain",
+      "I am Count Carburetor! Your town's horsepower belongs to me!"
+    ],
+    "movie_hero_2": [
+      "hero",
+      "Then come and take it, Count. My V8 runs on spite and premium unleaded."
+    ],
+    "movie_narr_2": [
+      "narrator",
+      "This Halloween, the race is on. Night of the V8. Rated R... for revving."
+    ],
+    "movie_villain_2": [
+      "villain",
+      "You haven't seen the last of me. I'll be back... for the sequel."
+    ],
+    "dyno_1": [
+      "dynotech",
+      "Roll her onto the rollers, nose to the fan. When you're set, press E and floor it."
+    ],
+    "dyno_good": [
+      "dynotech",
+      "Now THAT is horsepower. The rollers are still smoking!"
+    ],
+    "dyno_meh": [
+      "dynotech",
+      "Not bad, not bad. Bolt on a blower and come back."
+    ],
+    "dyno_record": [
+      "dynotech",
+      "New dyno record! I'm putting your name on the wall."
+    ],
+    "shift_start": [
+      "foreman",
+      "Clock's punched. Grab a crate off the pallet at receiving and run it to the station that's flashing. Go, go!"
+    ],
+    "shift_done": [
+      "foreman",
+      "That's a shift! Not bad for a rookie. Your pay's in your pocket."
+    ],
+    "shift_late": [
+      "foreman",
+      "Too slow, kid! The line can't wait on you."
+    ],
+    "arcade_hi": [
+      "kiosk",
+      "New high score! Pumpkin Panic champion detected."
+    ],
+    "marshal_1": [
+      "marshal",
+      "Racers to the line! Eighth mile, heads up. Watch the tree, and don't jump the green!"
+    ],
+    "marshal_win": [
+      "marshal",
+      "And the winner by a nose! Somebody check that car for rocket fuel!"
+    ],
+    "marshal_lose": [
+      "marshal",
+      "Vic Vapor takes it! Better luck next pass."
+    ],
+    "marshal_foul": [
+      "marshal",
+      "Red light! You jumped the start. That is a foul!"
+    ],
+    "rival_1": [
+      "rival",
+      "You call that a car? My grandma's hearse has more torque."
+    ],
+    "rival_lose": [
+      "rival",
+      "No way... Rematch! I want a rematch!"
+    ],
+    "payphone_1": [
+      "payphone",
+      "Is anyone there? I've been calling for fifty years... Find the clock that strikes thirteen."
+    ],
+    "payphone_2": [
+      "payphone",
+      "They never found my car. It's still out there on the proving ground... doing eighty-eight."
+    ],
+    "time88": [
+      "narrator",
+      "Eighty-eight miles per hour! The flux is fluxing!"
+    ],
+    "clock13": [
+      "groundskeeper",
+      "Thirteen bells... The old clock only strikes thirteen when the dead are listening."
+    ],
+    "secret_room": [
+      "dj",
+      "Hey! How'd you find the developers' room? Fine, take the cash. And thanks for playing!"
+    ],
+    "konami": [
+      "kiosk",
+      "Cheat code accepted. Big head mode engaged."
+    ],
+    "honkm_1": [
+      "civ_m",
+      "Hey! I'm walking here!"
+    ],
+    "honkm_2": [
+      "civ_m",
+      "Easy on the horn, pal!"
+    ],
+    "honkf_1": [
+      "civilian",
+      "Do you mind? It's a crosswalk!"
+    ],
+    "honkf_2": [
+      "civilian",
+      "Wow. Rude."
+    ],
+    "kidb_honk": [
+      "kid_b",
+      "Hey! Watch it, mister!"
+    ],
+    "kidg_honk": [
+      "kid_g",
+      "You almost squished my candy!"
+    ],
+    "rage_m": [
+      "panic_m",
+      "Hey! You hit my car! Do you know what this costs?"
+    ],
+    "rage_f": [
+      "panic",
+      "Are you kidding me?! I just got this washed!"
+    ],
+    "kidb_tot": [
+      "kid_b",
+      "Trick or treat!"
+    ],
+    "kidg_tot": [
+      "kid_g",
+      "Trick or treat! Smell my feet!"
+    ],
+    "homem_candy": [
+      "homeowner_m",
+      "Well look at you! Here, take two."
+    ],
+    "homef_candy": [
+      "homeowner_f",
+      "Aren't you adorable! Happy Halloween, sweetie."
+    ],
+    "civm_5": [
+      "civ_m",
+      "Heard they're showing Night of the V8 at the Palace tonight."
+    ],
+    "civilian_5": [
+      "civilian",
+      "Did you see the new traffic lights on Main Street? Fancy."
     ]
   }
 }

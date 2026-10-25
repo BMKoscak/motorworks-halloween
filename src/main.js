@@ -31,6 +31,10 @@ import { Combat } from './systems/combat.js';
 import { Burglary } from './systems/burglary.js';
 import { Interactions } from './systems/interactions.js';
 import { Fuel } from './systems/fuel.js';
+import { Signals } from './systems/signals.js';
+import { Cinema } from './world/cinema.js';
+import { Activities } from './systems/activities.js';
+import { Secrets } from './systems/secrets.js';
 import { HUD } from './ui/hud.js';
 import { LAYOUT, QUALITY, DEFAULT_CONFIG, ENGINES, pl } from './config.js';
 import dialogue from './data/dialogue.json';
@@ -116,7 +120,9 @@ class Game {
     this.buildings = new Buildings(this);
     this.terrain = buildTerrain(this.scene, this.physics);
     this.atmo = new Atmosphere(this.scene, q);
+    this.cinema = new Cinema(this);
     this.town = buildTown(this);
+    this.signals = new Signals(this, this.town.streets.lamps);
     this.cem = buildCemetery(this, this.town);
     this.factory = new Factory(this);
     this.jumbotron = new Jumbotron(this, this.factory, new THREE.Vector3(...pl(-22, 2, 8.6)));
@@ -134,9 +140,10 @@ class Game {
     this.police = new Police(this);
     this.npcs = new NPCs(this);
     this.traffic.spawnParked(this.town.parking);
-    this.traffic.spawnDriving(9);
+    this.traffic.spawnDriving(11);
     this.police.spawnPatrols();
     this.npcs.build(this.town, this.cem);
+    this.cinema.populate();
     this.player = new Player(this, new THREE.Vector3(...LAYOUT.playerStart));
     this.player.facing = Math.PI;
     this.combat = new Combat(this);
@@ -147,6 +154,10 @@ class Game {
     this.interactions.build();
     this.fuel = new Fuel(this);
     this.fuel.build();
+    this.activities = new Activities(this);
+    this.activities.build();
+    this.secrets = new Secrets(this);
+    this.secrets.build();
     this.assembly = new AssemblyLine(this, this.factory);
     this.kiosk = new Kiosk(this, this.factory);
     this.missions = new Missions(this, this.cem);
@@ -204,7 +215,7 @@ class Game {
       this.effects.sparks(e.point, Math.min(40, e.speed * 3), '#ffcf8a', e.speed * 0.5);
       if (e.vehicle === this.player.vehicle) this.effects.shake = Math.min(1.2, this.effects.shake + e.speed * 0.06);
       if (e.speed > 12) e.vehicle.damageEngine((e.speed - 12) * 2);
-      if (e.other && e.other.userData && e.other.userData.civilian) this.traffic.bump(e.other);
+      if (e.other && e.other.userData && e.other.userData.civilian) this.traffic.bump(e.other, undefined, e.speed);
       this.police.onImpact(e);
     });
     ev.on('propSmashed', (e) => this.police.onPropSmashed(e));
@@ -401,6 +412,8 @@ class Game {
 
   busted(reason = 'boxed') {
     if (this.mode !== 'play') return;
+    if (this.activity) (this.activity.stand || this.activity.close || (() => {})).call(this.activity);
+    this.activity = null;
     this.mode = 'busted';
     this.input.clearAll('busted');
     const fine = Math.min(this.state.money, 500 + this.police.level * 750);
@@ -445,6 +458,8 @@ class Game {
       if (fuel) return { ...fuel, alt: () => this.exitVehicle() };
       const sell = this.burglary.carCandidate(v);
       if (sell && !sell.alt) return { ...sell, alt: () => this.exitVehicle() };
+      const act = this.activities.carCandidate(v);
+      if (act) return { ...act, text: `${act.text}  ·  [Shift+E] exit car`, alt: () => this.exitVehicle() };
       if (this.inBayZone(v.position) && v.speedAbs < 1.5) return { text: `[E] Custom Bay: respray & modify  ·  [Shift+E] ${sell ? sell.text.replace('[Shift+E] ', '') : 'exit car'}`, act: () => this._bay(v), alt: sell ? sell.act : () => this.exitVehicle() };
       return { text: v.speedAbs < 4 ? (v.stalled ? `[E] Exit car — ${v.fuel <= 0.5 ? 'out of fuel' : 'engine dead'}` : '[E] Exit car') : '', act: () => this.exitVehicle() };
     }
@@ -454,7 +469,7 @@ class Game {
     if (info) cands.push({ d: 1.5, text: `[E] Read station ${info.station + 1} info panel`, act: () => { this.hud.subtitle('Info Panel', STATION_INFO[info.station], 7); this.audio.blip(); this.events.emit('infoPanel', { station: info.station }); } });
     const npc = this.npcs.nearestTalkable(pos);
     if (npc) cands.push({ d: npc.char.root.position.distanceTo(pos) + 0.3, text: `[E] Talk to ${npc.name}`, act: () => this.npcs.talk(npc) });
-    cands.push(...this.interactions.candidates(pos), ...this.burglary.candidates(pos));
+    cands.push(...this.interactions.candidates(pos), ...this.burglary.candidates(pos), ...this.cinema.candidates(pos), ...this.activities.candidates(pos), ...this.secrets.candidates(pos));
     const jc = this.fuel.jerrycanCandidate(pos);
     if (jc) cands.push(jc);
     // refuel standing at the pump next to a car
@@ -528,7 +543,11 @@ class Game {
     const veh = p.vehicle;
     this.time = (this.time || 0) + dt;
     // ------------------------------------------------ controls
-    if (playing) {
+    if (playing && this.activity) {
+      // dyno pull / cinema seat / arcade cabinet own the controls until they hand them back
+      this.hud.prompt(null);
+      this.activity.update(dt, input);
+    } else if (playing) {
       const it = this._interaction();
       this.hud.prompt(this.busy ? null : it && it.text);
       if (input.pressed('KeyE') && it) (input.down('ShiftLeft') && it.alt ? it.alt : it.act)();
@@ -537,7 +556,11 @@ class Game {
         const steer = input.axis('KeyD', 'KeyA');
         veh.setControls({ throttle, steer, handbrake: input.down('Space') });
         if (input.pressed('KeyC')) { this.rig.cockpit = !this.rig.cockpit; veh.visual.setFirstPerson(this.rig.cockpit); }
-        if (input.pressed('KeyH')) { this.audio.horn(true); this.missions.honk(); this.events.emit('horn', {}); }
+        if (input.pressed('KeyH')) {
+          this.audio.horn(true); this.missions.honk(); this.events.emit('horn', {});
+          this.cinema.honk();
+          this.npcs.folk.honk(veh.position, new THREE.Vector3(Math.sin(veh.heading), 0, Math.cos(veh.heading)));
+        }
         if (!input.down('KeyH')) this.audio.horn(false);
         if (input.pressed('KeyR') && this.audio.radio) { const n = this.audio.radio.cycle(); this.hud.radio(this.audio.radio.on ? n : null); this.hud.toast('📻 ' + n); this.events.emit('radio', { name: n }); }
         if (input.pressed('Backspace')) veh.reset();
@@ -557,13 +580,14 @@ class Game {
     } else if (mode === 'kiosk') {
       this.kiosk.update(dt, input, this.camera);
     } else if (veh) veh.setControls({ throttle: 0, steer: 0, handbrake: true });
-    if (veh || !playing) p.sync(dt);
+    if (veh || !playing || (this.activity && !this.activity.ownsChar)) p.sync(dt);
     // ------------------------------------------------ simulation
     if (simulate) {
       for (const v of this.vehicles) if (v !== veh && v.kind === 'player') v.setControls({ throttle: 0, steer: 0, handbrake: true });
       for (const v of this.vehicles) v.update(dt);
       this.physics.step(dt);
       for (const v of this.vehicles) v.sync(dt);
+      this.signals.update(dt);
       this.traffic.update(dt);
       this.police.update(dt);
       this.npcs.update(dt);
@@ -573,6 +597,9 @@ class Game {
       this.buildings.update(dt);
       this.burglary.update(dt);
       this.fuel.update(dt);
+      this.cinema.tick(dt);
+      this.activities.tick(dt);
+      this.secrets.tick(dt);
       const gateNear = Math.hypot(p.position.x, p.position.z - LAYOUT.gateZ) < 30;
       if (gateNear !== this._gateWasNear) { this.cem.gate.target = gateNear ? 1 : 0; this._gateWasNear = gateNear; if (this.audio.ctx) this.audio.tone(140, 1.4, 'sawtooth', 0.05, 0, this.audio.sfx, 95); }
       updateCemetery(this.cem, dt, this.time, this.physics);
@@ -589,7 +616,7 @@ class Game {
       const t = this.time * 0.05;
       this.rig.pose(dt, new THREE.Vector3(Math.sin(t) * 55, 22 + Math.sin(t * 2) * 4, -20 + Math.cos(t) * 40), new THREE.Vector3(0, 10, -60), 1.5);
     } else if (mode !== 'kiosk' && mode !== 'photo') {
-      const pose = !veh && this.assembly.cameraPose();
+      const pose = (this.activity && this.activity.cameraPose && this.activity.cameraPose()) || (!veh && this.assembly.cameraPose());
       if (pose) this.rig.pose(dt, pose.pos, pose.look, 2.5);
       else if (veh) this.rig.car(dt, input, veh);
       else this.rig.foot(dt, input, p);
@@ -609,7 +636,7 @@ class Game {
     this.hud.money(this.state.money);
     this.hud.pumpkins(this.state.pumpkins.length);
     this.hud.objective(this.missions.objectiveText());
-    this.hud.waypoint(this.missions.guide ? this.missions.target() : null, this.camera, pos);
+    this.hud.waypoint(this.activities.target() || (this.missions.guide ? this.missions.target() : null), this.camera, pos);
     if (veh) {
       const eng = veh.tune.eng;
       this.hud.speedo(true, veh.speed, veh.gear, (veh.rpm - eng.idle) / (eng.redline - eng.idle));
@@ -621,7 +648,7 @@ class Game {
     this.hud.weapon(ws, playing && !veh);
     this.hud.order(this.assembly.hudState());
     const T = this.missions.trial;
-    this.hud.trial(T.running ? `<div class="ph">GRAVEYARD SHIFT</div>Time <b>${T.t.toFixed(1)}s</b> · Drift <b>${Math.round(T.drift)}</b><br/>Checkpoint ${T.next + 1}/${this.cem.checkpoints.length}${T.best ? `<br/><span class="hint">Best ${T.best.toFixed(2)}s</span>` : ''}` : null);
+    this.hud.trial(T.running ? `<div class="ph">GRAVEYARD SHIFT</div>Time <b>${T.t.toFixed(1)}s</b> · Drift <b>${Math.round(T.drift)}</b><br/>Checkpoint ${T.next + 1}/${this.cem.checkpoints.length}${T.best ? `<br/><span class="hint">Best ${T.best.toFixed(2)}s</span>` : ''}` : this.activities.hud());
     this.hud.update(dt, this.camera);
     if (this.frames % 3 === 0) {
       const camDir = new THREE.Vector3(); this.camera.getWorldDirection(camDir);
@@ -630,6 +657,8 @@ class Game {
       if (this.ownedCar && this.ownedCar !== veh) markers.push({ x: this.ownedCar.position.x, z: this.ownedCar.position.z, color: '#ff7a1a', r: 5 });
       markers.push({ x: this.factory.kioskPos.x, z: this.factory.kioskPos.z, color: '#ffd23f', r: 3 });
       if (this.fuel.station && this.fuel.pumps.length) markers.push({ x: this.fuel.pumps[0].pos.x, z: this.fuel.pumps[0].pos.z, color: '#39ff14', r: 3 });
+      if (this.cinema.center) markers.push({ x: this.cinema.center.x, z: this.cinema.center.z - 12, color: '#ff4fd8', r: 3 });
+      markers.push({ x: this.activities.drag.start.x, z: this.activities.drag.start.z, color: '#39ff14', r: 2.5 });
       if (this.npcs.fence) markers.push({ x: this.npcs.fence.char.root.position.x, z: this.npcs.fence.char.root.position.z, color: '#c060ff', r: 3 });
       this.hud.minimap(pos, Math.atan2(camDir.x, camDir.z), { roads: this.town.roads, buildings: this.town.buildings, cemetery: LAYOUT.cemetery, markers, target: this.missions.guide ? this.missions.target() : null });
     }
@@ -742,6 +771,19 @@ window.__MW = {
   pumps: () => game.fuel.pumps.map((p) => p.pos.toArray().map((n) => +n.toFixed(2))),
   fuelState: () => { const v = game.player.vehicle || game.ownedCar; return v && { fuel: +v.fuel.toFixed(2), stalled: v.stalled, session: !!game.fuel.session, stats: game.fuel.stats }; },
   setFuel: (n) => { const v = game.player.vehicle || game.ownedCar; if (v) { v.fuel = n; v.stalled = n <= 0; } },
+  // ---- phase 3 QA hooks
+  signals: () => ({ t: +game.signals.t.toFixed(1), ELM: { A: game.signals.state('ELM', 'A'), B: game.signals.state('ELM', 'B'), walkA: game.signals.walk('ELM', 'A') }, EXIT: { A: game.signals.state('EXIT', 'A'), B: game.signals.state('EXIT', 'B') },
+    heads: game.signals.heads.length, peds: game.signals.peds.length, drag: Object.keys(game.signals.drag), stats: game.signals.stats }),
+  setSignalTime: (t) => { game.signals.t = t; game.signals._acc = 1; game.signals.update(0); },
+  trafficStats: () => ({ ...game.traffic.stats, closed: game.traffic.closed ? [...game.traffic.closed] : null, cars: game.traffic.driving.map((c) => ({ road: c.seg.road || c.seg.node, kind: c.seg.kind, speed: +c.speed.toFixed(1), red: !!c.redHold, ctrl: c.seg.control ? c.seg.control.control : null, toEnd: +(c.seg.length - c.s).toFixed(1) })) }),
+  cinema: () => ({ ticket: game.cinema.ticket > 0, seated: !!game.cinema.seat, filmT: +game.cinema.filmTime().toFixed(1), scene: game.cinema.film.scene(game.cinema.filmTime()), frames: game.cinema.film.frames, stats: game.cinema.stats,
+    spots: Object.fromEntries(['BoxOffice', 'Concession', 'Usher', 'Projectionist', 'Inside', 'Outside'].map((k) => [k, game.cinema.b.spots[k] && game.cinema.b.spots[k].toArray().map((n) => +n.toFixed(2))])),
+    seats: game.cinema.seats.length, audience: game.cinema.audience.length, screen: !!game.cinema.screen, drive: !!game.cinema.driveScreen, center: game.cinema.center.toArray(), screenCenter: game.cinema.screenCenter.toArray().map((n) => +n.toFixed(2)), ghost: +game.cinema.ghost.a.toFixed(2) }),
+  activities: () => ({ ...game.activities.stats(), activity: game.activity ? game.activity.constructor.name : null, dynoSpot: game.activities.dyno.spot && game.activities.dyno.spot.toArray(), timeClock: game.activities.timeClock.toArray(), pickup: game.activities.runner.pickup.toArray(),
+    arcade: game.activities.arcadePos.toArray(), vend: game.activities.vendPos.toArray(), drag: game.activities.drag.race ? { phase: game.activities.drag.race.phase, result: game.activities.drag.race.result } : null, job: game.activities.runner.job ? { n: game.activities.runner.job.n, drop: game.activities.runner.job.drop.pos.toArray() } : null }),
+  secrets: () => ({ found: [...game.secrets.found], count: game.secrets.count(), total: game.secrets.total(), bigHeads: game.secrets.bigHeads, heads: game.secrets.headCount || 0, phone: game.secrets.phone.pos.toArray(), ringing: game.secrets.phone.ringing, ufo: game.secrets.ufo.t, bigfoot: game.secrets.bigfoot.state, towerHits: game.secrets.towerHits }),
+  resetSecrets: () => { game.secrets.found.clear(); try { localStorage.removeItem('mw_secrets'); } catch (e) { /* noop */ } },
+  townsfolk: () => ({ net: game.npcs.net.stats, stats: game.npcs.folk.stats, states: game.npcs.pedestrians.reduce((a, p) => ((a[p.brain.state] = (a[p.brain.state] || 0) + 1), a), {}) }),
   nav: (x, z) => { const a = game.nav.nearest(game.player.position), b = game.nav.nearest(new THREE.Vector3(x, terrainHeight(x, z), z)); const path = game.nav.path(a, b); return path ? path.map((n) => [n.p.x, n.p.z].map((k) => +k.toFixed(1))) : null; },
 };
 game.init().catch((e) => { console.error(e); $('loadtext').textContent = 'Error: ' + e.message; game.errors.push(String(e.stack || e)); });

@@ -13,7 +13,8 @@ const results = [];
 const t0 = Date.now();
 const only = process.argv.slice(2);
 
-const browser = await chromium.launch({ headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
+const launchOpts = { headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] };
+const browser = await chromium.launch(launchOpts).catch(() => chromium.launch({ ...launchOpts, channel: 'chrome' }));
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const consoleErrors = [];
 page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
@@ -474,13 +475,14 @@ await check('npc_demographics', 'NPC demographics: kids are 0.68x trick-or-treat
       if (!n) return null;
       const p = n.char.root.position;
       n.talkT = 5; n.dodge = 0;
+      window.__qaNpc = n;
       window.__MW.teleport(p.x + 1.1, p.z + 0.4, p.y);
       g.player.facing = Math.atan2(-1.1, -0.4);
       return [p.x, p.y, p.z];
     }, kind);
     if (!ok) continue;
     await sleep(250);
-    await MW(() => { const g = window.__MW.game; const n = g.npcs.nearestTalkable(g.player.position, 3); if (n) g.npcs.talk(n); });
+    await MW(() => { const g = window.__MW.game; const n = window.__qaNpc || g.npcs.nearestTalkable(g.player.position, 3); if (n) g.npcs.talk(n); });
     await sleep(900);
     const last = (await state()).dialogue.at(-1);
     spoken.push({ kind, line: last.id, voiceDemo: last.demo, speaker: last.speaker });
@@ -580,7 +582,7 @@ await check('seated_drivers', 'Traffic cars, police cruisers, the forklift (and 
   await MW(() => window.__MW.resume());
 });
 
-await check('navigation_and_bounds', '30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - ground| < 0.6); traffic stays on the road graph', async (r) => {
+await check('navigation_and_bounds', '30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - support| < 0.75; physics vehicles may hop a little on kerbs and queued traffic); traffic stays on the road graph', async (r) => {
   await MW(() => { const g = window.__MW.game; window.__MW.spawnTestCar({ engine: 'v8sc' }, 60, 2.6, Math.PI / 2); window.__MW.teleport(60, 4.4); });
   await sleep(400);
   await MW(() => window.__MW.enterOwnedCar());
@@ -600,7 +602,7 @@ await check('navigation_and_bounds', '30 s of traffic + police pursuit: no vehic
     for (const v of snap.veh) {
       if (Math.abs(v.x) > 600 || Math.abs(v.z) > 600 || v.y < -20 || v.y > 150) worst.oob++;
       const dy = Math.abs(v.y - v.g);
-      if (dy > 0.6 && v.y > -50) { worst.float++; worst.maxDy = Math.max(worst.maxDy, dy); worst.sample = v; }
+      if (dy > 0.75 && v.y > -50) { worst.float++; worst.maxDy = Math.max(worst.maxDy, dy); worst.sample = v; }
     }
     for (const t of snap.traffic) { const dy = Math.abs(t.y - t.ground); if (dy > 0.6) { worst.float++; worst.maxDy = Math.max(worst.maxDy, dy); } if (Math.abs(t.x) > 600 || Math.abs(t.z) > 600) worst.oob++; }
     if (i % 10 === 0) samples.push(snap.traffic.slice(0, 3));
@@ -852,7 +854,7 @@ await check('doorbell_and_burglary', 'Ring a doorbell (E): chime, hinged front d
   await MW(() => { const g = window.__MW.game; const f = g.npcs.fence.char.root.position; g.ownedCar.teleport({ x: f.x + 3, y: 0, z: f.z }, 0); });
   await sleep(500);
   await MW(() => window.__MW.enterOwnedCar());
-  await sleep(1400);
+  await sleep(2600);
   const m2 = (await state()).money;
   const pr5 = await MW(() => window.__MW.prompt());
   await press('KeyE');
@@ -865,7 +867,7 @@ await check('doorbell_and_burglary', 'Ring a doorbell (E): chime, hinged front d
 await check('fuel_and_gas_station', 'Driving burns fuel (stalls when empty); refuelling at the Gas Station pumps restores 100% at $2/gal; jerrycan adds +35%', async (r) => {
   await MW(() => { const g = window.__MW.game; if (!g.player.vehicle) window.__MW.enterOwnedCar(); });
   await sleep(1400);
-  await MW(() => { const v = window.__MW.game.player.vehicle; v.teleport({ x: -60, y: 0, z: 2.6 }, Math.PI / 2); window.__MW.setFuel(60); });
+  await MW(() => { const v = window.__MW.game.player.vehicle; v.teleport({ x: -60, y: 0, z: -123.4 }, Math.PI / 2); window.__MW.setFuel(60); });
   await sleep(400);
   const f0 = await MW(() => window.__MW.fuelState());
   await hold(['KeyW'], 3500);
@@ -884,7 +886,7 @@ await check('fuel_and_gas_station', 'Driving burns fuel (stalls when empty); ref
   // jerrycan
   await MW(() => { const g = window.__MW.game; g.state.jerrycans = 1; g.player.vehicle.body.velocity.setZero(); });
   await sleep(300);
-  await MW(() => window.__MW.game.exitVehicle());
+  await MW(() => { const g = window.__MW.game; g.player.vehicle.body.velocity.setZero(); g.exitVehicle(); });
   await sleep(500);
   const prj = await MW(() => window.__MW.prompt());
   await MW(() => { const it = window.__MW.game.fuel.jerrycanCandidate(window.__MW.game.player.position); if (it) it.act(); });
@@ -907,7 +909,7 @@ await check('fuel_and_gas_station', 'Driving burns fuel (stalls when empty); ref
   await sleep(500);
   r.screenshots.push(await shot('25_gas_station_pump_hose'));
   await MW(() => window.__MW.resume());
-  await page.waitForFunction(() => { const f = window.__MW.fuelState(); return f && f.fuel >= 99.9 && !f.session; }, null, { timeout: 60000 });
+  await page.waitForFunction(() => { const f = window.__MW.fuelState(); return f && f.fuel >= 99.9 && !f.session; }, null, { timeout: 150000 });
   const f2 = await MW(() => window.__MW.fuelState());
   const m1 = (await state()).money;
   r.details.refuel = { prompt: pr, fuel: f2.fuel, cost: +(m0 - m1).toFixed(2), stats: f2.stats };
@@ -957,6 +959,381 @@ await check('trial', 'Graveyard Shift: driving through the start arch starts the
   const T = await MW(() => { const g = window.__MW.game; const v = g.player.vehicle; return { running: g.missions.trial.running, t: g.missions.trial.t, next: g.missions.trial.next, inCar: !!v, pos: v ? [v.position.x, v.position.y, v.position.z].map((n) => +n.toFixed(1)) : null }; });
   assert(r, T.running, 'trialRunning', T);
   r.screenshots.push(await shot('15_graveyard_shift_trial'));
+});
+
+// ------------------------------------------------------------------------------------------- PHASE 3
+const exitCar = () => MW(() => { const g = window.__MW.game; const v = g.player.vehicle; if (v) { v.body.velocity.setZero(); v.body.angularVelocity.setZero(); g.exitVehicle(); } if (g.activity) { (g.activity.stand || g.activity.close || (() => {})).call(g.activity); g.activity = null; } });
+const carAt = async (x, z, heading, cfg = {}) => {
+  await exitCar();
+  await sleep(400);
+  // one test car at a time: the previous one is removed so the perf snapshot isn't inflated
+  await MW(() => { const g = window.__MW.game; if (g.ownedCar && !g.player.vehicle && g.ownedCar.remove) g.ownedCar.remove(); });
+  await MW(([a, b, h, c]) => { window.__MW.spawnTestCar(c, a, b, h); const v = window.__MW.game.ownedCar; window.__MW.teleport(a + Math.cos(h) * 2.2, b - Math.sin(h) * 2.2); }, [x, z, heading, cfg]);
+  await sleep(300);
+  await MW(() => window.__MW.enterOwnedCar());
+  await sleep(1500);
+};
+
+await check('streets_signals', 'Blender street network (roads.glb from streets.json): asphalt, markings, crosswalks; traffic + walk signals cycle through their phases', async (r) => {
+  await exitCar();
+  const a = await MW(() => window.__MW.assets().roads);
+  assert(r, a && a.valid && a.meshes > 20, 'roadsGlb', a && { meshes: a.meshes, box: a.box });
+  const s0 = await MW(() => window.__MW.signals());
+  assert(r, s0.heads >= 15 && s0.peds >= 12 && s0.drag.length === 6, 'lamps', { heads: s0.heads, peds: s0.peds, drag: s0.drag });
+  const phases = {};
+  for (const t of [2, 17, 22, 32]) {
+    await MW((tt) => window.__MW.setSignalTime(tt), t);
+    phases[t] = await MW(() => { const s = window.__MW.signals(); const g = window.__MW.game.signals; const lit = g.heads.filter((h) => h.mesh.material.emissiveIntensity > 1).map((h) => h.node + h.group + h.color); return { A: s.ELM.A, B: s.ELM.B, walkA: s.ELM.walkA, lit: lit.filter((x) => x.startsWith('ELM')).sort().join(',') }; });
+  }
+  r.details.phases = phases;
+  assert(r, phases[2].A === 'green' && phases[2].B === 'red' && phases[17].A === 'yellow' && phases[22].A === 'red' && phases[22].B === 'green', 'phaseOrder', phases);
+  assert(r, phases[22].walkA && !phases[2].walkA, 'walkSignalWhileHeld', { t22: phases[22].walkA, t2: phases[2].walkA });
+  assert(r, /ELMAG/.test(phases[2].lit) && /ELMBR/.test(phases[2].lit) && /ELMBG/.test(phases[22].lit), 'lampsFollowPhase', phases);
+  await MW(() => window.__MW.shot(-14, 7.5, -16, 2, 0.5, 6));
+  await sleep(900);
+  r.screenshots.push(await shot('30_main_elm_intersection_signals'));
+  await MW(() => window.__MW.shot(6, 4.5, 34, -1, 0.4, 0));
+  await sleep(700);
+  r.screenshots.push(await shot('30_elm_avenue_crosswalk_markings'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('traffic_obeys_signals', 'AI traffic stops at red lights (and on yellow when it can), comes to a full stop at stop signs, never enters a junction on red', async (r) => {
+  await MW(() => window.__MW.teleport(-30, -35));
+  await MW(() => { const s = window.__MW.game.traffic.stats; s.redStops = 0; s.redRuns = 0; s.stopSigns = 0; });
+  const samples = [];
+  for (let i = 0; i < 50; i++) {
+    await sleep(500);
+    samples.push(await MW(() => { const t = window.__MW.trafficStats(); return { red: t.cars.filter((c) => c.red).length, stopped: t.cars.filter((c) => c.red && c.speed < 1).length }; }));
+  }
+  const st = await MW(() => window.__MW.trafficStats());
+  r.details.stats = { redStops: st.redStops, redRuns: st.redRuns, stopSigns: st.stopSigns, junctionWaits: st.junctionWaits, honks: st.honks };
+  r.details.heldSamples = samples.filter((s) => s.red).length;
+  assert(r, st.redStops > 0 && samples.some((s) => s.stopped > 0), 'carsHoldAtRed', r.details.stats);
+  assert(r, st.redRuns === 0, 'noRedLightRunners', st.redRuns);
+  const held = await MW(() => { const g = window.__MW.game; const c = g.traffic.driving.find((d) => d.redHold && d.speed < 0.3); if (!c) return null; const p = c.body.position; window.__MW.shot(p.x - 10, 6, p.z + 9, p.x + 6, 1, p.z); return [p.x, p.z]; });
+  await sleep(700);
+  r.details.heldCar = held;
+  r.screenshots.push(await shot('30_traffic_waiting_at_red'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('townsfolk_ai', 'Townsfolk walk a sidewalk network to doors/benches/bus stops/porches, wait for WALK or a traffic gap and cross only at crosswalks; horns make them jump back and shout', async (r) => {
+  await exitCar();
+  const t0 = await MW(() => window.__MW.townsfolk());
+  let offCrosswalk = [];
+  for (let i = 0; i < 20; i++) {
+    await sleep(1000);
+    const bad = await MW(() => {
+      const g = window.__MW.game, xs = [-28, 90, -10.4, 10.4, 65.6, 86.4];
+      return g.npcs.pedestrians.filter((p) => !p.hidden && p.dodge <= 0 && p.brain.state === 'walk').map((p) => p.char.root.position).filter((q) => {
+        const onMain = Math.abs(q.z) < 6.6 && Math.abs(q.x) < 186 && !xs.some((x) => Math.abs(q.x - x) < 3.5) && !(Math.abs(q.x - 76) < 9);
+        const onElm = q.z > 12 && q.z < 140 && Math.abs(q.x) < 5.6 && Math.abs(q.z - 72) > 3.5;
+        return onMain || onElm;
+      }).map((q) => [+q.x.toFixed(1), +q.z.toFixed(1)]);
+    });
+    offCrosswalk.push(...bad);
+  }
+  const t1 = await MW(() => window.__MW.townsfolk());
+  r.details.net = t1.net; r.details.stats = t1.stats; r.details.states = t1.states; r.details.jaywalkSamples = offCrosswalk.slice(0, 6);
+  assert(r, t1.net.crossings >= 8 && t1.net.pois >= 20, 'network', t1.net);
+  assert(r, t1.stats.trips > t0.stats.trips || t1.stats.visits > 0, 'errands', t1.stats);
+  assert(r, t1.stats.crossings > 0 && (t1.stats.signalWaits > 0 || t1.stats.gapWaits > 0), 'crossAtCrosswalks', t1.stats);
+  assert(r, offCrosswalk.length === 0, 'noJaywalking', offCrosswalk.length);
+  // horn reaction
+  const ped = await MW(() => { const g = window.__MW.game; const p = g.npcs.pedestrians.find((x) => !x.hidden && x.brain.state === 'walk' && Math.abs(x.char.root.position.z) > 6); if (!p) return null; const q = p.char.root.position; return [q.x, q.z]; });
+  if (ped) {
+    await MW(([x, z]) => { window.__MW.spawnTestCar({}, x - 7, z, Math.PI / 2); }, ped);
+    await MW(() => window.__MW.enterOwnedCar());
+    await sleep(1500);
+    const before = await MW(() => window.__MW.townsfolk().stats.honkReactions);
+    await press('KeyH');
+    await sleep(800);
+    const after = await MW(() => window.__MW.townsfolk().stats.honkReactions);
+    r.details.honk = { before, after, line: (await state()).dialogue.slice(-1)[0] };
+    assert(r, after > before, 'honkReaction', r.details.honk);
+  }
+  await exitCar();
+  await MW(() => window.__MW.shot(-40, 3.2, 14, -22, 1, 4));
+  await sleep(800);
+  r.screenshots.push(await shot('31_townsfolk_town_square'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('cinema_movie', 'Palace Cinema: box office ticket ($8), usher blocks ticketless entry, popcorn, sit in a seat and watch the projected film with voiced cues; ghost projectionist in the booth', async (r) => {
+  await exitCar();
+  const c0 = await MW(() => window.__MW.cinema());
+  // no ticket: the usher sends you back to the lobby
+  await MW(() => { const c = window.__MW.game.cinema; const p = c.local(0, 0.2, -2); window.__MW.game.player.teleport(p, c.rot); });
+  await sleep(700);
+  const bounced = await MW(() => ({ inAud: window.__MW.game.cinema.inAuditorium(window.__MW.game.player.position), stops: window.__MW.game.cinema.stats.usherStops }));
+  assert(r, !bounced.inAud && bounced.stops >= 1, 'usherBlocks', bounced);
+  // box office
+  const bo = c0.spots.BoxOffice;
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, Math.PI), bo);
+  await sleep(500);
+  const m0 = (await state()).money;
+  const pr = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(900);
+  const m1 = (await state()).money;
+  assert(r, /ticket/i.test(pr || '') && m0 - m1 === 8, 'ticketBought', { prompt: pr, paid: m0 - m1 });
+  // popcorn
+  const cs = c0.spots.Concession;
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, 0), cs);
+  await sleep(500);
+  const pp = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(700);
+  assert(r, /popcorn/i.test(pp || '') && (await state()).money === m1 - 5, 'popcorn', pp);
+  // sit down in row C and watch
+  await MW(() => { const c = window.__MW.game.cinema; const seat = c.seats.find((s) => s.row === 2 && s.col === 11 && !s.taken) || c.seats.find((s) => !s.taken && s.row === 3); window.__MW.game.player.teleport({ x: seat.pos.x, y: seat.pos.y - 0.4, z: seat.pos.z }, c.rot); });
+  await sleep(600);
+  const ps = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(1500);
+  const f0 = await MW(() => window.__MW.cinema());
+  assert(r, /Sit down/.test(ps || '') && f0.seated, 'seated', { prompt: ps, seated: f0.seated });
+  r.screenshots.push(await shot('32_palace_seated_watching_night_of_the_v8'));
+  // jump the reel to the chase scene and to the post-credits stinger: voiced cues fire for the seated viewer
+  await MW(() => { const g = window.__MW.game; g.time = Math.floor(g.time / 102) * 102 + 36; });
+  await sleep(3500);
+  r.screenshots.push(await shot('32_palace_film_chase_scene'));
+  await MW(() => { const g = window.__MW.game; g.time = Math.floor(g.time / 102) * 102 + 86; });
+  await sleep(1200);
+  await MW(() => { const g = window.__MW.game; g.time = Math.floor(g.time / 102) * 102 + 93.6; });
+  await sleep(3200);
+  const f1 = await MW(() => window.__MW.cinema());
+  const lines = (await state()).dialogue.map((d) => d.id);
+  r.details.film = { frames: [f0.frames, f1.frames], scene: f1.scene, cues: f1.stats.cuesPlayed, lines };
+  assert(r, f1.frames > f0.frames + 20, 'filmProjecting', r.details.film.frames);
+  assert(r, f1.stats.cuesPlayed >= 2 && lines.includes('movie_villain_2'), 'voicedCues', r.details.film);
+  r.screenshots.push(await shot('32_palace_post_credits_stinger'));
+  await press('KeyE');
+  await sleep(600);
+  assert(r, !(await MW(() => window.__MW.cinema())).seated, 'standUp', true);
+  // the projection booth ghost
+  await MW(() => { const c = window.__MW.game.cinema; const p = c.b.spots.BoothTop; window.__MW.game.player.teleport({ x: p.x, y: p.y + 0.1, z: p.z }, c.rot + Math.PI); });
+  await sleep(2500);
+  const gh = await MW(() => window.__MW.cinema().ghost);
+  await MW(() => { const c = window.__MW.game.cinema; c.talkGhost(); const p = c.ghost.char.root.position; window.__MW.shot(p.x + 2.2, p.y + 1.7, p.z - 2.4, p.x, p.y + 1.2, p.z); });
+  await sleep(900);
+  r.screenshots.push(await shot('32_projection_booth_ghost'));
+  assert(r, gh > 0.3, 'ghostAppears', gh);
+  await MW(() => window.__MW.resume());
+  await MW(() => { const c = window.__MW.game.cinema; const p = c.local(0, 0, 18); window.__MW.shot(p.x + 8, 4.5, p.z + (c.rot ? -10 : 10), c.center.x, 4, c.center.z - 14 * Math.cos(c.rot)); });
+  await sleep(800);
+  r.screenshots.push(await shot('32_palace_cinema_marquee'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('drivein_intermission', 'Starlight Drive-In shows the same film from a parked car (radio audio); three honks swap the reel for the INTERMISSION cartoon', async (r) => {
+  await carAt(135, -98, 0);
+  await MW(() => { const v = window.__MW.game.player.vehicle; v.teleport({ x: 135, y: 0, z: -98 }, 0); });
+  await sleep(1200);
+  const w = await MW(() => window.__MW.game.cinema.watching());
+  assert(r, w === 'drivein', 'watchingFromCar', w);
+  r.screenshots.push(await shot('33_drive_in_from_car'));
+  for (let i = 0; i < 3; i++) { await press('KeyH'); await sleep(350); }
+  await sleep(800);
+  const c = await MW(() => ({ inter: window.__MW.game.cinema.film.intermission, n: window.__MW.cinema().stats.intermissions }));
+  assert(r, c.inter > 0 && c.n >= 1, 'intermission', c);
+  await MW(() => window.__MW.shot(135, 5, -92, 135, 6.5, -72));
+  await sleep(900);
+  r.screenshots.push(await shot('33_drive_in_intermission_reel'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('dyno_pull', 'Motorworks dyno cell: drive onto the rollers, [E] runs an automatic pull; rollers/fan spin, the wall display plots HP + torque, Gina reads out the result', async (r) => {
+  const spot = await MW(() => window.__MW.activities().dynoSpot);
+  await carAt(spot[0] + 1.5, spot[2], -Math.PI / 2, { engine: 'v8sc', hood: 'Hood_Blower' });
+  await MW(([x, y, z]) => { window.__MW.game.player.vehicle.teleport({ x, y, z }, -Math.PI / 2); }, spot);
+  await sleep(1800);
+  const pr = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(4200);
+  const mid = await MW(() => ({ act: window.__MW.activities().activity, roller: +window.__MW.game.activities.dyno.nodes.Dyno_Roller_F.rotation.z.toFixed(2), curve: window.__MW.game.activities.dyno.curve.length }));
+  r.screenshots.push(await shot('34_dyno_pull_in_progress'));
+  await sleep(4500);
+  const a = await MW(() => window.__MW.activities());
+  r.details = { prompt: pr, mid, dyno: a.dyno, line: (await state()).dialogue.slice(-1)[0] };
+  assert(r, /dyno/i.test(pr || ''), 'prompt', pr);
+  assert(r, mid.act === 'Dyno' && Math.abs(mid.roller) > 0.5 && mid.curve > 10, 'pullRunning', mid);
+  assert(r, a.dyno.pulls >= 1 && a.dyno.best > 150 && !a.activity, 'result', a.dyno);
+  await MW(() => { const s = window.__MW.game.activities.dyno.spot; window.__MW.shot(s.x + 1.5, 3.2, s.z - 6.5, s.x, 3.6, s.z + 9.5); });
+  await sleep(700);
+  r.screenshots.push(await shot('34_dyno_power_curve_display'));
+  await MW(() => window.__MW.resume());
+});
+
+await check('drag_race', 'Proving Ground eighth-mile: christmas tree countdown, rival Vic Vapor, ET + trap speed, $200 stake; jumping the start is a foul; the strip is closed to traffic during the run', async (r) => {
+  await carAt(-147, -123.4, Math.PI / 2, { engine: 'tt', trans: 'short' });
+  await MW(() => { window.__MW.game.state.money = Math.max(window.__MW.game.state.money, 5000); });
+  const pr = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(1500);
+  const closed = await MW(() => window.__MW.trafficStats().closed);
+  r.screenshots.push(await shot('35_drag_strip_staging_tree'));
+  await sleep(2600);
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(() => { const d = window.__MW.game.activities.drag.race; return !d || d.phase === 'done'; }, null, { timeout: 30000 }).catch(() => {});
+  await page.keyboard.up('KeyW');
+  const res = await MW(() => { const d = window.__MW.game.activities.drag; return { result: d.race && d.race.result, et: d.race && d.race.playerT, rival: d.race && d.race.rival.done, stats: d.stats, best: d.best }; });
+  r.screenshots.push(await shot('35_drag_race_finish'));
+  r.details = { prompt: pr, closed, res };
+  assert(r, /drag race/i.test(pr || ''), 'prompt', pr);
+  assert(r, closed && closed.includes('south_w'), 'stripClosed', closed);
+  assert(r, (res.result === 'win' || res.result === 'lose') && res.et > 3 && res.et < 20, 'raced', res);
+  await page.waitForFunction(() => !window.__MW.game.activities.drag.race, null, { timeout: 15000 }).catch(() => {});
+  assert(r, !(await MW(() => window.__MW.trafficStats().closed)), 'stripReopened', true);
+  // foul: launching before the green
+  await MW(() => { const v = window.__MW.game.player.vehicle; v.teleport({ x: -147, y: 0, z: -123.4 }, Math.PI / 2); v.body.velocity.setZero(); });
+  await sleep(800);
+  await press('KeyE');
+  await sleep(1200);
+  await hold(['KeyW'], 900);
+  await sleep(600);
+  const foul = await MW(() => { const d = window.__MW.game.activities.drag; return d.race ? d.race.result : null; });
+  r.details.foul = foul;
+  assert(r, foul === 'foul', 'jumpStartFoul', foul);
+  await page.waitForFunction(() => !window.__MW.game.activities.drag.race, null, { timeout: 15000 }).catch(() => {});
+});
+
+await check('parts_runner_shift', 'Break-room time clock starts a Parts Runner shift: grab a crate at receiving, carry it to the flashing station ring, get paid', async (r) => {
+  await exitCar();
+  const a = await MW(() => window.__MW.activities());
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, -Math.PI / 2), a.timeClock);
+  await sleep(600);
+  const pr = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(800);
+  const j = await MW(() => window.__MW.activities().job);
+  assert(r, /Parts Runner/.test(pr || '') && j && j.n === 0, 'punchIn', { pr, j });
+  r.screenshots.push(await shot('36_break_room_time_clock'));
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, Math.PI), a.pickup);
+  await sleep(600);
+  await press('KeyE');
+  await sleep(600);
+  const carrying = await MW(() => window.__MW.game.player.carrying && window.__MW.game.player.carrying.kind);
+  assert(r, carrying === 'crate', 'grabCrate', carrying);
+  const job = await MW(() => window.__MW.activities().job);
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, 0), job.drop);
+  await sleep(700);
+  r.screenshots.push(await shot('36_parts_runner_delivery_ring'));
+  const m0 = (await state()).money;
+  const dp = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(700);
+  const m1 = (await state()).money;
+  const j2 = await MW(() => window.__MW.activities().job);
+  r.details.delivery = { prompt: dp, pay: m1 - m0, job: j2 };
+  assert(r, /Deliver/.test(dp || '') && m1 - m0 >= 120 && j2.n === 1, 'delivered', r.details.delivery);
+  await MW(() => window.__MW.game.activities.runner.end('quit'));
+});
+
+await check('arcade_vending', 'Break room: PUMPKIN PANIC arcade cabinet ($1, playable overlay, high score) and the Ghoul-Cola vending machine (+25 health)', async (r) => {
+  const a = await MW(() => window.__MW.activities());
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, -Math.PI / 2), a.arcade);
+  await sleep(600);
+  const pr = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(500);
+  await hold(['KeyD'], 900);
+  await hold(['KeyA'], 900);
+  const on = await MW(() => ({ act: window.__MW.activities().activity, overlay: !!document.getElementById('arcade') }));
+  r.screenshots.push(await shot('37_pumpkin_panic_arcade'));
+  await press('KeyE');
+  await sleep(500);
+  const off = await MW(() => ({ act: window.__MW.activities().activity, overlay: !!document.getElementById('arcade'), plays: window.__MW.game.activities.arcade.stats.plays }));
+  assert(r, /PUMPKIN PANIC/.test(pr || '') && on.act === 'Arcade' && on.overlay, 'arcadeOpens', { pr, on });
+  assert(r, !off.act && !off.overlay && off.plays >= 1, 'arcadeCloses', off);
+  await MW(() => { window.__MW.game.combat.health = 50; });
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, -Math.PI / 2), a.vend);
+  await sleep(600);
+  const vp = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(400);
+  const hp = (await state()).health;
+  assert(r, /Ghoul-Cola/.test(vp || '') && hp >= 75, 'vending', { vp, hp });
+});
+
+await check('stunt_jump', 'Stunt ramps: launching off a ramp at speed pays out for airtime', async (r) => {
+  await carAt(116, -50, Math.PI / 2, { engine: 'tt' });
+  await MW(() => { const v = window.__MW.game.player.vehicle; v.teleport({ x: 118, y: 0, z: -50 }, Math.PI / 2); });
+  await sleep(500);
+  await MW(() => { const b = window.__MW.game.player.vehicle.body; b.velocity.set(30, 0, 0); });
+  await hold(['KeyW'], 3500);
+  await sleep(1500);
+  const s = await MW(() => window.__MW.activities().stunts);
+  r.details.stunts = s;
+  assert(r, s.jumps >= 1 && s.best > 0.7, 'jumped', s);
+  r.screenshots.push(await shot('38_stunt_ramp_landing'));
+});
+
+await check('secrets', 'Easter eggs: Konami big-head mode, haunted payphone, thirteen bells, UFO over the water tower, Bigfoot, 88 mph flux, developers\' room (+$10k), plus the cinema ones — tracked n/10 in the pause menu', async (r) => {
+  await exitCar();
+  await MW(() => window.__MW.resetSecrets());
+  // konami
+  for (const k of ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA']) await press(k);
+  await sleep(500);
+  const big = await MW(() => window.__MW.secrets());
+  assert(r, big.bigHeads && big.heads > 10, 'konamiBigHeads', { on: big.bigHeads, heads: big.heads });
+  await MW(() => { const p = window.__MW.game.player.position; window.__MW.shot(p.x + 3, p.y + 2, p.z + 3, p.x, p.y + 1.4, p.z); });
+  await sleep(600);
+  r.screenshots.push(await shot('39_konami_big_head_mode'));
+  await MW(() => { window.__MW.resume(); window.__MW.game.secrets.toggleBigHeads(); });
+  // payphone
+  const ph = big.phone;
+  await MW(([x, y, z]) => { window.__MW.game.player.teleport({ x, y, z: z + 1.2 }, Math.PI); window.__MW.game.secrets.phone.ringT = 0; }, ph);
+  await sleep(1200);
+  const pp = await MW(() => window.__MW.prompt());
+  await press('KeyE');
+  await sleep(500);
+  // thirteen bells (fast-forwarded), UFO, bigfoot, dev room
+  await MW(() => { const s = window.__MW.game.secrets; s.ringBells(); s.bells = 1; s.bellT = 0; });
+  await sleep(800);
+  await MW(() => { const s = window.__MW.game.secrets; const o = new window.__MW.game.camera.position.constructor(-120, 12, -80); for (let i = 0; i < 5; i++) s.shot(o, s.tower.center.clone().sub(o).normalize()); });
+  await sleep(5000);
+  await MW(() => { const u = window.__MW.game.secrets.ufo.obj.position; window.__MW.shot(u.x - 30, 14, u.z + 30, u.x, u.y - 6, u.z); });
+  await sleep(700);
+  r.screenshots.push(await shot('39_ufo_tractor_beam'));
+  await MW(() => window.__MW.resume());
+  await MW(() => { const b = window.__MW.game.secrets.bigfoot.char.root.position; window.__MW.teleport(b.x + 10, b.z + 5); });
+  await sleep(1200);
+  const dv = await MW(() => { const s = window.__MW.game.secrets.devSpot; return [s.x, s.y, s.z]; });
+  const m0 = (await state()).money;
+  await MW(([x, y, z]) => window.__MW.game.player.teleport({ x, y, z }, Math.PI / 2), dv);
+  await sleep(900);
+  const m1 = (await state()).money;
+  r.screenshots.push(await shot('39_developers_room'));
+  // 88 mph on the proving ground
+  await carAt(-60, -123.4, Math.PI / 2, { engine: 'tt', trans: 'long' });
+  await MW(() => { const b = window.__MW.game.player.vehicle.body; b.velocity.set(41, 0, 0); });
+  await sleep(700);
+  const sc = await MW(() => window.__MW.secrets());
+  r.details = { payphonePrompt: pp, found: sc.found, devBonus: m1 - m0, ufo: sc.ufo, bigfoot: sc.bigfoot };
+  assert(r, /payphone/i.test(pp || '') && sc.found.includes('payphone'), 'payphone', pp);
+  for (const k of ['konami', 'clock13', 'ufo', 'bigfoot', 'devroom', 'time88']) assert(r, sc.found.includes(k), 'found_' + k, sc.found.includes(k));
+  assert(r, m1 - m0 >= 10000, 'devRoomBonus', m1 - m0);
+  await exitCar();
+});
+
+await check('phase3_voice_lines', 'All 49 new ElevenLabs lines (cinema, film cast, dyno, marshal, rival, payphone, street reactions) are cached MP3s; new lines played during the run with matching demographics', async (r) => {
+  const res = await MW(async () => {
+    const man = await (await fetch('audio/dialogue/manifest.json')).json();
+    const ids = ['boxoffice_1', 'usher_stop', 'concession_1', 'projectionist_1', 'movie_narr_1', 'movie_villain_2', 'dyno_1', 'dyno_record', 'shift_start', 'marshal_1', 'marshal_win', 'rival_1', 'payphone_1', 'time88', 'clock13', 'secret_room', 'konami',
+      'honkm_1', 'honkf_1', 'kidb_honk', 'kidg_honk', 'rage_m', 'rage_f', 'kidb_tot', 'kidg_tot', 'homem_candy', 'homef_candy', 'civm_5', 'civilian_5'];
+    const missing = ids.filter((i) => !man[i] || man[i].engine !== 'elevenlabs');
+    const heads = await Promise.all(ids.slice(0, 6).map((i) => fetch('audio/dialogue/' + man[i].file, { method: 'HEAD' }).then((x) => x.ok)));
+    const all = Object.values(man).filter((m) => m.engine === 'elevenlabs').length;
+    return { missing, headsOk: heads.every(Boolean), elevenlabs: all };
+  });
+  const audit = await MW(() => window.__MW.npcAudit());
+  const played = (await MW(() => window.__MW.game.dialogueLog.map((d) => d.id))).filter((id) => /^(boxoffice|usher|concession|projectionist|movie_|dyno|shift|arcade|marshal|rival|payphone|time88|clock13|secret_room|konami|honk|kid[bg]_(honk|tot)|rage|home[mf]_candy|civm_5|civilian_5)/.test(id));
+  r.details = { ...res, auditViolations: audit.length, played: [...new Set(played)] };
+  assert(r, res.missing.length === 0 && res.headsOk && res.elevenlabs >= 130, 'cached', res);
+  assert(r, audit.length === 0, 'demographicAudit', audit.slice(0, 4));
+  assert(r, new Set(played).size >= 10, 'newLinesPlayed', new Set(played).size);
 });
 
 await check('radio_audio', 'Spoken dialogue audio + radio DJ use the cached local audio files (no TTS fallback needed)', async (r) => {

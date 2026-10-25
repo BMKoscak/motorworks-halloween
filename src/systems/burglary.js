@@ -187,7 +187,7 @@ export class Burglary {
     const g = this.game, fence = g.npcs.fence;
     if (!v.trunk || !v.trunk.length) return null;
     const val = v.trunk.reduce((a, i) => a + i.value, 0);
-    if (fence && fence.char.root.position.distanceTo(v.visual.root.position) < 9 && v.speedAbs < 1.5) return { text: `[E] Sell trunk loot to Vinnie ($${val})`, act: () => this.sell('trunk', v) };
+    if (fence && fence.char.root.position.distanceTo(v.visual.root.position) < 9 && v.speedAbs < 2.5) return { text: `[E] Sell trunk loot to Vinnie ($${val})`, act: () => this.sell('trunk', v) };
     if (g.inBayZone(v.position) && v.speedAbs < 1.5) return { text: `[Shift+E] Cash out trunk loot at the bay ($${val})`, alt: true, act: () => this.sell('trunk', v) };
     return null;
   }

@@ -1,25 +1,16 @@
 import * as THREE from 'three';
+import { STREETS, approach } from '../world/streetGeom.js';
 
 /**
  * Closed-loop road graph for AI traffic and police patrols.
  * Two-way roads (centrelines between named nodes) become two right-hand lanes offset 2.6 m from the centre,
  * trimmed at junctions and joined by smooth Bezier connectors; dead ends get U-turn loops, so every lane has a successor
- * and cars circulate Main Street, Elm Avenue, the Factory Loop and the Hill Road forever without leaving the asphalt.
+ * and cars circulate Main Street, Elm Avenue, the Factory Loop, the outer avenues and the Hill Road forever without leaving the asphalt.
+ * The network itself lives in src/data/streets.json (shared with blender/build_roads.py, which models the asphalt from it).
  */
-const NODES = {
-  M_W: [-186, 0], LOT_W: [-50, 0], ELM: [0, 0], LOT_E: [55, 0], EXIT: [76, 0], M_E: [186, 0],
-  HILL: [0, 146], GATE: [0, 210],
-  LOT_SW: [-50, -48], LOT_SE: [55, -48], APRON: [76, -86],
-};
-const ROADS = [
-  { id: 'main_w', a: 'M_W', b: 'LOT_W', w: 2.6 }, { id: 'main_lw', a: 'LOT_W', b: 'ELM', w: 2.6 }, { id: 'main_le', a: 'ELM', b: 'LOT_E', w: 2.6 },
-  { id: 'main_e1', a: 'LOT_E', b: 'EXIT', w: 2.6 }, { id: 'main_e2', a: 'EXIT', b: 'M_E', w: 2.6 },
-  { id: 'elm', a: 'ELM', b: 'HILL', w: 2.6 },
-  { id: 'hill', a: 'HILL', b: 'GATE', w: 2.4, via: [[0, 152], [14, 166], [16, 176], [-10, 188], [-14, 197], [4, 205]] },
-  { id: 'exit', a: 'EXIT', b: 'APRON', w: 2.2 },
-  { id: 'lot_e', a: 'LOT_E', b: 'LOT_SE', w: 2.4 }, { id: 'lot_s', a: 'LOT_SE', b: 'LOT_SW', w: 2.4 }, { id: 'lot_w', a: 'LOT_SW', b: 'LOT_W', w: 2.4 },
-];
-const DEAD_ENDS = new Set(['M_W', 'M_E', 'GATE', 'APRON']);
+const NODES = STREETS.nodes;
+const ROADS = STREETS.roads.filter((r) => r.graph !== false);
+const DEAD_ENDS = new Set(STREETS.deadEnds);
 const TRIM = 7;
 
 function polyline(pts, step = 1.5) {
@@ -103,8 +94,10 @@ export class RoadGraph {
       for (const dir of [1, -1]) {
         const c = dir > 0 ? center : center.slice().reverse();
         const from = dir > 0 ? A : B, to = dir > 0 ? B : A;
-        const lane = trimLine(offsetLine(c, r.w), from.dead ? 4 : TRIM, to.dead ? 4 : TRIM);
-        const seg = new Segment(lane, 'lane', { road: r.id, from: from.id, to: to.id });
+        // lanes end at the painted stop bar of signalised / stop-controlled approaches, else TRIM before the node
+        const trimAt = (n) => { const ap = approach(n.id, r.id); return ap.stopDist ? ap.stopDist + 1.4 : n.dead ? 4 : TRIM; };
+        const lane = trimLine(offsetLine(c, r.w), trimAt(from), trimAt(to));
+        const seg = new Segment(lane, 'lane', { road: r.id, from: from.id, to: to.id, control: approach(to.id, r.id) });
         this.lanes.push(seg);
         from.out.push(seg);
         to.in.push(seg);
@@ -121,15 +114,18 @@ export class RoadGraph {
           let ctrl;
           if (uturn) {
             const fwd = inc.at(inc.length).dir;
-            ctrl = a.clone().add(b).multiplyScalar(0.5).addScaledVector(fwd, 7);
+            ctrl = a.clone().add(b).multiplyScalar(0.5).addScaledVector(fwd, 5.5);
           } else {
             // control point = where the two lane lines meet (straight-through keeps to its lane)
             const di = inc.at(inc.length).dir, dq = out.at(0).dir;
             const cross = di.x * dq.z - di.z * dq.x;
-            if (Math.abs(cross) < 0.2) ctrl = a.clone().add(b).multiplyScalar(0.5);
-            else ctrl = a.clone().addScaledVector(di, ((b.x - a.x) * dq.z - (b.z - a.z) * dq.x) / cross);
+            if (Math.abs(cross) < 0.25) ctrl = a.clone().add(b).multiplyScalar(0.5);
+            else {
+              const t = THREE.MathUtils.clamp(((b.x - a.x) * dq.z - (b.z - a.z) * dq.x) / cross, -12, 12);
+              ctrl = a.clone().addScaledVector(di, t);
+            }
           }
-          const pts = uturn ? bezier(a, ctrl, b, 14) : bezier(a, ctrl, b, 10);
+          const pts = uturn ? bezier(a, ctrl, b, 18) : bezier(a, ctrl, b, 16);
           const seg = new Segment(pts, uturn ? 'uturn' : 'turn', { node: n.id, from: inc.road, to: out.road });
           seg.next = [out];
           inc.next.push(seg);
@@ -146,7 +142,7 @@ export class RoadGraph {
   nearest(p, lanesOnly = true) {
     let best = null;
     for (const seg of lanesOnly ? this.lanes : this.segments) {
-      for (let i = 0; i < seg.pts.length; i += 2) {
+      for (let i = 0; i < seg.pts.length; i++) {
         const q = seg.pts[i];
         const d = Math.hypot(q.x - p.x, q.z - p.z);
         if (!best || d < best.d) best = { seg, s: seg.cum[i], p: q.clone(), d };

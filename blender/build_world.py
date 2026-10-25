@@ -38,29 +38,43 @@ def col(name, size, center, parent):
     return box("COL_" + name, size, center, COLM(), pivot=center, parent=parent)
 
 
-def wall(name, a, b, h, t, mtl, parent, openings=(), y0=0.0, collide=True):
-    """Axis-aligned wall from a=(x,z) to b=(x,z) with door/window openings [(s0,s1,top[,sill])] measured along the wall.
-    Doors leave the gap open to the floor; windows (with a sill height) keep a sill piece below them."""
+def wall(name, a, b, h, t, mtl, parent, openings=(), y0=0.0, collide=True, cap_ends=None):
+    """Axis-aligned wall from a=(x,z) to b=(x,z) of height h above y0, with door/window openings
+    [(s0,s1,top[,sill])] measured along the wall (top and sill are absolute Y coordinates).
+    Uses 2D rectangle splitting so multi-storey openings never conflict, and extends x-walls by t/2
+    at both ends by default so perpendicular corner joints are completely flush with zero gaps."""
     ax = 'x' if abs(b[0] - a[0]) > abs(b[1] - a[1]) else 'z'
     L = abs((b[0] - a[0]) if ax == 'x' else (b[1] - a[1]))
     start = min(a[0], b[0]) if ax == 'x' else min(a[1], b[1])
     fixed = a[1] if ax == 'x' else a[0]
-    cuts = sorted(openings)
-    pieces = []
-    cur = 0.0
-    for cut in cuts:
+    y1 = y0 + h
+    if cap_ends is None:
+        cap_ends = (ax == 'x')
+    ext = (t / 2.0) if cap_ends else 0.0
+    rects = [(-ext, L + ext, y0, y1)]
+    for cut in sorted(openings):
         s0, s1, top = cut[0], cut[1], cut[2]
-        if s0 > cur:
-            pieces.append((cur, s0, y0, h))
-        pieces.append((s0, s1, top, h))  # lintel
-        if len(cut) > 3:
-            pieces.append((s0, s1, y0, cut[3]))  # window sill
-        cur = s1
-    if cur < L:
-        pieces.append((cur, L, y0, h))
+        sill = cut[3] if len(cut) > 3 else y0
+        cy0, cy1 = min(sill, top), max(sill, top)
+        next_rects = []
+        for (u0, u1, v0, v1) in rects:
+            cs0, cs1 = max(u0, s0), min(u1, s1)
+            cv0, cv1 = max(v0, cy0), min(v1, cy1)
+            if cs1 - cs0 <= 0.005 or cv1 - cv0 <= 0.005:
+                next_rects.append((u0, u1, v0, v1))
+                continue
+            if cs0 - u0 > 0.01:
+                next_rects.append((u0, cs0, v0, v1))
+            if u1 - cs1 > 0.01:
+                next_rects.append((cs1, u1, v0, v1))
+            if cv0 - v0 > 0.01:
+                next_rects.append((cs0, cs1, v0, cv0))
+            if v1 - cv1 > 0.01:
+                next_rects.append((cs0, cs1, cv1, v1))
+        rects = next_rects
     specs = []
-    for (u0, u1, v0, v1) in pieces:
-        if v1 - v0 < 0.01:
+    for (u0, u1, v0, v1) in rects:
+        if u1 - u0 < 0.01 or v1 - v0 < 0.01:
             continue
         c_u = start + (u0 + u1) / 2
         if ax == 'x':
@@ -76,14 +90,17 @@ def wall(name, a, b, h, t, mtl, parent, openings=(), y0=0.0, collide=True):
 
 
 def gable_roof(name, w, d, y, rise, overhang, mtl, parent, axis='x', pivot=(0, 0, 0), cx=0, cz=0):
-    """Gable roof whose ridge runs along `axis`."""
+    """Gable roof whose ridge runs along `axis`. Eaves drop below `y` so the roof underside meets the wall top cleanly."""
+    span = (d / 2.0) if axis == 'x' else (w / 2.0)
+    drop = rise * overhang / max(0.1, span) - 0.08
+    y_eave = y - drop
     if axis == 'x':
-        prof = [(cz + d / 2 + overhang, y), (cz, y + rise), (cz - d / 2 - overhang, y),
-                (cz - d / 2 - overhang, y - 0.15), (cz, y + rise - 0.2), (cz + d / 2 + overhang, y - 0.15)]
+        prof = [(cz + d / 2 + overhang, y_eave), (cz, y + rise), (cz - d / 2 - overhang, y_eave),
+                (cz - d / 2 - overhang, y_eave - 0.18), (cz, y + rise - 0.22), (cz + d / 2 + overhang, y_eave - 0.18)]
         return profile(name, prof, cx - w / 2 - overhang, cx + w / 2 + overhang, mtl, pivot, parent)
     bm = bmesh.new()
-    prof = [(cx + w / 2 + overhang, y), (cx, y + rise), (cx - w / 2 - overhang, y),
-            (cx - w / 2 - overhang, y - 0.15), (cx, y + rise - 0.2), (cx + w / 2 + overhang, y - 0.15)]
+    prof = [(cx + w / 2 + overhang, y_eave), (cx, y + rise), (cx - w / 2 - overhang, y_eave),
+            (cx - w / 2 - overhang, y_eave - 0.18), (cx, y + rise - 0.22), (cx + w / 2 + overhang, y_eave - 0.18)]
     _bm_profile(bm, prof, cz - d / 2 - overhang, cz + d / 2 + overhang)
     # rotate profile so it runs along z: swap x<->z
     for v in bm.verts:
@@ -92,18 +109,28 @@ def gable_roof(name, w, d, y, rise, overhang, mtl, parent, axis='x', pivot=(0, 0
     return mesh_from_bm(name, bm, pivot, mtl, parent)
 
 
-def gable_ends(name, w, d, y, rise, mtl, parent, axis='x', cx=0, cz=0):
-    """Triangular wall infill under a gable roof."""
+def gable_ends(name, w, d, y, rise, mtl, parent, axis='x', cx=0, cz=0, t=0.2):
+    """Triangular wall infill under a gable roof, centered on the exterior walls with matching thickness `t`."""
     bm = bmesh.new()
+    y_bot = y - 0.04
+    y_top = y + rise - 0.08
     for s in (1, -1):
         if axis == 'x':
-            x = cx + s * (w / 2 - 0.1)
-            vs = [bm.verts.new((x, y, cz + d / 2)), bm.verts.new((x, y + rise - 0.1, cz)), bm.verts.new((x, y, cz - d / 2))]
+            x0, x1 = cx + s * (w / 2 - t / 2), cx + s * (w / 2 + t / 2)
+            z_span = d / 2 + t / 2
+            v_in = [bm.verts.new((x0, y_bot, cz + z_span)), bm.verts.new((x0, y_top, cz)), bm.verts.new((x0, y_bot, cz - z_span))]
+            v_out = [bm.verts.new((x1, y_bot, cz + z_span)), bm.verts.new((x1, y_top, cz)), bm.verts.new((x1, y_bot, cz - z_span))]
         else:
-            z = cz + s * (d / 2 - 0.1)
-            vs = [bm.verts.new((cx + w / 2, y, z)), bm.verts.new((cx, y + rise - 0.1, z)), bm.verts.new((cx - w / 2, y, z))]
-        bm.faces.new(vs)
-    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=0.2)
+            z0, z1 = cz + s * (d / 2 - t / 2), cz + s * (d / 2 + t / 2)
+            x_span = w / 2 + t / 2
+            v_in = [bm.verts.new((cx + x_span, y_bot, z0)), bm.verts.new((cx, y_top, z0)), bm.verts.new((cx - x_span, y_bot, z0))]
+            v_out = [bm.verts.new((cx + x_span, y_bot, z1)), bm.verts.new((cx, y_top, z1)), bm.verts.new((cx - x_span, y_bot, z1))]
+        bm.faces.new(v_in)
+        bm.faces.new(list(reversed(v_out)))
+        for k in range(3):
+            kn = (k + 1) % 3
+            bm.faces.new((v_in[k], v_in[kn], v_out[kn], v_out[k]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     return mesh_from_bm(name, bm, (0, 0, 0), mtl, parent)
 
 
@@ -146,7 +173,7 @@ CHROME = lambda: mat("Chrome", (0.9, 0.9, 0.92), 1.0, 0.12)
 DARKM = lambda: mat("DarkMetal", (0.08, 0.08, 0.09), 0.6, 0.4)
 
 
-def openwall(name, a, b, h, t, mtl, parent, doors=(), windows=(), passthrough=(), y0=0.0, skin=None, frame=True, collide=True):
+def openwall(name, a, b, h, t, mtl, parent, doors=(), windows=(), passthrough=(), y0=0.0, skin=None, frame=True, collide=True, cap_ends=None):
     """Wall from a to b (x,z) with doors [(c, width, height)], glazed windows [(c, width, sill, top)] and unglazed
     pass-throughs [(c, width, sill, top)]. Centres are absolute coordinates along the wall axis, heights absolute.
     skin=(material, sign) adds an interior finish on the +sign side of the wall."""
@@ -155,12 +182,12 @@ def openwall(name, a, b, h, t, mtl, parent, doors=(), windows=(), passthrough=()
     fixed = a[1] if ax == 'x' else a[0]
     ops = [(c - w / 2 - start, c + w / 2 - start, y0 + hh) for (c, w, hh) in doors]
     ops += [(c - w / 2 - start, c + w / 2 - start, top, sill) for (c, w, sill, top) in list(windows) + list(passthrough)]
-    wall(name, a, b, h, t, mtl, parent, ops, y0, collide=collide)
+    wall(name, a, b, h, t, mtl, parent, ops, y0, collide=collide, cap_ends=cap_ends)
     if skin:
-        off = skin[1] * (t / 2 + 0.012)
+        off = skin[1] * (t / 2 + 0.01)
         a2 = (a[0], a[1] + off) if ax == 'x' else (a[0] + off, a[1])
         b2 = (b[0], b[1] + off) if ax == 'x' else (b[0] + off, b[1])
-        wall(name + "_Skin", a2, b2, h, 0.02, skin[0], parent, ops, y0, collide=False)
+        wall(name + "_Skin", a2, b2, h, 0.02, skin[0], parent, ops, y0, collide=False, cap_ends=False)
     fr = []
     for i, (c, w, sill, top) in enumerate(list(windows) + list(passthrough)):
         glazed = i < len(windows)
@@ -277,13 +304,17 @@ def half_cyl(name, r, h, base, sx, mtl, parent, seg=16):
         rings.append([bm.verts.new((base[0] + sx * r * math.cos(a), y, base[2] + r * math.sin(a)))
                       for a in [-math.pi / 2 + math.pi * i / seg for i in range(seg + 1)]])
     lo, hi = rings
+    side_faces = []
     for i in range(seg):
-        bm.faces.new((lo[i], lo[i + 1], hi[i + 1], hi[i]))
-    bm.faces.new(lo)
-    bm.faces.new(list(reversed(hi)))
-    bm.faces.new((lo[0], hi[0], hi[-1], lo[-1]))
+        side_faces.append(bm.faces.new((lo[i], lo[i + 1], hi[i + 1], hi[i])))
+    cap_lo = bm.faces.new(lo)
+    cap_hi = bm.faces.new(list(reversed(hi)))
+    cap_bk = bm.faces.new((lo[0], hi[0], hi[-1], lo[-1]))
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    return mesh_from_bm(name, bm, (0, 0, 0), mtl, parent, smooth=True)
+    ob = mesh_from_bm(name, bm, (0, 0, 0), mtl, parent, smooth=False)
+    for poly in ob.data.polygons:
+        poly.use_smooth = (poly.index < seg)
+    return ob
 
 
 def spot(name, pos, parent, **props):
@@ -495,16 +526,18 @@ def build_plant():
     box("Plant_Floor", (120, 0.3, 50), (0, -0.09, 0), CONCRETE(), pivot=(0, 0, 0), parent=root, uv_scale=0.25)
     # north facade: lobby doors x -48..-42 (relative to wall start -60 => 12..18), custom bay x 36..44 (96..104)
     wall("Wall_N", (-60, 25), (60, 25), H, T, BRICK(), root, openings=[(12, 18, 3.6), (96, 104, 5.6)])
-    wall("Wall_S", (-60, -25), (60, -25), H, T, BRICK(), root)
-    wall("Wall_W", (-60, -25), (-60, 25), H, T, BRICK(), root)
+    wall("Wall_S", (-60, -25), (60, -25), H, T, BRICK(), root, openings=[(46, 54, 4.2)])  # receiving dock x -14..-6
+    wall("Wall_W", (-60, -25), (-60, 25), H, T, BRICK(), root, openings=[(2.85, 3.95, 2.2)])  # secret annex door
     wall("Wall_E", (60, -25), (60, 25), H, T, BRICK(), root, openings=[(15, 23, 6.0)])  # exit door z -10..-2
     # lobby partitions & custom-bay partitions
     wall("Lobby_Wall_E", (-32, 8), (-32, 25), 4.5, 0.3, mat("LobbyWall", (0.85, 0.82, 0.75), 0, 0.8), root, openings=[(4, 10, 3.2)])
     wall("Lobby_Wall_S", (-60, 8), (-32, 8), 4.5, 0.3, mat("LobbyWall", (0.85, 0.82, 0.75)), root, openings=[(10, 16, 3.2)])
     wall("Bay_Wall_W", (28, 8), (28, 25), 7, 0.4, CONCRETE(), root, openings=[(3, 9, 3.2)])
     wall("Bay_Wall_S", (28, 8), (60, 8), 7, 0.4, CONCRETE(), root)
-    box("Lobby_Floor", (27.6, 0.04, 16.6), (-46, 0.075, 16.5), mat("LobbyTile", (0.15, 0.12, 0.12), 0.2, 0.3), pivot=(0, 0, 0), parent=root, uv_scale=1.0)
-    box("Bay_Floor", (31.4, 0.04, 16.6), (44, 0.075, 16.5), mat("EpoxyFloor", (0.25, 0.27, 0.3), 0.1, 0.25), pivot=(0, 0, 0), parent=root)
+    box("Lobby_Floor", (28.0, 0.04, 17.0), (-46, 0.075, 16.5), mat("LobbyTile", (0.15, 0.12, 0.12), 0.2, 0.3), pivot=(0, 0, 0), parent=root, uv_scale=1.0)
+    box("Lobby_Ceiling", (28.2, 0.18, 17.2), (-46, 4.55, 16.5), CEILING(), pivot=(0, 0, 0), parent=root)
+    box("Bay_Floor", (32.0, 0.04, 17.0), (44, 0.075, 16.5), mat("EpoxyFloor", (0.25, 0.27, 0.3), 0.1, 0.25), pivot=(0, 0, 0), parent=root)
+    box("Bay_Ceiling", (32.2, 0.2, 17.2), (44, 7.05, 16.5), CONCRETE(), pivot=(0, 0, 0), parent=root)
     boxes("Line_Lane", [((80, 0.03, 0.15), (12, 0.075, z)) for z in (-9.5, -2.5)], YELLOW(), (0, 0, 0), root)
     # roof with sawtooth skylights
     box("Roof_Slab", (121.4, 0.5, 51.4), (0, H + 0.15, 0), ROOF(), pivot=(0, 0, 0), parent=root)
@@ -680,10 +713,111 @@ def build_plant():
     # loading dock + parking stops
     box("Dock", (14, 1.2, 4), (-10, 0.6, -27.2), CONCRETE(), pivot=(0, 0, 0), parent=root)
     col("Dock", (14, 1.2, 4), (-10, 0.6, -27.2), root)
+    # station overhead signboards, line-side PLC consoles, steel coil racks (S1), and powertrain dress stands (S4)
+    st_signs = ((-26, "01 STAMPING"), (-12, "02 BODY-IN-WHITE"), (6, "03 PAINT BOOTH"), (28, "04 POWERTRAIN"), (42, "05 FINAL QC"))
+    for si, (sx_pos, st_lbl) in enumerate(st_signs):
+        box("Station_Board_%d" % si, (4.8, 0.65, 0.14), (sx_pos, 7.6, -6.0), mat("SignDark", (0.08, 0.05, 0.1), 0, 0.5), pivot=(0, 0, 0), parent=root)
+        beams("Station_Hangers_%d" % si, [((sx_pos + dx, 7.9, -6.0), (sx_pos + dx, H - 1.7, -6.0), 0.03) for dx in (-2.0, 2.0)], 0.03, STEEL(), (0, 0, 0), root)
+        text_mesh("Station_Text_%d" % si, st_lbl, (sx_pos, 7.6, -5.9), 0.34, mat("Lamp_Sign", (1, 0.9, 0.5), 0, 0.3, emit=(1, 0.85, 0.4), emit_strength=2.5), parent=root, depth=0.03)
+        # PLC console along walkway
+        px_c = sx_pos + 3.0
+        boxes("PLC_Cabinet_%d" % si, [((0.65, 1.15, 0.45), (px_c, 0.58, 1.2)), ((0.68, 0.35, 0.42), (px_c, 1.28, 1.18), Matrix.Rotation(math.radians(-22), 3, 'X'))],
+              mat("LockerGrey", (0.45, 0.5, 0.55), 0.6, 0.5), (0, 0, 0), root)
+        box("PLC_Screen_%d" % si, (0.48, 0.24, 0.03), (px_c, 1.32, 1.38), mat("Lamp_Monitor", (0.2, 0.8, 0.95), 0, 0.2, emit=(0.15, 0.75, 0.95), emit_strength=2.2),
+            pivot=(0, 0, 0), parent=root, rot=Matrix.Rotation(math.radians(-22), 3, 'X'))
+        cyl("PLC_Tower_%d" % si, 0.035, 0.36, (px_c + 0.24, 1.62, 1.08), mat("Lamp_Sign2", (0.2, 1, 0.3), 0, 0.2, emit=(0.2, 1, 0.25), emit_strength=3), seg=10, pivot=(0, 0, 0), parent=root)
+        col("PLC_%d" % si, (0.7, 1.5, 0.5), (px_c, 0.75, 1.2), root)
+    # Stamping sheet-metal coils & blank stackers near S1 (-36..-30, -19)
+    for ci, cx_c in enumerate((-36.5, -33.5, -30.5)):
+        boxes("Coil_Cradle_%d" % ci, [((1.5, 0.28, 1.4), (cx_c, 0.14, -19.5))], YELLOW(), (0, 0, 0), root)
+        cyl("Steel_Coil_%d" % ci, 0.78, 1.15, (cx_c, 0.92, -19.5), CHROME(), axis='z', seg=20, pivot=(0, 0, 0), parent=root)
+        cyl("Steel_CoilCore_%d" % ci, 0.32, 1.18, (cx_c, 0.92, -19.5), DARKM(), axis='z', seg=14, pivot=(0, 0, 0), parent=root)
+        col("Steel_Coil_%d" % ci, (1.6, 1.7, 1.5), (cx_c, 0.85, -19.5), root)
+    # Powertrain sub-assembly stands & fluid tanks near S4 (20..28, -19.5)
+    for ti, tx_c in enumerate((19.5, 22.0)):
+        cyl("Fluid_Tank_%d" % ti, 0.75, 2.8, (tx_c, 1.5, -20.5), mat("BarrelBlue", (0.12, 0.32, 0.62), 0.5, 0.4), seg=18, pivot=(0, 0, 0), parent=root)
+        boxes("Tank_Base_%d" % ti, [((1.6, 0.2, 1.6), (tx_c, 0.1, -20.5))], STEEL(), (0, 0, 0), root)
+        col("Fluid_Tank_%d" % ti, (1.6, 2.9, 1.6), (tx_c, 1.45, -20.5), root)
+    # ---------------------------------------------------------------- Phase 3: dyno cell, break room, dock door, secret annex
+    # DYNO CELL (north of the line, west of the custom bay opening): cars drive in from the bay heading -x onto the rollers
+    dx0, dx1, dz0, dz1 = 12.5, 27.4, 12.2, 23.6
+    box("Dyno_Floor", (dx1 - dx0, 0.03, dz1 - dz0), ((dx0 + dx1) / 2, 0.082, (dz0 + dz1) / 2), mat("DynoFloor", (0.08, 0.09, 0.1), 0.3, 0.3), pivot=(0, 0, 0), parent=root)
+    stripes = [((dx1 - dx0, 0.035, 0.18), ((dx0 + dx1) / 2, 0.085, z)) for z in (dz0, dz1)] + [((0.18, 0.035, dz1 - dz0), (x, 0.085, (dz0 + dz1) / 2)) for x in (dx0,)]
+    boxes("Dyno_Border", stripes, YELLOW(), (0, 0, 0), root)
+    DYX, DYZ = 20.0, 15.0
+    for nm, ax_x in (("F", DYX - 1.45), ("R", DYX + 1.45)):
+        box("Dyno_Pit_%s" % nm, (1.3, 0.03, 2.8), (ax_x, 0.09, DYZ), mat("PitSteel", (0.3, 0.32, 0.34), 0.8, 0.4), pivot=(0, 0, 0), parent=root)
+        rp = empty("Dyno_Roller_%s" % nm, (ax_x, -0.12, DYZ), root, props={"joint": "z"})
+        cyl("Dyno_Roller_%s_Drum" % nm, 0.24, 2.4, (ax_x, -0.12, DYZ), mat("RollerSteel", (0.6, 0.62, 0.65), 0.9, 0.25), axis='z', seg=18, pivot=(ax_x, -0.12, DYZ), parent=rp)
+        boxes("Dyno_Roller_%s_Knurl" % nm, [((0.05, 0.05, 2.42), (ax_x + 0.2 * math.cos(a), -0.12 + 0.2 * math.sin(a), DYZ)) for a in [k * math.pi / 3 for k in range(6)]],
+              DARKM(), (ax_x, -0.12, DYZ), rp)
+    # cooling fan in front of the car (car faces -x)
+    fx = DYX - 4.6
+    box("Dyno_FanHousing", (0.6, 2.0, 2.0), (fx, 1.15, DYZ), YELLOW(), pivot=(0, 0, 0), parent=root)
+    col("Dyno_Fan", (0.6, 2.2, 2.0), (fx, 1.1, DYZ), root)
+    fp = empty("Dyno_Fan", (fx + 0.32, 1.15, DYZ), root, props={"joint": "x"})
+    boxes("Dyno_FanBlades", [((0.04, 1.6, 0.28), (fx + 0.32, 1.15, DYZ), Matrix.Rotation(k * math.pi / 3, 3, 'X')) for k in range(3)], DARKM(), (fx + 0.32, 1.15, DYZ), fp)
+    beams("Dyno_FanGuard", [((fx + 0.4, 1.15 - 0.9 * math.cos(a), DYZ + 0.9 * math.sin(a)), (fx + 0.4, 1.15 + 0.9 * math.cos(a), DYZ - 0.9 * math.sin(a)), 0.03) for a in [k * math.pi / 4 for k in range(4)]],
+          0.03, CHROME(), (0, 0, 0), root)
+    # exhaust extraction hose dropping from the trusses to the tail pipe
+    beams("Dyno_ExhaustHose", [((DYX + 4.2, H - 1.8, DYZ), (DYX + 4.0, 2.2, DYZ - 0.2), 0.22), ((DYX + 4.0, 2.2, DYZ - 0.2), (DYX + 3.0, 0.5, DYZ - 0.45), 0.2)], 0.2,
+          mat("HoseBlack", (0.06, 0.06, 0.07), 0.2, 0.7), (0, 0, 0), root)
+    # operator desk + wall display (Dyno_Screen: the game draws the live power curve on it)
+    furn("Dyno_Desk", (2.2, 0.85, 0.8), (DYX + 1.8, 0.425, dz1 - 1.6), mat("LockerGrey", (0.45, 0.5, 0.55), 0.6, 0.5), root)
+    box("Dyno_Monitor", (0.7, 0.45, 0.05), (DYX + 1.8, 1.15, dz1 - 1.85), mat("Lamp_Monitor", (0.2, 0.5, 1), 0, 0.2, emit=(0.2, 0.5, 1), emit_strength=1.6), pivot=(0, 0, 0), parent=root)
+    box("Dyno_ScreenFrame", (6.4, 3.4, 0.2), (DYX, 4.4, dz1 + 0.75), DARKM(), pivot=(0, 0, 0), parent=root)
+    box("Dyno_Screen", (6.0, 3.0, 0.04), (DYX, 4.4, dz1 + 0.63), mat("Dyno_Screen", (0.05, 0.05, 0.08), 0, 0.3, emit=(0.1, 0.1, 0.2), emit_strength=0.6), pivot=(0, 0, 0), parent=root)
+    text_mesh("Dyno_Sign", "DYNO CELL", (DYX, 6.4, dz1 + 0.6), 0.5, mat("Lamp_Sign2", (0.3, 1, 0.3), 0, 0.3, emit=(0.3, 1, 0.2), emit_strength=3), parent=root, depth=0.04, facing='-z')
+    beams("Dyno_ChainPosts", [((x, 0, dz0 - 0.3), (x, 1.0, dz0 - 0.3), 0.08) for x in (dx0 + 0.5, dx0 + 4.5, dx1 - 4.5, dx1 - 0.5)], 0.08, YELLOW(), (0, 0, 0), root)
+    beams("Dyno_Chain", [((dx0 + 0.5, 0.85, dz0 - 0.3), (dx0 + 4.5, 0.75, dz0 - 0.3), 0.03), ((dx1 - 4.5, 0.85, dz0 - 0.3), (dx1 - 0.5, 0.75, dz0 - 0.3), 0.03)], 0.03, DARKM(), (0, 0, 0), root)
+    spot("Dyno", (DYX, 0.08, DYZ), root)
+    spot("DynoDesk", (DYX + 1.8, 0.08, dz1 - 2.6), root)
+    # BREAK ROOM (north-west strip beside the lobby): lockers, coffee counter, fridge, table + chairs; the game adds the
+    # arcade cabinet, vending machine and the Parts Runner time clock from props.glb
+    bx0, bx1, bz0, bz1 = -31.6, -19.0, 18.2, 24.5
+    tiles("BreakRoom_Floor", bx0, bx1 - 0.6, bz0, bz1 - 0.3, 0.083, 0.9, mat("TileCream", (0.82, 0.78, 0.66), 0, 0.6), mat("TileTeal", (0.15, 0.4, 0.42), 0, 0.6), root)
+    furn("BreakRoom_Lockers", (3.6, 2.0, 0.5), (-27.0, 1.0, bz1 - 0.15), mat("LockerGreen", (0.25, 0.45, 0.35), 0.5, 0.5), root)
+    boxes("BreakRoom_LockerVents", [((0.6, 0.04, 0.02), (-28.5 + k * 0.6, 1.7, bz1 - 0.41)) for k in range(6)], DARKM(), (0, 0, 0), root)
+    furn("BreakRoom_Counter", (3.0, 0.92, 0.65), (-22.6, 0.46, bz1 - 0.3), mat("CounterWood", (0.4, 0.25, 0.12), 0, 0.5), root)
+    box("BreakRoom_Coffee", (0.35, 0.45, 0.35), (-23.4, 1.15, bz1 - 0.35), mat("CoffeeBlack", (0.08, 0.08, 0.09), 0.5, 0.4), pivot=(0, 0, 0), parent=root)
+    box("BreakRoom_Microwave", (0.55, 0.32, 0.4), (-22.2, 1.08, bz1 - 0.35), STEEL(), pivot=(0, 0, 0), parent=root)
+    furn("BreakRoom_Fridge", (0.8, 1.8, 0.7), (-20.3, 0.9, bz1 - 0.4), mat("FridgeWhite", (0.9, 0.9, 0.88), 0.2, 0.4), root)
+    furn("BreakRoom_Table", (2.4, 0.76, 1.1), (-25.0, 0.38, 20.6), mat("TableTop", (0.75, 0.72, 0.65), 0.1, 0.5), root)
+    for i, (x, z) in enumerate(((-25.8, 19.6), (-24.2, 19.6), (-25.8, 21.6), (-24.2, 21.6))):
+        boxes("BreakRoom_Chair_%d" % i, [((0.45, 0.06, 0.45), (x, 0.46, z)), ((0.45, 0.5, 0.06), (x, 0.72, z + (-0.2 if z < 20.6 else 0.2)))], mat("ChairOrange", (0.85, 0.4, 0.08), 0, 0.6), (0, 0, 0), root)
+    box("BreakRoom_SignBoard", (3.2, 0.6, 0.1), (-25.0, 3.6, bz0 - 0.2), mat("SignDark", (0.08, 0.05, 0.1), 0, 0.5), pivot=(0, 0, 0), parent=root)
+    text_mesh("BreakRoom_Sign", "BREAK ROOM", (-25.0, 3.6, bz0 - 0.27), 0.32, mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2), parent=root, depth=0.03, facing='-z')
+    beams("BreakRoom_SignRods", [((x, 3.9, bz0 - 0.2), (x, H - 1.7, bz0 - 0.2), 0.03) for x in (-26.3, -23.7)], 0.03, STEEL(), (0, 0, 0), root)
+    spot("BreakRoom", (-25.0, 0.08, 22.6), root)
+    # LOADING DOCK: roll-up door drum over the new south-wall opening, delivery pallet inside
+    box("Dock_DoorDrum", (8.6, 0.6, 0.6), (-10, 4.5, -24.6), STEEL(), pivot=(0, 0, 0), parent=root)
+    boxes("Dock_DoorRails", [((0.12, 4.2, 0.2), (x, 2.1, -24.5)) for x in (-14.2, -5.8)], YELLOW(), (0, 0, 0), root)
+    box("Dock_Pallet", (1.6, 0.14, 1.2), (-10, 0.15, -21.6), WOOD(), pivot=(0, 0, 0), parent=root)
+    text_mesh("Dock_Sign", "RECEIVING", (-10, 5.2, -24.0), 0.4, mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2), parent=root, depth=0.03)
+    spot("CratePickup", (-10, 0.08, -20.6), root)
+    # SECRET ANNEX behind tool crib 0: a brick-faced door in the west wall leads to the developers' hideout
+    hinged_door("Door_Secret", 'z', -60.0, -21.6, 1.1, 2.2, 0.0, (-1, 0), root, BRICK(), knob=False)
+    ax0, ax1, az0, az1 = -66.0, -60.3, -25.0, -18.0
+    am = mat("AnnexWall", (0.35, 0.33, 0.32), 0, 0.9)
+    wall("Annex_N", (ax0, az1), (-60.0, az1), 3.0, 0.25, am, root)
+    wall("Annex_S", (ax0, az0), (-60.0, az0), 3.0, 0.25, am, root)
+    wall("Annex_W", (ax0, az0), (ax0, az1), 3.0, 0.25, am, root)
+    box("Annex_Floor", (ax1 - ax0, 0.12, az1 - az0), ((ax0 + ax1) / 2, 0.06, (az0 + az1) / 2), mat("AnnexCarpet", (0.12, 0.1, 0.2), 0, 1), pivot=(0, 0, 0), parent=root)
+    box("Annex_Roof", (ax1 - ax0 + 0.6, 0.2, az1 - az0 + 0.4), ((ax0 + ax1) / 2, 3.1, (az0 + az1) / 2), ROOF(), pivot=(0, 0, 0), parent=root)
+    col("Annex_Roof", (ax1 - ax0 + 0.6, 0.2, az1 - az0 + 0.4), ((ax0 + ax1) / 2, 3.1, (az0 + az1) / 2), root)
+    furn("Annex_Desk", (2.6, 0.78, 0.9), (-64.6, 0.39, -21.5), mat("DeskWood", (0.3, 0.18, 0.1), 0, 0.5), root, rot=Matrix.Rotation(math.pi / 2, 3, 'Y'))
+    boxes("Annex_Monitors", [((0.06, 0.45, 0.7), (-65.1, 1.05, -21.5 + dz)) for dz in (-0.8, 0.0, 0.8)],
+          mat("Lamp_Monitor", (0.2, 0.5, 1), 0, 0.2, emit=(0.2, 0.5, 1), emit_strength=1.6), (0, 0, 0), root)
+    text_mesh("Annex_Credits", "THANKS FOR PLAYING", (-65.85, 2.2, -21.5), 0.26, mat("Lamp_NeonTeal", (0.2, 1, 0.9), 0, 0.3, emit=(0.1, 1, 0.85), emit_strength=5), parent=root, depth=0.03, facing='x')
+    boxes("Annex_PizzaBoxes", [((0.45, 0.05, 0.45), (-61.6, 0.15 + k * 0.05, -24.2)) for k in range(5)], mat("Cardboard", (0.72, 0.55, 0.32), 0, 0.9), (0, 0, 0), root)
+    sphere("Annex_Beanbag", 0.55, (-62.0, 0.42, -19.2), mat("BeanbagPurple", (0.4, 0.1, 0.55), 0, 0.9), pivot=(0, 0, 0), parent=root, scale=(1, 0.7, 1))
+    box("Annex_Lamp", (0.6, 0.06, 0.6), (-63.0, 3.0, -21.5), mat("Lamp_Ceiling", (1, 1, 0.95), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=3), pivot=(0, 0, 0), parent=root)
+    spot("Secret", (-63.6, 0.1, -21.5), root)
+    spot("SecretDoor", (-58.8, 0.08, -21.6), root)
     export_glb("plant.glb")
     render_preview("blender_plant.png", elev=25, azim=-25, dist_mul=0.75)
     for o in bpy.data.objects:
-        if o.name.startswith(("Roof_Slab", "Skylight", "Parapet", "Sign_", "SpiderWeb", "Spider", "Chimney", "Roof_Trusses", "Pipes", "Ceiling_Lights", "Wall_N", "Facade", "Lobby_Canopy", "GiantSpider")):
+        if o.name.startswith(("Roof_Slab", "Skylight", "Parapet", "Sign_", "SpiderWeb", "Spider", "Chimney", "Roof_Trusses", "Pipes", "Ceiling_Lights", "Wall_N", "Facade", "Lobby_Canopy", "GiantSpider", "Lobby_Ceiling", "Bay_Ceiling", "Station_")):
             o["preview_hide"] = 1
     render_preview("blender_plant_interior.png", elev=55, azim=-20, dist_mul=0.62)
 
@@ -728,9 +862,9 @@ def house(key, w, d, stories, porch=True, gable_axis='x'):
     door_x = w / 4
     box("Foundation", (w + 0.3, F, d + 0.3), (0, F / 2, 0), CONCRETE(), pivot=(0, 0, 0), parent=root)
     col("Foundation", (w + 0.3, F, d + 0.3), (0, F / 2, 0), root)
-    box("Floor_Wood", (w - 0.3, 0.02, d - 0.3), (0, F + 0.01, 0), FLOORWOOD(), pivot=(0, 0, 0), parent=root, uv_scale=1.5)
-    box("Ceiling", (w - 0.3, 0.1, d - 0.3), (0, F + 2.95, 0), CEILING(), pivot=(0, 0, 0), parent=root)
-    col("Ceiling", (w - 0.3, 0.1, d - 0.3), (0, F + 2.95, 0), root)  # keeps the chase camera indoors
+    box("Floor_Wood", (w, 0.02, d), (0, F + 0.01, 0), FLOORWOOD(), pivot=(0, 0, 0), parent=root, uv_scale=1.5)
+    box("Ceiling", (w, 0.1, d), (0, F + 2.95, 0), CEILING(), pivot=(0, 0, 0), parent=root)
+    col("Ceiling", (w, 0.1, d), (0, F + 2.95, 0), root)  # keeps the chase camera indoors
     gy0, gy1 = F + 0.9, F + 2.3
     up = [(F + 3.9, F + 5.3)] if stories > 1 else []
     # ---- exterior shell (siding outside, wallpaper inside)
@@ -744,12 +878,12 @@ def house(key, w, d, stories, porch=True, gable_axis='x'):
     rw = [(-d / 4 + 0.2, 1.0, gy0 + 0.2, gy1)] + [(z, 1.0, a, b) for (a, b) in up for z in (-d / 4, d / 4)]
     openwall("Wall_Right", (hw, -hd), (hw, hd), h, T, SIDING(), root, windows=rw, y0=F, skin=(WALLPAPER(), -1))
     if stories > 1:
-        box("Floor2", (w - 0.3, 0.12, d - 0.3), (0, F + 3.06, 0), FLOORWOOD(), pivot=(0, 0, 0), parent=root)
-        box("Upper_Glow", (w - 0.6, 2.4, d - 0.6), (0, F + 4.4, 0), mat("UpperRoom", (0.12, 0.08, 0.06), 0, 1), pivot=(0, 0, 0), parent=root)
+        box("Floor2", (w, 0.12, d), (0, F + 3.06, 0), FLOORWOOD(), pivot=(0, 0, 0), parent=root)
+        box("Upper_Glow", (w - 0.3, 2.75, d - 0.3), (0, F + 4.5, 0), mat("UpperRoom", (0.12, 0.08, 0.06), 0, 1), pivot=(0, 0, 0), parent=root)
     # ---- interior partitions
     pw = mat("InteriorWall", (0.86, 0.8, 0.68), 0, 0.85)
-    openwall("Part_Kitchen", (px, -hd + T / 2), (px, fz), 2.9, 0.12, pw, root, doors=[(-d / 4, 1.0, 2.1)], y0=F, frame=True)
-    openwall("Part_Foyer", (px, fz), (hw - T / 2, fz), 2.9, 0.12, pw, root, doors=[((px + hw) / 2, 1.0, 2.1)], y0=F, frame=True)
+    openwall("Part_Kitchen", (px, -hd + T / 2), (px, fz + 0.06), 2.95, 0.12, pw, root, doors=[(-d / 4, 1.0, 2.1)], y0=F, frame=True, cap_ends=False)
+    openwall("Part_Foyer", (px, fz), (hw - T / 2, fz), 2.95, 0.12, pw, root, doors=[((px + hw) / 2, 1.0, 2.1)], y0=F, frame=True, cap_ends=False)
     # ---- doors
     hinged_door("Door_Front", 'x', hd, door_x, 1.1, 2.2, F, (0, -1), root, mat("DoorRed", (0.45, 0.08, 0.06), 0, 0.6))
     hinged_door("Door_Back", 'x', -hd, back_x, 0.95, 2.1, F, (0, 1), root, mat("DoorWhite", (0.85, 0.85, 0.82), 0, 0.6))
@@ -815,9 +949,11 @@ def house(key, w, d, stories, porch=True, gable_axis='x'):
     # ---- roof, gables, chimney
     rise = 2.6 if stories > 1 else 2.2
     gable_roof("Roof", w, d, F + h, rise, 0.5, ROOF(), root, axis=gable_axis)
-    gable_ends("Gables", w, d, F + h, rise, SIDING(), root, axis=gable_axis)
+    gable_ends("Gables", w, d, F + h, rise, SIDING(), root, axis=gable_axis, t=T)
     boxes("Chimney", [((0.9, 3.0, 0.9), (-w / 3, F + h + 1.6, -d / 5))], BRICK(), (0, 0, 0), root, uv_scale=0.5)
-    boxes("Eaves_Trim", [((w + 0.4, 0.18, 0.12), (0, F + h - 0.05, sz * (hd + 0.08))) for sz in (1, -1)], TRIM(), (0, 0, 0), root)
+    eaves_specs = [((w + T * 2 + 0.08, 0.18, 0.08), (0, F + h - 0.12, sz * (hd + T / 2 + 0.02))) for sz in (1, -1)] + \
+                  [((0.08, 0.18, d + T * 2 + 0.08), (sx * (hw + T / 2 + 0.02), F + h - 0.12, 0)) for sx in (1, -1)]
+    boxes("Eaves_Trim", eaves_specs, TRIM(), (0, 0, 0), root)
     if porch:
         pw2 = w * 0.85
         box("Porch_Deck", (pw2, 0.12, 2.4), (0, F - 0.06, hd + 1.2), WOOD(), pivot=(0, 0, 0), parent=root)
@@ -854,6 +990,7 @@ def build_diner():
     col("Diner_Base", (W + 0.6, F, D + 0.6), (0, F / 2, 0), root)
     for sx in (1, -1):  # rounded stainless end caps (solid half-cylinders outside the dining room)
         half_cyl("Diner_End_%d" % sx, hd, H, (sx * hw, F, 0), sx, STEELD, root)
+        half_cyl("Diner_EndRoof_%d" % sx, hd + 0.2, 0.35, (sx * hw, F + H, 0), sx, RED, root)
         box("Diner_EndBase_%d" % sx, (hd, F, D), (sx * (hw + hd / 2), F / 2, 0), mat("DinerTile", (0.85, 0.1, 0.12)), pivot=(0, 0, 0), parent=root)
         col("Diner_End_%d" % sx, (hd, H + F, D * 0.92), (sx * (hw + hd / 2), (H + F) / 2, 0), root)
     door_x = 1.2
@@ -865,16 +1002,16 @@ def build_diner():
     hinged_door("Door_Front", 'x', hd, door_x, 1.3, 2.4, F, (0, -1), root, None, glass=True)
     hinged_door("Door_Back", 'x', -hd, 5.0, 1.0, 2.2, F, (0, 1), root, mat("DoorWhite", (0.85, 0.85, 0.82), 0, 0.6))
     boxes("Diner_Stripes", [((W + 0.06, 0.25, 0.04), (0, y, sz * (hd + T / 2 + 0.02))) for y in (F + 0.75, F + 3.2) for sz in (1, -1)], RED, (0, 0, 0), root)
-    box("Diner_RoofCap", (W + 0.4, 0.35, D + 0.4), (0, F + H + 0.17, 0), RED, pivot=(0, 0, 0), parent=root)
-    box("Ceiling", (W - 0.4, 0.1, D - 0.4), (0, F + 3.6, 0), mat("CeilingTile", (0.9, 0.88, 0.85), 0, 0.8), pivot=(0, 0, 0), parent=root)
-    col("Ceiling", (W - 0.4, 0.1, D - 0.4), (0, F + 3.6, 0), root)
+    box("Diner_RoofCap", (W, 0.35, D + 0.4), (0, F + H + 0.175, 0), RED, pivot=(0, 0, 0), parent=root)
+    box("Ceiling", (W, 0.1, D), (0, F + 3.6, 0), mat("CeilingTile", (0.9, 0.88, 0.85), 0, 0.8), pivot=(0, 0, 0), parent=root)
+    col("Ceiling", (W, 0.1, D), (0, F + 3.6, 0), root)
     # ---- floors: black & white checkerboard dining room, kitchen tiles
     kz = -2.6
-    tiles("Floor_Check", -hw + 0.11, hw - 0.11, kz, hd - 0.11, F + 0.005, 0.6, mat("TileBlack", (0.04, 0.04, 0.05), 0.1, 0.3), mat("TileWhite", (0.92, 0.92, 0.9), 0.1, 0.3), root)
-    box("Floor_Kitchen", (W - 0.2, 0.01, hd + kz - 0.1), (0, F + 0.005, (-hd + kz) / 2), mat("KitchenFloor", (0.55, 0.5, 0.45), 0, 0.7), pivot=(0, 0, 0), parent=root)
+    tiles("Floor_Check", -hw, hw, kz, hd, F + 0.005, 0.6, mat("TileBlack", (0.04, 0.04, 0.05), 0.1, 0.3), mat("TileWhite", (0.92, 0.92, 0.9), 0.1, 0.3), root)
+    box("Floor_Kitchen", (W, 0.015, hd + kz), (0, F + 0.007, (-hd + kz) / 2), mat("KitchenFloor", (0.55, 0.5, 0.45), 0, 0.7), pivot=(0, 0, 0), parent=root)
     # ---- kitchen partition with pass-through window and swing gap
     openwall("Diner_Kitchen", (-hw + T / 2, kz), (hw - T / 2, kz), 3.6, 0.15, mat("DinerCream", (0.95, 0.9, 0.78)), root,
-             doors=[(5.0, 1.1, 2.2)], passthrough=[(-1.0, 4.0, F + 1.15, F + 2.1)], y0=F)
+             doors=[(5.0, 1.1, 2.2)], passthrough=[(-1.0, 4.0, F + 1.15, F + 2.1)], y0=F, cap_ends=False)
     box("PassThrough_Shelf", (4.2, 0.05, 0.5), (-1.0, F + 1.17, kz), CHROME(), pivot=(0, 0, 0), parent=root)
     # ---- counter, stools, register
     cz = -1.5
@@ -949,7 +1086,7 @@ def build_gas_station():
     x0, x1, z0, z1 = -13.0, -3.0, -9.5, -2.5
     box("Mart_Slab", (x1 - x0 + 0.3, F, z1 - z0 + 0.3), ((x0 + x1) / 2, F / 2, (z0 + z1) / 2), CONCRETE(), pivot=(0, 0, 0), parent=root)
     col("Mart_Slab", (x1 - x0 + 0.3, F, z1 - z0 + 0.3), ((x0 + x1) / 2, F / 2, (z0 + z1) / 2), root)
-    tiles("Mart_Floor", x0 + 0.1, x1 - 0.1, z0 + 0.1, z1 - 0.1, F + 0.005, 0.5, mat("TileWhite", (0.92, 0.92, 0.9), 0.1, 0.3), mat("TileGrey", (0.6, 0.62, 0.64), 0.1, 0.3), root)
+    tiles("Mart_Floor", x0, x1, z0, z1, F + 0.005, 0.5, mat("TileWhite", (0.92, 0.92, 0.9), 0.1, 0.3), mat("TileGrey", (0.6, 0.62, 0.64), 0.1, 0.3), root)
     door_x = -8.0
     openwall("Mart_Front", (x0, z1), (x1, z1), H, T, WHITE, root, doors=[(door_x, 1.3, 2.3)],
              windows=[(-11.0, 2.4, F + 0.6, F + 2.6), (-5.0, 2.4, F + 0.6, F + 2.6)], y0=F, skin=(WHITE, -1))
@@ -957,9 +1094,10 @@ def build_gas_station():
     openwall("Mart_West", (x0, z0), (x0, z1), H, T, WHITE, root, windows=[(-6.0, 1.6, F + 1.0, F + 2.4)], y0=F, skin=(WHITE, 1))
     openwall("Mart_East", (x1, z0), (x1, z1), H, T, WHITE, root, y0=F, skin=(WHITE, -1))
     hinged_door("Door_Front", 'x', z1, door_x, 1.3, 2.3, F, (0, -1), root, None, glass=True)
-    box("Mart_Ceiling", (x1 - x0 - 0.2, 0.08, z1 - z0 - 0.2), ((x0 + x1) / 2, F + 3.1, (z0 + z1) / 2), CEILING(), pivot=(0, 0, 0), parent=root)
-    col("Mart_Ceiling", (x1 - x0 - 0.2, 0.08, z1 - z0 - 0.2), ((x0 + x1) / 2, F + 3.1, (z0 + z1) / 2), root)
-    box("Office_Trim", (x1 - x0 + 0.2, 0.6, z1 - z0 + 0.2), ((x0 + x1) / 2, F + H, (z0 + z1) / 2), REDG, pivot=(0, 0, 0), parent=root)
+    box("Mart_Ceiling", (x1 - x0, 0.08, z1 - z0), ((x0 + x1) / 2, F + 3.1, (z0 + z1) / 2), CEILING(), pivot=(0, 0, 0), parent=root)
+    col("Mart_Ceiling", (x1 - x0, 0.08, z1 - z0), ((x0 + x1) / 2, F + 3.1, (z0 + z1) / 2), root)
+    box("Mart_Roof", (x1 - x0 + 0.1, 0.2, z1 - z0 + 0.1), ((x0 + x1) / 2, F + H + 0.15, (z0 + z1) / 2), ROOF(), pivot=(0, 0, 0), parent=root)
+    box("Office_Trim", (x1 - x0 + 0.3, 0.6, z1 - z0 + 0.3), ((x0 + x1) / 2, F + H, (z0 + z1) / 2), REDG, pivot=(0, 0, 0), parent=root)
     text_mesh("Mart_Sign", "MOONBEAM MART", (-8, F + H + 0.02, z1 + 0.13), 0.42, mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2), parent=root, depth=0.05)
     # aisles with stocked shelves
     snack_cols = [(0.9, 0.2, 0.1), (0.95, 0.75, 0.1), (0.15, 0.45, 0.85), (0.2, 0.7, 0.25), (0.6, 0.1, 0.6)]
@@ -1032,10 +1170,10 @@ def shop_shell(label, w, d, h, color, ceil, F=0.15, T=0.25, front_windows=(), do
     openwall("Wall_Back", (-hw, -hd), (hw, -hd), h, T, m, root, doors=[back_door] if back_door else [], y0=F, skin=(inner, 1))
     openwall("Wall_West", (-hw, -hd), (-hw, hd), h, T, m, root, windows=[(z, 1.2, F + 1.0, F + 2.4) for z in side_windows], y0=F, skin=(inner, 1))
     openwall("Wall_East", (hw, -hd), (hw, hd), h, T, m, root, windows=[(z, 1.2, F + 1.0, F + 2.4) for z in side_windows], y0=F, skin=(inner, -1))
-    box("Ceiling", (w - 0.3, 0.12, d - 0.3), (0, F + ceil, 0), CEILING(), pivot=(0, 0, 0), parent=root)
-    col("Ceiling", (w - 0.3, 0.12, d - 0.3), (0, F + ceil, 0), root)
+    box("Ceiling", (w, 0.12, d), (0, F + ceil, 0), CEILING(), pivot=(0, 0, 0), parent=root)
+    col("Ceiling", (w, 0.12, d), (0, F + ceil, 0), root)
     box("Cornice", (w + 0.5, 0.6, d + 0.5), (0, h + F + 0.1, 0), TRIM(), pivot=(0, 0, 0), parent=root)
-    box("Roof_Slab", (w + 0.2, 0.2, d + 0.2), (0, h + F - 0.1, 0), ROOF(), pivot=(0, 0, 0), parent=root)
+    box("Roof_Slab", (w + 0.3, 0.25, d + 0.3), (0, h + F - 0.05, 0), ROOF(), pivot=(0, 0, 0), parent=root)
     hinged_door("Door_Front", 'x', hd, 0, door_w, 2.5, F, (0, -1), root, None, glass=True)
     if back_door:
         hinged_door("Door_Back", 'x', -hd, back_door[0], back_door[1], back_door[2], F, (0, 1), root, mat("DoorSteel", (0.6, 0.62, 0.65), 0.7, 0.4))
@@ -1051,7 +1189,7 @@ def build_hardware():
     hw, hd = w / 2, d / 2
     root, F, T, m = shop_shell("Hardware", w, d, h, (0.45, 0.25, 0.18), 3.6, front_windows=[(-5.0, 4.0, F + 0.5, F + 2.8), (5.0, 4.0, F + 0.5, F + 2.8)],
                                back_door=(4.0, 1.1, 2.3), side_windows=(2.0,))
-    box("Floor", (w - 0.3, 0.01, d - 0.3), (0, F + 0.005, 0), mat("ShopFloor", (0.5, 0.45, 0.38), 0, 0.8), pivot=(0, 0, 0), parent=root, uv_scale=0.8)
+    box("Floor", (w, 0.02, d), (0, F + 0.01, 0), mat("ShopFloor", (0.5, 0.45, 0.38), 0, 0.8), pivot=(0, 0, 0), parent=root, uv_scale=0.8)
     peg = mat("Pegboard", (0.75, 0.6, 0.4), 0, 0.9)
     tools = mat("ToolSteel", (0.55, 0.57, 0.6), 0.8, 0.35)
     handles = mat("ToolRed", (0.75, 0.1, 0.06), 0, 0.5)
@@ -1126,12 +1264,12 @@ def build_police():
     root, F, T, m = shop_shell("PoliceStation", w, d, h, (0.55, 0.55, 0.6), 3.6, door_w=1.6,
                                front_windows=[(x, 2.2, F + 0.9, F + 2.6) for x in (-8.5, -4.5, 4.5, 8.5)], back_door=(-8.0, 1.0, 2.3))
     windows_row("Upper_Windows", [x for x in (-w / 3, -w / 9, w / 9, w / 3)], h - 2.0, hd + 0.16, 1.2, 1.6, root, lit=True)
-    box("Floor", (w - 0.3, 0.01, d - 0.3), (0, F + 0.005, 0), mat("TerrazzoFloor", (0.62, 0.62, 0.6), 0.1, 0.4), pivot=(0, 0, 0), parent=root, uv_scale=0.8)
+    box("Floor", (w, 0.02, d), (0, F + 0.01, 0), mat("TerrazzoFloor", (0.62, 0.62, 0.6), 0.1, 0.4), pivot=(0, 0, 0), parent=root, uv_scale=0.8)
     pw = mat("PoliceInner", (0.7, 0.74, 0.78), 0, 0.85)
     zp = 1.0  # lobby | back rooms
-    openwall("Part_Lobby", (-hw + T / 2, zp), (hw - T / 2, zp), 3.6, 0.15, pw, root, doors=[(-7.0, 1.1, 2.2), (0.0, 1.3, 2.3), (7.0, 1.1, 2.2)], y0=F)
-    openwall("Part_West", (-3.0, -hd + T / 2), (-3.0, zp), 3.6, 0.15, pw, root, y0=F)
-    openwall("Part_East", (3.0, -hd + T / 2), (3.0, zp), 3.6, 0.15, pw, root, y0=F)
+    openwall("Part_Lobby", (-hw + T / 2, zp), (hw - T / 2, zp), 3.6, 0.15, pw, root, doors=[(-7.0, 1.1, 2.2), (0.0, 1.3, 2.3), (7.0, 1.1, 2.2)], y0=F, cap_ends=False)
+    openwall("Part_West", (-3.0, -hd + T / 2), (-3.0, zp + 0.075), 3.6, 0.15, pw, root, y0=F, cap_ends=False)
+    openwall("Part_East", (3.0, -hd + T / 2), (3.0, zp + 0.075), 3.6, 0.15, pw, root, y0=F, cap_ends=False)
     hinged_door("Door_Evidence", 'x', zp, -7.0, 1.1, 2.2, F, (0, -1), root, mat("DoorSteel", (0.6, 0.62, 0.65), 0.7, 0.4))
     # lobby: desk, monitor, posters, benches, flags
     furn("FrontDesk", (5.0, 1.1, 0.8), (1.0, F + 0.55, 3.6), mat("DeskWood", (0.3, 0.18, 0.1), 0, 0.5), root)
@@ -1199,6 +1337,192 @@ def build_police():
         if o.name.startswith(("Ceiling", "Cornice", "Roof_Slab", "Wall_Front", "Sign_", "Portico", "Upper_Windows", "Columns")):
             o["preview_hide"] = 1
     render_preview("blender_police_station_interior.png", elev=55, azim=15, dist_mul=0.8)
+
+
+def build_cinema():
+    """Palace Cinema (art-deco picture house on Main Street). Lobby: box office with a pass-through ticket window, concession
+    stand (popcorn machine, soda fountain, menu board), movie-poster cases. Auditorium: 13 m screen (Cinema_Screen - the game
+    projects the film onto it) on a stage between velvet curtains, 8 raked rows of seats rising to a rear cross-aisle, and a
+    projection booth above the rear aisle (stairs along the back wall) whose projector beam reaches the screen.
+    Marquee with chaser bulbs (Lamp_Marquee) and a vertical PALACE blade sign. Side fire exit = Door_Back."""
+    w, d, h, F, T = 20.0, 30.0, 9.0, 0.15, 0.3
+    hw, hd = w / 2, d / 2
+    LZ = 4.0                      # lobby (z > LZ) / auditorium (z < LZ) partition
+    reset_scene()
+    root = empty("Cinema", (0, 0, 0))
+    brick = mat("CinemaBrick", (0.42, 0.13, 0.12), 0, 0.9)
+    inner = mat("CinemaInner", (0.3, 0.07, 0.09), 0, 0.85)
+    gold = mat("CinemaGold", (0.85, 0.62, 0.22), 0.8, 0.35)
+    velvet = mat("Velvet", (0.45, 0.03, 0.06), 0, 0.95)
+    carpet = mat("CinemaCarpet", (0.22, 0.04, 0.07), 0, 1.0)
+    seatm = mat("SeatVelvet", (0.55, 0.05, 0.08), 0, 0.9)
+    aisle = mat("Lamp_Aisle", (1.0, 0.75, 0.4), 0, 0.3, emit=(1.0, 0.65, 0.3), emit_strength=1.5)
+    box("Slab", (w + 0.4, F, d + 0.4), (0, F / 2, 0), CONCRETE(), pivot=(0, 0, 0), parent=root)
+    col("Slab", (w + 0.4, F, d + 0.4), (0, F / 2, 0), root)
+    openwall("Wall_Front", (-hw, hd), (hw, hd), h, T, brick, root, doors=[(0, 1.8, 2.6)], passthrough=[(-6.5, 1.4, F + 1.05, F + 2.05)], y0=F, skin=(inner, -1))
+    openwall("Wall_Back", (-hw, -hd), (hw, -hd), h, T, brick, root, y0=F, skin=(inner, 1))
+    openwall("Wall_West", (-hw, -hd), (-hw, hd), h, T, brick, root, y0=F, skin=(inner, 1))
+    openwall("Wall_East", (hw, -hd), (hw, hd), h, T, brick, root, doors=[(-1.0, 1.4, 2.4)], y0=F, skin=(inner, -1))
+    # partition: the screen hangs on its auditorium side; doorways beside the screen
+    openwall("Wall_Partition", (-hw, LZ), (hw, LZ), h - 0.6, 0.3, inner, root, passthrough=[(-8.6, 1.6, F, F + 2.7), (8.6, 1.6, F, F + 2.7)], y0=F)
+    hinged_door("Door_Front", 'x', hd, 0, 1.8, 2.6, F, (0, -1), root, None, glass=True)
+    hinged_door("Door_Back", 'z', hw, -1.0, 1.4, 2.4, F, (-1, 0), root, mat("DoorSteel", (0.6, 0.62, 0.65), 0.7, 0.4))
+    # floors / ceilings
+    box("Lobby_Floor", (w - 0.6, 0.02, hd - LZ - 0.3), (0, F + 0.01, (LZ + hd) / 2), mat("LobbyTerrazzo", (0.62, 0.55, 0.45), 0.1, 0.4), pivot=(0, 0, 0), parent=root)
+    tiles("Lobby_Inlay", -3.0, 3.0, 8.0, 14.0, F + 0.022, 1.0, gold, mat("TerrazzoDark", (0.12, 0.08, 0.1), 0.1, 0.4), root)
+    box("Aud_Floor", (w - 0.6, 0.02, LZ + hd - 0.3), (0, F + 0.01, (LZ - hd) / 2), carpet, pivot=(0, 0, 0), parent=root)
+    box("Lobby_Ceiling", (w, 0.15, hd - LZ), (0, F + 4.6, (LZ + hd) / 2), CEILING(), pivot=(0, 0, 0), parent=root)
+    col("Lobby_Ceiling", (w, 0.15, hd - LZ), (0, F + 4.6, (LZ + hd) / 2), root)
+    box("Ceiling", (w, 0.15, LZ + hd), (0, F + 8.45, (LZ - hd) / 2), mat("AudCeiling", (0.08, 0.04, 0.08), 0, 0.9), pivot=(0, 0, 0), parent=root)
+    col("Ceiling", (w, 0.15, LZ + hd), (0, F + 8.45, (LZ - hd) / 2), root)
+    box("Cornice", (w + 0.5, 0.6, d + 0.5), (0, h + F + 0.1, 0), TRIM(), pivot=(0, 0, 0), parent=root)
+    box("Roof_Slab", (w + 0.3, 0.25, d + 0.3), (0, h + F - 0.05, 0), ROOF(), pivot=(0, 0, 0), parent=root)
+    # ---------------------------------------------------------------- lobby
+    # box office booth just inside the ticket window
+    furn("BoxOffice_Counter", (1.9, 1.05, 0.55), (-6.5, F + 0.52, hd - 0.5), mat("CounterWood", (0.4, 0.25, 0.12), 0, 0.5), root)
+    for x in (-7.7, -5.3):
+        furn("BoxOffice_Side_%d" % int(abs(x) * 10), (0.12, 2.6, 2.2), (x, F + 1.3, hd - 1.25), inner, root)
+    box("BoxOffice_Brass", (1.5, 0.05, 0.08), (-6.5, F + 1.08, hd + 0.05), gold, pivot=(0, 0, 0), parent=root)
+    text_mesh("BoxOffice_Sign", "TICKETS", (-6.5, F + 2.55, hd + 0.18), 0.32, mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2), parent=root, depth=0.04)
+    spot("BoxOffice", (-6.5, 0, hd + 1.1), root)
+    spot("Clerk", (-6.5, F, hd - 1.25), root)
+    # concession stand in front of the partition
+    cc = 3.2
+    furn("Concession_Counter", (7.0, 1.05, 0.8), (cc, F + 0.52, LZ + 2.3), mat("ConcessionRed", (0.6, 0.06, 0.08), 0.2, 0.5), root)
+    box("Concession_Top", (7.1, 0.06, 0.9), (cc, F + 1.07, LZ + 2.3), CHROME(), pivot=(0, 0, 0), parent=root)
+    box("Popcorn_Machine", (1.1, 1.0, 0.7), (cc - 2.2, F + 1.6, LZ + 2.3), mat("Lamp_Popcorn", (1.0, 0.85, 0.4), 0.1, 0.2, emit=(1.0, 0.75, 0.25), emit_strength=1.8), pivot=(0, 0, 0), parent=root)
+    boxes("Popcorn_Frame", [((1.16, 0.06, 0.76), (cc - 2.2, y, LZ + 2.3)) for y in (F + 1.1, F + 2.1)] + [((0.05, 1.0, 0.05), (cc - 2.2 + sx * 0.56, F + 1.6, LZ + 2.3 + sz * 0.36)) for sx in (1, -1) for sz in (1, -1)],
+          mat("PopcornRed", (0.75, 0.05, 0.05), 0.3, 0.4), (0, 0, 0), root)
+    box("Soda_Fountain", (1.2, 0.7, 0.5), (cc + 1.4, F + 1.45, LZ + 2.4), STEEL(), pivot=(0, 0, 0), parent=root)
+    boxes("Soda_Taps", [((0.06, 0.12, 0.08), (cc + 1.0 + k * 0.26, F + 1.25, LZ + 2.68)) for k in range(4)], CHROME(), (0, 0, 0), root)
+    box("Candy_Case", (1.6, 0.5, 0.6), (cc + 2.6, F + 1.36, LZ + 2.3), PANE(), pivot=(0, 0, 0), parent=root)
+    boxes("Candy_Boxes", [((0.18, 0.12, 0.08), (cc + 2.0 + k * 0.22, F + 1.2, LZ + 2.3 + (k % 2) * 0.15)) for k in range(6)], mat("CandyMix", (0.9, 0.3, 0.6), 0, 0.6), (0, 0, 0), root)
+    box("Menu_Board", (6.4, 1.3, 0.06), (cc, F + 3.2, LZ + 0.2), mat("Lamp_Menu", (0.15, 0.1, 0.12), 0, 0.4, emit=(0.6, 0.35, 0.1), emit_strength=0.8), pivot=(0, 0, 0), parent=root)
+    text_mesh("Menu_Text", "POPCORN $5 - SODA $3 - CANDY $2", (cc, F + 3.25, LZ + 0.25), 0.26, mat("Lamp_Sign", (1, 1, 1)), parent=root, depth=0.02)
+    spot("Concession", (cc - 1.0, F, LZ + 3.4), root)
+    spot("Vendor", (cc - 1.0, F, LZ + 1.05), root)
+    spot("Usher", (-7.0, F, LZ + 1.4), root)
+    # poster cases inside, bench, rope barriers, chandeliers
+    for i, x in enumerate((-9.6, 9.6)):
+        sx = -1 if x < 0 else 1
+        box("MoviePoster_%d" % (i + 2), (0.04, 1.6, 1.1), (x - sx * 0.06, F + 1.6, 10.5), mat("Poster", (0.9, 0.9, 0.9), 0, 0.8), pivot=(0, 0, 0), parent=root)
+        boxes("PosterCase_%d" % (i + 2), [((0.08, 1.8, 0.08), (x - sx * 0.05, F + 1.6, 10.5 + dz)) for dz in (-0.6, 0.6)] + [((0.08, 0.08, 1.3), (x - sx * 0.05, F + 1.6 + dy, 10.5)) for dy in (-0.9, 0.9)], gold, (0, 0, 0), root)
+    furn("Lobby_Bench_0", (0.6, 0.45, 2.4), (-9.1, F + 0.22, 7.6), velvet, root)
+    beams("Rope_Posts", [((x, F, 9.0), (x, F + 0.95, 9.0), 0.07) for x in (-4.0, -2.0, 2.0, 4.0)], 0.07, gold, (0, 0, 0), root)
+    beams("Rope", [((-4.0, F + 0.85, 9.0), (-2.0, F + 0.7, 9.0), 0.04), ((2.0, F + 0.85, 9.0), (4.0, F + 0.7, 9.0), 0.04)], 0.04, velvet, (0, 0, 0), root)
+    for i, (x, z) in enumerate(((-4.5, 10.5), (4.5, 10.5), (0, 7.0))):
+        fixture("Lobby_%d" % i, (x, F + 4.3, z), root, pendant=True, color="#ffd9a0")
+    light_switch("Main", (1.3, F + 1.3, hd - T / 2 - 0.02), '-z', root)
+    # ---------------------------------------------------------------- auditorium
+    scr_z = LZ - 0.25
+    box("Screen_Masking", (14.6, 7.0, 0.05), (0, F + 4.9, scr_z + 0.06), mat("Masking", (0.02, 0.02, 0.02), 0, 1), pivot=(0, 0, 0), parent=root)
+    box("Cinema_Screen", (13.0, 5.8, 0.04), (0, F + 4.9, scr_z), mat("Movie_Screen", (0.9, 0.9, 0.9), 0, 0.6, emit=(0.6, 0.6, 0.6), emit_strength=0.4), pivot=(0, 0, 0), parent=root)
+    furn("Stage", (15.0, 0.7, 2.2), (0, F + 0.35, LZ - 1.25), mat("StageWood", (0.25, 0.13, 0.07), 0, 0.6), root)
+    box("Stage_Lip", (15.05, 0.1, 0.1), (0, F + 0.66, LZ - 2.35), gold, pivot=(0, 0, 0), parent=root)
+    folds = []
+    for sx in (1, -1):
+        for k in range(8):
+            folds.append(((0.36, 7.8, 0.3), (sx * (7.0 + k * 0.32), F + 4.2, scr_z - 0.25 - (k % 2) * 0.18)))
+    boxes("Curtains", folds, velvet, (0, 0, 0), root)
+    box("Valance", (19.4, 1.0, 0.4), (0, F + 8.0, scr_z - 0.3), velvet, pivot=(0, 0, 0), parent=root)
+    box("Valance_Trim", (19.4, 0.12, 0.44), (0, F + 7.5, scr_z - 0.3), gold, pivot=(0, 0, 0), parent=root)
+    # raked rows: row k sits on a riser 0.3k high, seats face the screen (+z)
+    rows, seat_w = 8, 0.6
+    for k in range(rows):
+        zc = -1.6 - k * 1.15
+        y = F + 0.3 * k
+        if k > 0:
+            furn("Riser_%d" % k, (w - 0.6, 0.3 * k, 1.15), (0, 0.15 * k + F, zc), carpet, root)
+        seats, backs, arms = [], [], []
+        for c in range(24):
+            x = -6.9 + c * seat_w
+            seats.append(((0.5, 0.12, 0.48), (x, y + 0.45, zc + 0.12)))
+            backs.append(((0.5, 0.62, 0.1), (x, y + 0.78, zc - 0.17), Matrix.Rotation(math.radians(-10), 3, 'X')))
+            arms.append(((0.06, 0.5, 0.5), (x - seat_w / 2, y + 0.4, zc + 0.05)))
+            empty("Seat_%d_%d" % (k, c), (x, y + 0.42, zc + 0.1), root)
+        arms.append(((0.06, 0.5, 0.5), (-6.9 + 24 * seat_w - seat_w / 2, y + 0.4, zc + 0.05)))
+        boxes("Seats_%d" % k, seats, seatm, (0, 0, 0), root)
+        boxes("SeatBacks_%d" % k, backs, seatm, (0, 0, 0), root)
+        boxes("SeatArms_%d" % k, arms, mat("SeatFrame", (0.08, 0.06, 0.07), 0.5, 0.5), (0, 0, 0), root)
+        boxes("AisleLights_%d" % k, [((0.12, 0.05, 0.05), (sx * 7.55, y + 0.05, zc + 0.55)) for sx in (1, -1)], aisle, (0, 0, 0), root)
+    rear_y = F + 0.3 * (rows - 1)
+    rz0 = -1.6 - (rows - 1) * 1.15 - 0.575                     # back edge of the last row
+    rear_d = rz0 - (-hd + T / 2)
+    furn("Riser_Rear", (w - 0.6, 0.3 * (rows - 1), rear_d), (0, 0.15 * (rows - 1) + F, rz0 - rear_d / 2), carpet, root)
+    boxes("Sconces", [((0.08, 0.5, 0.35), (sx * (hw - T / 2 - 0.08), F + 4.4, z)) for sx in (1, -1) for z in (-10.0, -5.0, 0.0)],
+          mat("Lamp_Sconce", (1, 0.6, 0.3), 0, 0.3, emit=(1, 0.5, 0.2), emit_strength=1.2), (0, 0, 0), root)
+    # projection booth over the rear aisle; stairs along the back wall from the east side
+    bf = F + 4.2
+    bz0, bz1 = -hd + T / 2, -12.6
+    furn("Booth_Floor", (9.0, 0.2, bz1 - bz0), (-0.5, bf - 0.1, (bz0 + bz1) / 2), CONCRETE(), root)
+    openwall("Booth_Front", (-5.0, bz1), (4.0, bz1), 2.6, 0.15, inner, root, windows=[(-0.5, 2.4, bf + 0.9, bf + 1.9)], y0=bf)
+    openwall("Booth_West", (-5.0, bz0), (-5.0, bz1), 2.6, 0.15, inner, root, y0=bf)
+    box("Booth_Roof", (9.2, 0.12, bz1 - bz0 + 0.2), (-0.5, bf + 2.66, (bz0 + bz1) / 2), inner, pivot=(0, 0, 0), parent=root)
+    beams("Booth_Rail", [((4.0, bf + 1.0, bz0), (4.0, bf + 1.0, bz1), 0.05), ((4.0, bf, bz1), (4.0, bf + 1.0, bz1), 0.05)], 0.05, gold, (0, 0, 0), root)
+    n_st = 7
+    for k in range(n_st):
+        hgt = (bf - rear_y) / n_st * (k + 1)
+        xc = 4.0 + (n_st - 1 - k + 0.5) * 0.42
+        furn("Booth_Stair_%d" % k, (0.42, hgt, 1.3), (xc, rear_y + hgt / 2, bz0 + 0.75), mat("StairSteel", (0.4, 0.42, 0.45), 0.7, 0.4), root)
+    pj = (-0.5, bf + 1.35, bz1 - 0.9)
+    box("Projector_Body", (0.7, 0.6, 1.2), pj, mat("ProjectorGrey", (0.35, 0.37, 0.4), 0.7, 0.4), pivot=(0, 0, 0), parent=root)
+    for dz in (-0.35, 0.35):
+        cyl("Projector_Reel_%d" % int(dz * 10 + 5), 0.42, 0.06, (pj[0], pj[1] + 0.75, pj[2] + dz), mat("ReelMetal", (0.55, 0.57, 0.6), 0.9, 0.3), axis='x', seg=20, pivot=(0, 0, 0), parent=root)
+    cyl("Projector_Lens", 0.12, 0.3, (pj[0], pj[1], pj[2] + 0.75), DARKM(), axis='z', seg=14, pivot=(0, 0, 0), parent=root)
+    furn("Booth_Table", (1.6, 0.8, 0.7), (-3.6, bf + 0.4, bz0 + 0.6), WOOD(), root)
+    boxes("Film_Cans", [((0.42, 0.06, 0.42), (-3.6 + (k % 3 - 1) * 0.45, bf + 0.83 + (k // 3) * 0.07, bz0 + 0.6)) for k in range(5)], mat("ReelMetal", (0.55, 0.57, 0.6), 0.9, 0.3), (0, 0, 0), root)
+    beam = beams("FX_ProjectorBeam", [((pj[0], pj[1], pj[2] + 0.9), (0, F + 4.9, scr_z - 0.4), 0.3, 9.0)], 0.3, mat("FX_LightShaft", (0.9, 0.95, 1.0), 0, 1, alpha=0.08), (0, 0, 0), root)
+    beam["preview_hide"] = 1
+    spot("Projectionist", (-2.6, bf, bz0 + 1.6), root)
+    spot("BoothTop", (2.6, bf, bz0 + 0.9), root)
+    spot("AudFront", (0, F, LZ - 3.2), root)
+    spot("Inside", (0, F, hd - 1.6), root)
+    spot("Outside", (0, 0, hd + 1.6), root)
+    spot("BackIn", (hw - 1.2, F, -1.0), root)
+    spot("BackOut", (hw + 1.4, 0, -1.0), root)
+    # ---------------------------------------------------------------- facade: marquee, blade sign, poster cases, chaser bulbs
+    mz = hd + 1.6
+    box("Marquee", (13.0, 1.6, 3.0), (0, 4.6, mz), mat("MarqueeBody", (0.12, 0.06, 0.1), 0.4, 0.4), pivot=(0, 0, 0), parent=root)
+    box("Marquee_Soffit", (12.6, 0.06, 2.6), (0, 3.78, mz), mat("Lamp_MarqueeSoffit", (1, 0.85, 0.6), 0, 0.3, emit=(1, 0.8, 0.5), emit_strength=2.5), pivot=(0, 0, 0), parent=root)
+    board = mat("Lamp_MarqueeBoard", (1, 0.97, 0.88), 0, 0.3, emit=(1, 0.95, 0.82), emit_strength=1.6)
+    box("Marquee_Board_F", (12.2, 1.1, 0.05), (0, 4.6, mz + 1.52), board, pivot=(0, 0, 0), parent=root)
+    for sx in (1, -1):
+        box("Marquee_Board_S%d" % (sx + 1), (0.05, 1.1, 2.6), (sx * 6.52, 4.6, mz), board, pivot=(0, 0, 0), parent=root)
+    ink = mat("MarqueeInk", (0.05, 0.02, 0.03), 0, 0.6)
+    text_mesh("Marquee_Line1", "NOW SHOWING", (0, 4.88, mz + 1.56), 0.32, ink, parent=root, depth=0.02)
+    text_mesh("Marquee_Line2", "NIGHT OF THE V8", (0, 4.38, mz + 1.56), 0.42, mat("MarqueeRed", (0.7, 0.03, 0.03), 0, 0.6), parent=root, depth=0.02)
+    for sx in (1, -1):
+        text_mesh("Marquee_Side%d" % (sx + 1), "PALACE", (sx * 6.56, 4.6, mz), 0.5, ink, parent=root, depth=0.02, facing='x' if sx > 0 else '-x')
+    bulbs = []
+    for k in range(26):
+        x = -6.25 + k * 0.5
+        bulbs += [((0.11, 0.11, 0.11), (x, 5.45, mz + 1.5)), ((0.11, 0.11, 0.11), (x, 3.75, mz + 1.5))]
+    for sx in (1, -1):
+        for k in range(6):
+            bulbs.append(((0.11, 0.11, 0.11), (sx * 6.5, 5.45, mz - 1.25 + k * 0.5)))
+    boxes("Marquee_Bulbs", bulbs, mat("Lamp_Marquee", (1, 0.85, 0.5), 0, 0.3, emit=(1, 0.8, 0.4), emit_strength=4), (0, 0, 0), root)
+    beams("Marquee_Rods", [((x, 5.4, mz + 1.4), (x, 8.0, hd + 0.2), 0.06) for x in (-5.5, 5.5)], 0.06, IRON(), (0, 0, 0), root)
+    # vertical blade sign
+    box("Blade_Sign", (0.5, 6.2, 1.8), (0, 9.4, hd + 1.1), mat("BladeBody", (0.1, 0.05, 0.12), 0.4, 0.4), pivot=(0, 0, 0), parent=root)
+    neon = mat("Lamp_NeonPalace", (1, 0.25, 0.1), 0, 0.3, emit=(1, 0.2, 0.05), emit_strength=6)
+    for k, ch in enumerate("PALACE"):
+        for sx in (1, -1):
+            text_mesh("Blade_%s_%d_%d" % (ch, k, sx + 1), ch, (sx * 0.27, 11.8 - k * 0.92, hd + 1.1), 0.8, neon, parent=root, depth=0.05, facing='x' if sx > 0 else '-x')
+    box("Blade_Cap", (0.7, 0.3, 2.0), (0, 12.6, hd + 1.1), gold, pivot=(0, 0, 0), parent=root)
+    # exterior poster cases either side of the doors
+    for i, x in enumerate((-3.3, 3.3)):
+        box("MoviePoster_%d" % i, (1.1, 1.6, 0.04), (x, F + 1.6, hd + 0.2), mat("Poster", (0.9, 0.9, 0.9), 0, 0.8), pivot=(0, 0, 0), parent=root)
+        boxes("PosterFrame_%d" % i, [((1.3, 0.08, 0.08), (x, F + 1.6 + dy, hd + 0.22)) for dy in (-0.9, 0.9)] + [((0.08, 1.8, 0.08), (x + dx, F + 1.6, hd + 0.22)) for dx in (-0.62, 0.62)], gold, (0, 0, 0), root)
+        box("PosterLight_%d" % i, (1.2, 0.06, 0.1), (x, F + 2.55, hd + 0.3), mat("Lamp_Street", (1, 0.85, 0.55), 0, 0.3, emit=(1, 0.75, 0.4), emit_strength=4), pivot=(0, 0, 0), parent=root)
+    boxes("Deco_Pilasters", [((0.7, h, 0.35), (x, h / 2 + F, hd + 0.2)) for x in (-9.7, -5.0, 5.0, 9.7)], mat("DecoCream", (0.85, 0.78, 0.62), 0, 0.7), (0, 0, 0), root)
+    boxes("Deco_Bands", [((w + 0.2, 0.25, 0.4), (0, y, hd + 0.18)) for y in (6.1, 8.6)], gold, (0, 0, 0), root)
+    empty("LightPoint", (0, 3.4, mz + 1.2), root)
+    export_glb("cinema.glb")
+    render_preview("blender_cinema.png", elev=16, azim=28)
+    for o in bpy.data.objects:
+        if o.name.startswith(("Ceiling", "Cornice", "Roof_Slab", "Lobby_Ceiling", "Booth_Roof", "Marquee", "Blade", "Wall_Front", "Deco_", "Valance")):
+            o["preview_hide"] = 1
+    render_preview("blender_cinema_interior.png", elev=58, azim=200, dist_mul=0.75)
 
 
 # ========================================================================== PROPS
@@ -1434,6 +1758,210 @@ def build_props():
     g, x = grp("Loot_Cash", 0.8, loot="cash", value=0, heavy=0)
     boxes("Cash_Stack", [((0.16, 0.03, 0.07), (x + (k % 2) * 0.02, 0.015 + k * 0.03, (k % 3) * 0.01)) for k in range(4)], mat("CashGreen", (0.35, 0.55, 0.3), 0, 0.8), (x, 0, 0), g)
     boxes("Cash_Bands", [((0.03, 0.032, 0.072), (x + (k % 2) * 0.02, 0.015 + k * 0.03, (k % 3) * 0.01)) for k in range(4)], mat("CashBand", (0.9, 0.85, 0.7), 0, 0.6), (x, 0, 0), g)
+    # ---- world expansion landmarks (Clocktower, Gazebo, Barn_CiderMill, WaterTower, DriveIn_Screen, TestTrack_Arch)
+    COPPER = mat("Copper", (0.22, 0.48, 0.42), 0.5, 0.45)
+    BARN_RED = mat("BarnRed", (0.58, 0.11, 0.09), 0.0, 0.85)
+    CLOCK_GLOW = mat("Lamp_Clock", (1.0, 0.92, 0.72), 0.0, 0.25, emit=(1.0, 0.85, 0.55), emit_strength=3.5)
+    # 1. Clocktower (Town Square centerpiece)
+    g, x = grp("Clocktower", 8.0, light=1)
+    boxes("Clock_Base", [((4.2, 0.5, 4.2), (x, 0.25, 0)), ((3.6, 2.2, 3.6), (x, 1.6, 0)), ((3.8, 0.3, 3.8), (x, 2.8, 0))], STONE(), (x, 0, 0), g, uv_scale=0.5)
+    boxes("Clock_Shaft", [((2.8, 6.2, 2.8), (x, 6.0, 0))], BRICK(), (x, 0, 0), g, uv_scale=0.5)
+    boxes("Clock_Quoins", [((0.35, 6.2, 0.35), (x + sx * 1.32, 6.0, sz * 1.32)) for sx in (1, -1) for sz in (1, -1)] +
+          [((3.2, 0.35, 3.2), (x, 9.2, 0)), ((3.1, 2.2, 3.1), (x, 10.4, 0)), ((3.4, 0.3, 3.4), (x, 11.6, 0))], TRIM(), (x, 0, 0), g)
+    for ax_c, s_c in (('z', 1), ('z', -1), ('x', 1), ('x', -1)):
+        cpos = (x, 10.4, s_c * 1.58) if ax_c == 'z' else (x + s_c * 1.58, 10.4, 0)
+        cyl("Clock_Face_%s_%d" % (ax_c, s_c), 0.95, 0.08, cpos, CLOCK_GLOW, axis=ax_c, seg=24, pivot=(x, 0, 0), parent=g)
+        cyl("Clock_Rim_%s_%d" % (ax_c, s_c), 1.05, 0.05, cpos, IRON(), axis=ax_c, seg=24, pivot=(x, 0, 0), parent=g)
+        if ax_c == 'z':
+            boxes("Clock_Hands_%d" % s_c, [((0.08, 0.65, 0.06), (x, 10.65, s_c * 1.63)), ((0.52, 0.08, 0.06), (x + 0.2, 10.4, s_c * 1.63))], IRON(), (x, 0, 0), g)
+        else:
+            boxes("Clock_HandsX_%d" % s_c, [((0.06, 0.65, 0.08), (x + s_c * 1.63, 10.65, 0)), ((0.06, 0.08, 0.52), (x + s_c * 1.63, 10.4, 0.2))], IRON(), (x, 0, 0), g)
+    cyl("Clock_Spire", 2.3, 3.4, (x, 13.4, 0), COPPER, seg=4, r2=0.05, pivot=(x, 0, 0), parent=g)
+    beams("Clock_Vane", [((x, 15.0, 0), (x, 16.0, 0), 0.05), ((x - 0.5, 15.7, 0), (x + 0.5, 15.7, 0), 0.04)], 0.05, IRON(), (x, 0, 0), g)
+    empty("LightPoint", (x, 10.4, 2.2), g)
+    col("Clocktower", (3.8, 12.0, 3.8), (x, 6.0, 0), g)
+    # 2. Gazebo (Octagonal Park Pavilion)
+    g, x = grp("Gazebo", 9.0, light=1)
+    cyl("Gazebo_Steps", 3.6, 0.22, (x, 0.11, 0), STONE(), seg=8, pivot=(x, 0, 0), parent=g)
+    cyl("Gazebo_Deck", 3.2, 0.24, (x, 0.34, 0), WOOD(), seg=8, pivot=(x, 0, 0), parent=g)
+    g_posts, g_rails = [], []
+    for k in range(8):
+        a0 = k * math.pi / 4 + math.pi / 8
+        a1 = (k + 1) * math.pi / 4 + math.pi / 8
+        px0, pz0 = x + 2.85 * math.cos(a0), 2.85 * math.sin(a0)
+        px1, pz1 = x + 2.85 * math.cos(a1), 2.85 * math.sin(a1)
+        g_posts.append(((px0, 0.45, pz0), (px0, 3.2, pz0), 0.12))
+        if k not in (0, 4):  # leave front & back walkways open
+            g_rails += [((px0, 1.15, pz0), (px1, 1.15, pz1), 0.07), ((px0, 0.65, pz0), (px1, 0.65, pz1), 0.06)]
+            for b_i in range(1, 5):
+                bx_p = px0 + (px1 - px0) * (b_i / 5.0)
+                bz_p = pz0 + (pz1 - pz0) * (b_i / 5.0)
+                g_rails.append(((bx_p, 0.65, bz_p), (bx_p, 1.15, bz_p), 0.04))
+    beams("Gazebo_Posts", g_posts, 0.12, TRIM(), (x, 0, 0), g)
+    beams("Gazebo_Rails", g_rails, 0.06, TRIM(), (x, 0, 0), g)
+    cyl("Gazebo_Roof", 3.55, 1.6, (x, 3.9, 0), ROOF(), seg=8, r2=0.5, pivot=(x, 0, 0), parent=g)
+    cyl("Gazebo_Cupola", 0.55, 0.55, (x, 4.85, 0), TRIM(), seg=8, pivot=(x, 0, 0), parent=g)
+    cyl("Gazebo_CupolaCap", 0.72, 0.6, (x, 5.4, 0), COPPER, seg=8, r2=0.04, pivot=(x, 0, 0), parent=g)
+    sphere("Gazebo_Lantern", 0.22, (x, 3.25, 0), LAMP(), pivot=(x, 0, 0), parent=g, seg=12)
+    empty("LightPoint", (x, 3.1, 0), g)
+    col("Gazebo_Base", (5.8, 0.46, 5.8), (x, 0.23, 0), g)
+    # 3. Barn_CiderMill (Old Hollow Cider Mill & Gambrel Barn)
+    g, x = grp("Barn_CiderMill", 16.0, light=1)
+    bw, bd = 11.0, 9.0
+    box("Barn_Found", (bw + 0.4, 0.45, bd + 0.4), (x, 0.225, 0), STONE(), pivot=(x, 0, 0), parent=g, uv_scale=0.5)
+    box("Barn_Body", (bw, 4.4, bd), (x, 2.65, 0), BARN_RED, pivot=(x, 0, 0), parent=g, uv_scale=0.5)
+    # Gambrel roof + gable infill via profile
+    gamb_in = [(-bd / 2, 4.8), (-bd * 0.34, 6.7), (0, 7.6), (bd * 0.34, 6.7), (bd / 2, 4.8)]
+    profile("Barn_GableFill", gamb_in, x - bw / 2, x + bw / 2, BARN_RED, (x, 0, 0), g)
+    gamb_r = [(bd / 2 + 0.5, 4.6), (bd * 0.34 + 0.2, 6.8), (0, 7.8), (-bd * 0.34 - 0.2, 6.8), (-bd / 2 - 0.5, 4.6),
+              (-bd / 2 - 0.5, 4.4), (-bd * 0.34 - 0.2, 6.6), (0, 7.55), (bd * 0.34 + 0.2, 6.6), (bd / 2 + 0.5, 4.4)]
+    profile("Barn_Roof", gamb_r, x - bw / 2 - 0.45, x + bw / 2 + 0.45, ROOF(), (x, 0, 0), g)
+    # White barn X-trim on doors, hayloft door, glowing windows, and waterwheel
+    boxes("Barn_Doors", [((2.8, 3.2, 0.12), (x, 2.05, bd / 2 + 0.04)), ((1.6, 1.8, 0.12), (x, 5.8, bd / 2 + 0.04))], WOOD(), (x, 0, 0), g)
+    beams("Barn_XTrim", [((x - 1.35, 0.5, bd / 2 + 0.12), (x - 0.05, 3.6, bd / 2 + 0.12), 0.08),
+                         ((x - 0.05, 0.5, bd / 2 + 0.12), (x - 1.35, 3.6, bd / 2 + 0.12), 0.08),
+                         ((x + 0.05, 0.5, bd / 2 + 0.12), (x + 1.35, 3.6, bd / 2 + 0.12), 0.08),
+                         ((x + 1.35, 0.5, bd / 2 + 0.12), (x + 0.05, 3.6, bd / 2 + 0.12), 0.08),
+                         ((x - 1.4, 3.65, bd / 2 + 0.12), (x + 1.4, 3.65, bd / 2 + 0.12), 0.1),
+                         ((x, 6.9, bd / 2 + 0.1), (x, 6.9, bd / 2 + 1.2), 0.14)], 0.08, TRIM(), (x, 0, 0), g)
+    boxes("Barn_Windows", [((1.2, 1.3, 0.1), (x + sx * 3.4, 2.4, bd / 2 + 0.03)) for sx in (1, -1)] +
+          [((0.1, 1.3, 1.2), (x + sx * (bw / 2 + 0.03), 2.4, sz * 2.2)) for sx in (1, -1) for sz in (1, -1)], WINDOW(), (x, 0, 0), g)
+    # Hollow spoked waterwheel on the east side
+    wx = x + bw / 2 + 0.45
+    cyl("Mill_Hub", 0.35, 0.75, (wx, 2.3, 0), IRON(), axis='x', seg=12, pivot=(x, 0, 0), parent=g)
+    wheel_beams = [((wx + dx_w, 2.3 - 2.0 * math.cos(k * math.pi / 4), -2.0 * math.sin(k * math.pi / 4)),
+                    (wx + dx_w, 2.3 + 2.0 * math.cos(k * math.pi / 4), 2.0 * math.sin(k * math.pi / 4)), 0.08)
+                   for k in range(4) for dx_w in (-0.22, 0.22)]
+    for k in range(12):
+        a0, a1 = k * math.pi / 6, (k + 1) * math.pi / 6
+        for dx_w in (-0.22, 0.22):
+            wheel_beams.append(((wx + dx_w, 2.3 + 2.0 * math.cos(a0), 2.0 * math.sin(a0)),
+                                (wx + dx_w, 2.3 + 2.0 * math.cos(a1), 2.0 * math.sin(a1)), 0.12))
+        wheel_beams.append(((wx - 0.28, 2.3 + 2.05 * math.cos(a0), 2.05 * math.sin(a0)),
+                            (wx + 0.28, 2.3 + 2.05 * math.cos(a0), 2.05 * math.sin(a0)), 0.14))
+    beams("Mill_Wheel", wheel_beams, 0.1, WOOD(), (x, 0, 0), g)
+    text_mesh("Barn_Sign", "HOLLOW CIDER MILL", (x, 4.35, bd / 2 + 0.12), 0.45, TRIM(), parent=g, depth=0.05)
+    empty("LightPoint", (x, 4.1, bd / 2 + 0.9), g)
+    col("Barn", (bw + 0.6, 7.5, bd + 0.4), (x, 3.75, 0), g)
+    # 4. WaterTower (Industrial Steel Water Tank)
+    g, x = grp("WaterTower", 9.0)
+    wt_legs = []
+    for sx in (1, -1):
+        for sz in (1, -1):
+            wt_legs.append(((x + sx * 2.2, 0, sz * 2.2), (x + sx * 1.4, 7.8, sz * 1.4), 0.18))
+    for y_br, r_br in ((2.6, 1.95), (5.2, 1.68), (7.6, 1.42)):
+        for s in (1, -1):
+            wt_legs += [((x - r_br, y_br, s * r_br), (x + r_br, y_br, s * r_br), 0.1),
+                        ((x + s * r_br, y_br, -r_br), (x + s * r_br, y_br, r_br), 0.1)]
+    wt_legs.append(((x, 0, 0), (x, 7.8, 0), 0.35))
+    beams("WT_Structure", wt_legs, 0.14, STEEL(), (x, 0, 0), g)
+    cyl("WT_Walkway", 2.55, 0.12, (x, 7.8, 0), YELLOW(), seg=24, pivot=(x, 0, 0), parent=g)
+    cyl("WT_Tank", 2.25, 3.6, (x, 9.6, 0), mat("TankSilver", (0.72, 0.75, 0.78), 0.75, 0.3), seg=24, pivot=(x, 0, 0), parent=g)
+    cyl("WT_Roof", 2.4, 1.3, (x, 12.05, 0), BARN_RED, seg=24, r2=0.08, pivot=(x, 0, 0), parent=g)
+    text_mesh("WT_Label", "HOLLOW", (x, 9.7, 2.3), 0.55, IRON(), parent=g, depth=0.06)
+    col("WaterTower", (4.6, 12.0, 4.6), (x, 6.0, 0), g)
+    # 5. DriveIn_Screen (Spooky Drive-In Theater Screen)
+    g, x = grp("DriveIn_Screen", 16.0, light=1)
+    boxes("DriveIn_Frame", [((13.6, 7.6, 0.9), (x, 6.8, 0)), ((14.2, 0.5, 1.3), (x, 10.7, 0))] +
+          [((0.7, 10.6, 1.1), (x + sx * 5.8, 5.3, -0.2)) for sx in (1, -1)], STEEL(), (x, 0, 0), g)
+    beams("DriveIn_Braces", [((x + sx * 5.8, 10.0, -0.5), (x + sx * 5.8, 0, -3.6), 0.22) for sx in (1, -1)] +
+          [((x - 5.8, y_d, -0.5), (x + 5.8, y_d, -0.5), 0.15) for y_d in (1.5, 3.0)], 0.18, STEEL(), (x, 0, 0), g)
+    box("DriveIn_Canvas", (12.6, 6.6, 0.08), (x, 6.8, 0.48), mat("Lamp_Screen", (0.95, 0.52, 0.12), 0, 0.2, emit=(1.0, 0.48, 0.1), emit_strength=2.2), pivot=(x, 0, 0), parent=g)
+    text_mesh("DriveIn_Title", "NIGHT OF THE V8", (x, 7.3, 0.54), 0.85, IRON(), parent=g, depth=0.04)
+    text_mesh("DriveIn_Sub", "SPOOKY DRIVE-IN THEATER", (x, 5.5, 0.54), 0.48, IRON(), parent=g, depth=0.04)
+    box("DriveIn_Marquee", (9.2, 1.2, 0.5), (x, 2.1, 0.35), mat("SignDark", (0.08, 0.05, 0.1), 0, 0.5), pivot=(x, 0, 0), parent=g)
+    text_mesh("DriveIn_Now", "NOW SHOWING", (x, 2.1, 0.62), 0.52, mat("Lamp_NeonTeal", (0.2, 1, 0.9), 0, 0.3, emit=(0.1, 1, 0.85), emit_strength=4), parent=g, depth=0.05)
+    empty("LightPoint", (x, 6.8, 2.5), g)
+    col("DriveIn", (13.6, 10.6, 2.8), (x, 5.3, -0.8), g)
+    # 6. TestTrack_Arch (Motorworks Proving Ground Start/Finish Gantry)
+    g, x = grp("TestTrack_Arch", 16.0, light=1)
+    span_x = 6.8
+    arch_b = []
+    for sx in (1, -1):
+        px_a = x + sx * span_x
+        arch_b += [((px_a - 0.3, 0, -0.4), (px_a - 0.3, 6.8, -0.4), 0.16), ((px_a + 0.3, 0, 0.4), (px_a + 0.3, 6.8, 0.4), 0.16)]
+        for y_a in range(1, 7):
+            arch_b.append(((px_a - 0.3, y_a, -0.4), (px_a + 0.3, y_a, 0.4), 0.1))
+        col("Arch_Post_%d" % sx, (0.9, 6.8, 1.0), (px_a, 3.4, 0), g)
+    beams("Arch_Truss", arch_b, 0.14, STEEL(), (x, 0, 0), g)
+    box("Arch_Header", (span_x * 2 + 1.4, 1.35, 0.9), (x, 6.4, 0), mat("SignDark", (0.08, 0.05, 0.1), 0, 0.4), pivot=(x, 0, 0), parent=g)
+    boxes("Arch_Stripes", [((span_x * 2 + 1.45, 0.16, 0.94), (x, y_s, 0)) for y_s in (5.75, 7.05)], YELLOW(), (x, 0, 0), g)
+    text_mesh("Arch_Title", "PROVING GROUND", (x, 6.4, 0.48), 0.68, mat("Lamp_Neon", (1, 0.4, 0.05), 0, 0.3, emit=(1, 0.35, 0.02), emit_strength=5), parent=g, depth=0.06)
+    text_mesh("Arch_TitleBack", "TEST TRACK", (x, 6.4, -0.48), 0.68, mat("Lamp_Neon", (1, 0.4, 0.05), 0, 0.3, emit=(1, 0.35, 0.02), emit_strength=5), parent=g, depth=0.06, facing='-z')
+    boxes("Arch_Lights", [((0.35, 0.35, 0.2), (x + dx_l, 5.4, 0.45)) for dx_l in (-2.4, -1.2, 0.0, 1.2, 2.4)],
+          mat("Lamp_Sign2", (0.2, 1, 0.3), 0, 0.2, emit=(0.2, 1, 0.2), emit_strength=4), (x, 0, 0), g)
+    empty("LightPoint", (x, 5.8, 0), g)
+    # ---- Phase 3 props: bus stop, arcade cabinet, vending machine, time clock, parts crate, payphone, UFO, job board
+    NEON_G = mat("Lamp_ArcadeMarquee", (0.4, 1, 0.3), 0, 0.3, emit=(0.3, 1, 0.2), emit_strength=3)
+    # bus stop shelter (faces +z = the street)
+    g, x = grp("BusStop", 5.0)
+    beams("BusStop_Frame", [((x + sx * 1.6, 0, sz), (x + sx * 1.6, 2.5, sz), 0.08) for sx in (1, -1) for sz in (-0.7, 0.6)] +
+          [((x - 1.6, 2.5, sz), (x + 1.6, 2.5, sz), 0.07) for sz in (-0.7, 0.6)], 0.08, STEEL(), (x, 0, 0), g)
+    box("BusStop_Roof", (3.6, 0.1, 1.7), (x, 2.58, -0.05), mat("ShelterRoof", (0.2, 0.22, 0.25), 0.4, 0.4), pivot=(x, 0, 0), parent=g)
+    box("BusStop_Back", (3.2, 1.9, 0.03), (x, 1.35, -0.7), PANE(), pivot=(x, 0, 0), parent=g)
+    box("BusStop_Ad", (1.4, 1.6, 0.06), (x + 1.65, 1.3, -0.05), mat("Lamp_AdPanel", (0.9, 0.5, 0.1), 0, 0.3, emit=(1.0, 0.45, 0.08), emit_strength=1.8), pivot=(x, 0, 0), parent=g, rot=Matrix.Rotation(math.pi / 2, 3, 'Y'))
+    text_mesh("BusStop_AdText", "PALACE", (x + 1.69, 1.55, -0.05), 0.2, mat("SignDark", (0.08, 0.05, 0.1)), parent=g, depth=0.01, facing='x')
+    furn("BusStop_Bench", (2.4, 0.45, 0.45), (x - 0.2, 0.45, -0.38), WOOD(), g)
+    beams("BusStop_SignPost", [((x - 2.1, 0, 0.4), (x - 2.1, 2.7, 0.4), 0.06)], 0.06, STEEL(), (x, 0, 0), g)
+    cyl("BusStop_SignDisc", 0.3, 0.04, (x - 2.1, 2.6, 0.4), mat("SignBlue", (0.1, 0.25, 0.7), 0.1, 0.5), axis='z', seg=18, pivot=(x, 0, 0), parent=g)
+    text_mesh("BusStop_SignTxt", "BUS", (x - 2.1, 2.6, 0.43), 0.18, mat("SignWhite", (0.95, 0.95, 0.93)), parent=g, depth=0.01)
+    col("BusStop", (3.4, 2.6, 0.2), (x, 1.3, -0.7), g)
+    empty("Spot_BusSeat", (x - 0.2, 0.45, -0.25), g)
+    # arcade cabinet (screen faces +z; the game paints PUMPKIN PANIC onto Arcade_Screen)
+    g, x = grp("ArcadeCabinet", 1.6)
+    cab = mat("ArcadePurple", (0.25, 0.05, 0.35), 0.2, 0.5)
+    profile("Arcade_Body", [(-0.4, 0), (0.35, 0), (0.35, 0.9), (0.15, 1.15), (0.15, 1.75), (0.3, 1.85), (0.3, 1.95), (-0.4, 1.95)], x - 0.36, x + 0.36, cab, (x, 0, 0), g)
+    box("Arcade_Screen", (0.56, 0.46, 0.02), (x, 1.45, 0.165), mat("Arcade_Screen", (0.1, 0.1, 0.1), 0, 0.3, emit=(0.2, 0.2, 0.2), emit_strength=0.5), pivot=(x, 0, 0), parent=g,
+        rot=Matrix.Rotation(math.radians(-8), 3, 'X'))
+    box("Arcade_Marquee", (0.66, 0.16, 0.02), (x, 1.88, 0.31), NEON_G, pivot=(x, 0, 0), parent=g)
+    box("Arcade_Panel", (0.68, 0.06, 0.32), (x, 1.0, 0.27), mat("ArcadeBlack", (0.05, 0.05, 0.06), 0.3, 0.5), pivot=(x, 0, 0), parent=g, rot=Matrix.Rotation(math.radians(-25), 3, 'X'))
+    cyl("Arcade_Stick", 0.02, 0.12, (x - 0.15, 1.09, 0.28), CHROME(), seg=8, pivot=(x, 0, 0), parent=g)
+    sphere("Arcade_Ball", 0.04, (x - 0.15, 1.16, 0.28), mat("ArcadeRed", (0.9, 0.05, 0.05), 0, 0.4), pivot=(x, 0, 0), parent=g, seg=8)
+    boxes("Arcade_Buttons", [((0.05, 0.03, 0.05), (x + 0.05 + k * 0.08, 1.06, 0.27)) for k in range(3)], mat("ArcadeYellow", (1, 0.8, 0.1), 0, 0.4), (x, 0, 0), g)
+    col("Arcade", (0.72, 1.95, 0.75), (x, 0.97, -0.03), g)
+    # vending machine
+    g, x = grp("VendingMachine", 1.6)
+    box("Vend_Body", (0.95, 1.9, 0.8), (x, 0.95, 0), mat("VendRed", (0.75, 0.05, 0.05), 0.3, 0.4), pivot=(x, 0, 0), parent=g)
+    box("Vend_Front", (0.6, 1.4, 0.03), (x - 0.12, 1.1, 0.41), mat("Lamp_Vend", (0.9, 0.95, 1.0), 0, 0.2, emit=(0.8, 0.9, 1.0), emit_strength=1.4), pivot=(x, 0, 0), parent=g)
+    boxes("Vend_Cans", [((0.07, 0.12, 0.02), (x - 0.38 + c * 0.1, 0.55 + r * 0.32, 0.43)) for r in range(4) for c in range(6)], mat("CanMix", (0.2, 0.5, 0.9), 0.6, 0.3), (x, 0, 0), g)
+    box("Vend_Slot", (0.2, 0.3, 0.03), (x + 0.33, 1.1, 0.41), DARKM(), pivot=(x, 0, 0), parent=g)
+    text_mesh("Vend_Label", "GHOUL-COLA", (x, 1.75, 0.42), 0.12, mat("SignWhite", (0.95, 0.95, 0.93)), parent=g, depth=0.01)
+    col("Vend", (0.95, 1.9, 0.8), (x, 0.95, 0), g)
+    # punch time clock + card rack (wall mounted, faces +z)
+    g, x = grp("TimeClock", 1.4)
+    box("Clock_Box", (0.4, 0.55, 0.22), (x, 1.4, 0.11), mat("ClockBeige", (0.8, 0.75, 0.62), 0.1, 0.5), pivot=(x, 0, 0), parent=g)
+    cyl("Clock_Dial", 0.13, 0.02, (x, 1.52, 0.225), mat("Lamp_ClockDial", (1, 1, 0.9), 0, 0.3, emit=(1, 0.95, 0.8), emit_strength=0.8), axis='z', seg=18, pivot=(x, 0, 0), parent=g)
+    box("Clock_Slot", (0.16, 0.03, 0.06), (x, 1.25, 0.22), DARKM(), pivot=(x, 0, 0), parent=g)
+    boxes("Clock_Cards", [((0.07, 0.18, 0.02), (x + 0.36 + (k % 4) * 0.09, 1.45 - (k // 4) * 0.22, 0.04)) for k in range(12)], mat("CardManila", (0.85, 0.75, 0.5), 0, 0.8), (x, 0, 0), g)
+    box("Clock_Rack", (0.42, 0.5, 0.03), (x + 0.49, 1.35, 0.01), STEEL(), pivot=(x, 0, 0), parent=g)
+    box("JobBoard", (0.9, 0.7, 0.03), (x - 0.75, 1.55, 0.01), mat("Cork", (0.55, 0.4, 0.25), 0, 0.9), pivot=(x, 0, 0), parent=g)
+    boxes("JobBoard_Notes", [((0.18, 0.22, 0.01), (x - 1.05 + k * 0.22, 1.6 + (k % 2) * 0.1, 0.03)) for k in range(4)], mat("NotePaper", (0.95, 0.92, 0.6), 0, 0.8), (x, 0, 0), g)
+    text_mesh("JobBoard_Title", "PARTS RUNNER", (x - 0.75, 1.83, 0.035), 0.07, mat("SignDark", (0.08, 0.05, 0.1)), parent=g, depth=0.005)
+    # parts crate (carried by the Parts Runner job)
+    g, x = grp("PartsCrate", 1.2, loot="crate", value=0, heavy=1)
+    box("Crate_Box", (0.7, 0.55, 0.55), (x, 0.275, 0), WOOD(), pivot=(x, 0, 0), parent=g)
+    boxes("Crate_Slats", [((0.72, 0.06, 0.57), (x, y, 0)) for y in (0.08, 0.47)] + [((0.06, 0.57, 0.57), (x + dx, 0.275, 0)) for dx in (-0.33, 0.33)], mat("CrateDark", (0.25, 0.14, 0.07), 0, 0.8), (x, 0, 0), g)
+    text_mesh("Crate_Stencil", "MOTORWORKS", (x, 0.3, 0.285), 0.07, mat("SignDark", (0.08, 0.05, 0.1)), parent=g, depth=0.005)
+    # payphone booth (gas station, haunted)
+    g, x = grp("Payphone", 2.0)
+    box("Payphone_Post", (0.18, 1.5, 0.18), (x, 0.75, -0.1), STEEL(), pivot=(x, 0, 0), parent=g)
+    box("Payphone_Hood", (0.75, 0.9, 0.5), (x, 1.75, 0.0), mat("PhoneBlue", (0.08, 0.2, 0.55), 0.4, 0.4), pivot=(x, 0, 0), parent=g)
+    box("Payphone_Unit", (0.36, 0.55, 0.14), (x, 1.6, 0.12), STEEL(), pivot=(x, 0, 0), parent=g)
+    box("Payphone_Handset", (0.07, 0.3, 0.07), (x - 0.22, 1.62, 0.18), DARKM(), pivot=(x, 0, 0), parent=g)
+    boxes("Payphone_Keys", [((0.04, 0.03, 0.02), (x - 0.05 + (k % 3) * 0.06, 1.62 - (k // 3) * 0.05, 0.2)) for k in range(12)], CHROME(), (x, 0, 0), g)
+    text_mesh("Payphone_Sign", "PHONE", (x, 2.08, 0.26), 0.12, mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2), parent=g, depth=0.01)
+    col("Payphone", (0.75, 2.2, 0.5), (x, 1.1, 0.0), g)
+    # flying saucer (easter egg) - hull, dome, rim lights, tractor beam
+    g, x = grp("UFO", 10.0)
+    lathe("UFO_Hull", [(0.0, -0.45), (2.4, -0.25), (4.0, 0.0), (2.6, 0.35), (0.0, 0.45)], (x, 0, 0), mat("UFOChrome", (0.7, 0.72, 0.78), 0.95, 0.2), axis='y', seg=32, pivot=(x, 0, 0), parent=g)
+    lathe("UFO_Dome", [(1.4, 0.4), (1.2, 0.9), (0.7, 1.3), (0.0, 1.45)], (x, 0, 0), mat("Lamp_UFODome", (0.5, 1, 0.6), 0, 0.2, emit=(0.4, 1, 0.5), emit_strength=2.5), axis='y', seg=24, pivot=(x, 0, 0), parent=g)
+    boxes("UFO_Lights", [((0.3, 0.16, 0.3), (x + 3.6 * math.cos(k * math.pi / 6), -0.05, 3.6 * math.sin(k * math.pi / 6))) for k in range(12)],
+          mat("Lamp_UFORim", (1, 0.9, 0.3), 0, 0.2, emit=(1, 0.85, 0.2), emit_strength=6), (x, 0, 0), g)
+    beam = lathe("FX_UFOBeam", [(0.9, -0.4), (3.2, -14.0)], (x, 0, 0), mat("FX_UFOBeam", (0.5, 1, 0.6), 0, 1, alpha=0.15), axis='y', seg=20, pivot=(x, 0, 0), parent=g, smooth=False)
+    beam["preview_hide"] = 1
+    g, x = grp("Popcorn", 0.8)
+    lathe("Popcorn_Bucket", [(0.0, 0.0), (0.065, 0.0), (0.095, 0.2), (0.0, 0.2)], (x, 0, 0), mat("PopcornStripe", (0.85, 0.08, 0.08), 0, 0.6), axis='y', seg=12, pivot=(x, 0, 0), parent=g, smooth=False)
+    boxes("Popcorn_Kernels", [((0.04, 0.04, 0.04), (x + 0.05 * math.cos(k * 1.3), 0.21 + (k % 3) * 0.015, 0.05 * math.sin(k * 1.3))) for k in range(10)], mat("PopcornYellow", (1, 0.9, 0.55), 0, 0.8), (x, 0, 0), g)
     export_glb("props.glb")
     for i, g in enumerate([o for o in root.children]):
         g.location = g2b(((i % 6) * 7.0, 0, -(i // 6) * 7.0))
@@ -1445,7 +1973,7 @@ BUILDERS = {
     "machines": build_forklift_lift_scanner, "plant": build_plant, "diner": build_diner, "gas": build_gas_station,
     "hardware": build_hardware, "police": build_police, "jumbotron": lambda: build_jumbotron(),
     "houseA": lambda: house("a", 10, 8, 2), "houseB": lambda: house("b", 12, 9, 1, gable_axis='z'),
-    "props": build_props,
+    "props": build_props, "cinema": build_cinema,
 }
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ import { LAYOUT, pl } from '../config.js';
 import { terrainHeight } from '../world/terrain.js';
 import dialogue from '../data/dialogue.json';
 import { makePerson, makeProfile, randomAdult, randomKid, POOLS, ADULT_ONLY, demoOf } from '../data/demographics.js';
+import { SidewalkNet, Townsfolk } from './townsfolk.js';
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -78,24 +79,26 @@ export class NPCs {
     this.game.scene.add(fd.root);
     this.game.factory.forkDriver = fd;
     this.forkDriver = fd;
-    // trick-or-treaters & townsfolk walking the sidewalks (roughly half kids)
-    town.pedestrianPaths.forEach((path, i) => {
-      for (let k = 0; k < 3; k++) {
-        const kid = (i + k) % 3 !== 0;
-        const age = kid ? randomKid() : randomAdult();
-        const c = makePerson(this.game.assets, age, kid ? 'trick-or-treater' : 'townsperson');
-        this.game.scene.add(c.root);
-        const a = new THREE.Vector3(path[0][0], 0, path[0][1]), b = new THREE.Vector3(path[1][0], 0, path[1][1]);
-        this.pedestrians.push({ char: c, a, b, t: Math.random(), dir: Math.random() < 0.5 ? 1 : -1, speed: kid ? 1.5 : 1.25, dodge: 0, offset: rnd(-0.6, 0.6),
-          name: kid ? 'Trick-or-Treater' : 'Townsperson', lines: c.profile.lines, idx: Math.floor(Math.random() * 3), profile: c.profile, kind: 'ped', health: 100, kid });
-      }
-    });
+    // townsfolk on the sidewalk network (roughly 40% trick-or-treaters): errands, crosswalks, benches, porches
+    this.net = new SidewalkNet(this.game);
+    this.net.build(town, this.game.cinema);
+    this.folk = new Townsfolk(this.game, this.net);
+    for (let i = 0; i < 18; i++) {
+      const kid = i % 5 < 2;
+      const age = kid ? randomKid() : randomAdult();
+      const c = makePerson(this.game.assets, age, kid ? 'trick-or-treater' : 'townsperson');
+      this.game.scene.add(c.root);
+      const p = { char: c, dodge: 0, offset: rnd(-0.6, 0.6), name: kid ? 'Trick-or-Treater' : 'Townsperson', lines: c.profile.lines, idx: Math.floor(Math.random() * 3),
+        profile: c.profile, kind: 'ped', health: 100, kid };
+      this.folk.init(p);
+      this.pedestrians.push(p);
+    }
   }
 
   nearestTalkable(pos, maxD = 2.8) {
     let best = null, bd = maxD;
     for (const n of [...this.statics, ...this.pedestrians, ...this.homeowners]) {
-      if (n.down > 0 || n.fleeing) continue;
+      if (n.down > 0 || n.fleeing || n.hidden) continue;
       const d = n.char.root.position.distanceTo(pos);
       if (d < bd) { bd = d; best = n; }
     }
@@ -186,12 +189,14 @@ export class NPCs {
       if (n.down > 0) { n.down -= dt; n.char.update(dt, 'down'); continue; }
       n.char.update(dt, n.talkT > 0 ? 'talk' : n.anim);
     }
+    this.folk.tick(dt);
     for (const p of this.pedestrians) {
-      const len = p.a.distanceTo(p.b);
       const pos = p.char.root.position;
-      p.char.root.visible = pos.distanceTo(g.focusPos) < 110;
-      if (p.down > 0) { p.down -= dt; if (p.char.root.visible) p.char.update(dt, 'down'); if (p.down <= 0) { p.dodge = 4; p.dodgeDir ||= new THREE.Vector3(1, 0, 0); } continue; }
-      // dodge fast cars
+      p.char.root.visible = !p.hidden && pos.distanceTo(g.focusPos) < 110;
+      const visible = p.char.root.visible;
+      if (p.hidden) { this.folk.update(p, dt, false); continue; }
+      if (p.down > 0) { p.down -= dt; if (visible) p.char.update(dt, 'down'); if (p.down <= 0) { p.dodge = 4; p.dodgeDir ||= new THREE.Vector3(1, 0, 0); } continue; }
+      // dodge fast cars, horns, gunfire
       let dodge = false;
       const cars = [pv, ...g.police.cruisers].filter(Boolean);
       for (const c of cars) {
@@ -204,23 +209,12 @@ export class NPCs {
         pos.addScaledVector(p.dodgeDir, dt * 5);
         pos.y = groundAt(g, pos.x, pos.z, pos.y);
         p.char.root.rotation.y = Math.atan2(p.dodgeDir.x, p.dodgeDir.z);
-        if (p.char.root.visible) p.char.update(dt, 'panic');
-        if (p.dodge <= 0) p.t = THREE.MathUtils.clamp(new THREE.Vector3().subVectors(pos, p.a).dot(p.b.clone().sub(p.a).normalize()) / len, 0, 1);
+        if (visible) p.char.update(dt, 'panic');
+        if (p.dodge <= 0) { p.brain.state = 'plan'; p.brain.wait = 0.8; p.brain.crossing = false; }
         continue;
       }
-      const talking = (p.talkT = Math.max(0, (p.talkT || 0) - dt)) > 0;
-      if (!talking) {
-        p.t += (p.dir * p.speed * dt) / len;
-        if (p.t > 1 || p.t < 0) { p.dir *= -1; p.t = THREE.MathUtils.clamp(p.t, 0, 1); }
-      }
-      const tgt = p.a.clone().lerp(p.b, p.t);
-      const side = new THREE.Vector3(-(p.b.z - p.a.z), 0, p.b.x - p.a.x).normalize().multiplyScalar(p.offset);
-      tgt.add(side);
-      pos.lerp(tgt, Math.min(1, dt * 4));
-      // ground clamp every frame onto the sidewalk slab (static collider) or terrain
-      if (p.char.root.visible || (g.frames + p.offset * 10) % 6 < 1) pos.y = groundAt(g, pos.x, pos.z, pos.y);
-      if (!talking) p.char.root.rotation.y = Math.atan2((p.b.x - p.a.x) * p.dir, (p.b.z - p.a.z) * p.dir);
-      if (p.char.root.visible) p.char.update(dt, talking ? 'talk' : 'walk');
+      p.talkT = Math.max(0, (p.talkT || 0) - dt);
+      this.folk.update(p, dt, visible);
     }
     for (let i = this.ejecting.length - 1; i >= 0; i--) {
       const e = this.ejecting[i];

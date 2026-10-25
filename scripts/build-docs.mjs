@@ -28,6 +28,14 @@ const phases2 = [
   ['Phase 2 · Game systems (10 upgrades)', mtime('src/data/demographics.js'), mtime('src/main.js')],
   ['Phase 2 · QA expansion & perf pass', mtime('tests/views.mjs'), mtime('tests/qa-results.json')],
 ];
+const P3_START = new Date('2026-10-24T15:00:00Z');
+const phases3 = [
+  ['Phase 3 · streets.json + Blender road network (roads.glb)', P3_START, mtime('public/models/roads.glb')],
+  ['Phase 3 · Blender cinema, dyno cell, break room, props', mtime('public/models/roads.glb'), mtime('public/models/cinema.glb')],
+  ['Phase 3 · ElevenLabs cast (49 lines, 11 voices)', mtime('scripts/phase3-lines.mjs'), mtime('public/audio/dialogue/manifest.json')],
+  ['Phase 3 · cinema, activities, secrets, townsfolk, signals', mtime('src/world/streetGeom.js'), mtime('src/main.js')],
+  ['Phase 3 · QA expansion (12 checks)', mtime('src/main.js'), mtime('tests/qa-results.json')],
+];
 const prevT = readTelemetry();
 const tel = updateTelemetry({
   summary: {
@@ -36,7 +44,7 @@ const tel = updateTelemetry({
     estimatedCost: prevT.llm ? prevT.llm.estimatedCostDisplay : '—', glbAssets: manifest.assets.length,
     qaPasses: qa ? `${qa.passed}/${qa.total}` : '—',
   },
-  phases: [...phases, ...phases2].map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
+  phases: [...phases, ...phases2, ...phases3].map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
   assets: { glbFiles: manifest.assets.length, totalTriangles: manifest.assets.reduce((s, a) => s + a.tris, 0), totalBytes: manifest.assets.reduce((s, a) => s + a.bytes, 0),
     blenderRuns: manifest.runs },
 });
@@ -61,6 +69,13 @@ const telemetryMd = [
     `| Phase 2 LLM usage | ${tel.phase2.llm.calls} calls · ${tel.phase2.llm.inputTokens} input · ${tel.phase2.llm.outputTokens} output |`,
     `| Phase 2 performance | ${tel.phase2.perf} |`,
   ] : []),
+  ...(tel.phase3 ? [
+    `| Phase 3 build window | ${tel.phase3.startedAt} → ${tel.summary.finishedAt} |`,
+    `| Phase 3 ElevenLabs delta | +${tel.phase3.elevenlabs.lines} lines · +${tel.phase3.elevenlabs.characters} chars · **+${tel.phase3.elevenlabs.credits} credits** (${tel.phase3.elevenlabs.voicesAdded} new voices) |`,
+    `| Phase 3 Blender | ${tel.phase3.blender} |`,
+    `| Phase 3 LLM usage | ${tel.phase3.llm.calls} calls · ${tel.phase3.llm.inputTokens} input · ${tel.phase3.llm.outputTokens} output |`,
+    `| Phase 3 performance | ${tel.phase3.perf} |`,
+  ] : []),
   '', '**Per-phase timestamps** (from artifact modification times)', '', '| Phase | Start | End | Minutes |', '|---|---|---|---|',
   ...tel.phases.map((p) => `| ${p.name} | ${p.start} | ${p.end} | ${p.minutes ?? '—'} |`),
 ].join('\n');
@@ -69,7 +84,7 @@ const qaMd = qa ? [
   `Last run: ${qa.ranAt} — **${qa.passed}/${qa.total} checks passed** in ${qa.durationSec}s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).`, '',
   ...qa.results.map((r) => `- [${r.pass ? 'x' : ' '}] **${r.id}** — ${r.title}${r.pass ? '' : ' ⚠️ ' + JSON.stringify(r.details).slice(0, 220)}`),
   '', '<details><summary>Key measurements</summary>', '', '```json',
-  JSON.stringify(Object.fromEntries(qa.results.filter((r) => ['boot', 'physics', 'perf', 'theft', 'navigation_and_bounds', 'factory_jumbotron_and_conveyor', 'fuel_and_gas_station'].includes(r.id)).map((r) => [r.id, r.id === 'factory_jumbotron_and_conveyor' ? { factory: r.details.factory, jumbotron: r.details.jumbotron } : r.id === 'navigation_and_bounds' ? { worst: r.details.worst, physics: r.details.physics } : r.details])), null, 1).slice(0, 6000),
+  JSON.stringify(Object.fromEntries(qa.results.filter((r) => ['boot', 'physics', 'perf', 'theft', 'navigation_and_bounds', 'factory_jumbotron_and_conveyor', 'fuel_and_gas_station', 'traffic_obeys_signals', 'townsfolk_ai', 'drag_race', 'dyno_pull'].includes(r.id)).map((r) => [r.id, r.id === 'factory_jumbotron_and_conveyor' ? { factory: r.details.factory, jumbotron: r.details.jumbotron } : r.id === 'navigation_and_bounds' ? { worst: r.details.worst, physics: r.details.physics } : r.details])), null, 1).slice(0, 6000),
   '```', '</details>',
 ].join('\n') : '_QA has not been run yet._';
 

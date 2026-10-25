@@ -114,7 +114,15 @@ export class CarVisual {
     const ud = (this.model.getObjectByName('Car_' + cfg.body) || this.model).userData;
     this.spec = { W: ud.W, r: ud.wheel_radius, wx: ud.wheel_x, af: ud.axle_f, ar: ud.axle_r, yb: ud.yb };
     this.n = {};
-    this.model.traverse((o) => (this.n[o.name] = o));
+    this.engineBayNodes = [];
+    this.model.traverse((o) => {
+      this.n[o.name] = o;
+      o.userData.restPos = o.position.clone();
+      if (o.isMesh && o.name.startsWith('EngineBay_')) {
+        o.visible = false;
+        this.engineBayNodes.push(o);
+      }
+    });
     this.model.updateMatrixWorld(true);
     this._measure();
     this.paint = new PaintSystem(this.info);
@@ -271,8 +279,11 @@ export class CarVisual {
     this.lightningExhaust = c.exhaust === 'Exhaust_Lightning';
     const eng = ENGINES.find((e) => e.id === c.engine) || ENGINES[0];
     const e = this._attach('engine', 'EngineBay', eng.part);
-    if (e) { e.scale.setScalar(0.8); e.position.y = 0.32; e.visible = false; }
+    if (e) { e.scale.setScalar(0.8); e.position.y = 0.22; e.visible = false; }
     this.engineNode = e;
+    for (const k in this.partNodes) {
+      if (this.partNodes[k]) this.partNodes[k].userData.restPos = this.partNodes[k].position.clone();
+    }
     // police lightbar materials flash independently per car
     const pb = this.partNodes.roof;
     this.policeLamps = [];
@@ -356,7 +367,13 @@ export class CarVisual {
       h.node.rotation[h.axis] = h.base + h.open * h.t;
     }
     if (this.n.SteeringWheel) this.n.SteeringWheel.rotation.z = -(state.steer || 0) * 5.5;
-    if (this.engineNode) this.engineNode.visible = (this.hinges.Hood && this.hinges.Hood.t > 0.3) || !!state.showEngine;
+    const hoodOpen = this.hinges.Hood && (!this.hinges.Hood.node.visible || this.hinges.Hood.t > 0.08);
+    const hasEngine = this._buildStage === undefined || this._buildStage >= 4 || !!state.showEngine;
+    if (this.engineNode) this.engineNode.visible = hasEngine && ((this.hinges.Hood && this.hinges.Hood.t > 0.15) || !!state.showEngine);
+    if (!this.baked && (this._buildStage === undefined || this._buildStage >= 1)) {
+      const showBay = hoodOpen || !!state.showEngine || (this._buildStage !== undefined && this._buildStage < 4);
+      for (const n of this.engineBayNodes) n.visible = showBay;
+    }
     if (this.blower) {
       this.blowerSpin += dt * (8 + (state.rpm || 800) / 60);
       this.blower.rotation.z = this.blowerSpin;
@@ -392,17 +409,89 @@ export class CarVisual {
   // ------------------------------------------------------------------- assembly helpers
   /** Show only what exists at a given build stage. stage: 0 frame, 1 body, 2 painted, 3 powertrain, 4 complete */
   setBuildStage(stage) {
-    const bodyNames = /^(Body|Cabin_Glass|Roof|Pillars|Quarters|Coach|Bed_|Grille|Bumper|Plate|Headlight|Taillight|Dashboard|Seat|Steering|Floor|Splitter_Stock|Diffuser|Tail_Fins|Landau|Coffin|Liftgate)/;
+    this._buildStage = stage;
+    const frameNames = /^(Underbody|Chassis_Rails|WheelWell)/;
+    const biwNames = /^(Body|Roof|Pillars|Quarters|Coach_Roof|Coach_Side|Bed_|Floor_Carpet|Tail_Fins|Landau|Liftgate|EngineBay_|Door|Hood|Trunk)/;
+    const finalNames = /^(Cabin_Glass|Wipers|Coach_Window|Grille|Bumper|Plate|Headlight|Taillight|Reverse|Dashboard|GaugeCluster|CenterConsole|GearShifter|GearKnob|Pedals|RearviewMirror|Seat|Steering|Splitter_Stock|Diffuser|Coffin|Curtain)/;
     this.model.traverse((o) => {
-      if (!o.isMesh) return;
-      if (o.name === 'Underbody' || o.name.startsWith('WheelWell')) { o.visible = true; return; }
-      if (bodyNames.test(o.name) || /^(Door|Hood|Trunk)/.test(o.name) || o.name.startsWith('Door')) o.visible = stage >= 1;
+      if (o.userData.restPos) o.position.copy(o.userData.restPos);
+      if (!o.isMesh || o.name.startsWith('FP_')) return;
+      if (frameNames.test(o.name)) { o.visible = true; return; }
+      if (biwNames.test(o.name) || o.name.startsWith('Door')) { o.visible = stage >= 1; return; }
+      if (finalNames.test(o.name)) { o.visible = stage >= 4; return; }
     });
-    for (const k in this.partNodes) this.partNodes[k].visible = stage >= (k === 'engine' ? 3 : 4);
-    for (const w of this.wheelNodes) { if (w.rim) w.rim.visible = stage >= 3; if (w.caliper) w.caliper.visible = stage >= 3; }
+    for (const k in this.hinges) this.hinges[k].node.visible = stage >= 1;
+    for (const k in this.partNodes) {
+      const p = this.partNodes[k];
+      if (!p) continue;
+      if (p.userData.restPos) p.position.copy(p.userData.restPos);
+      p.visible = stage >= (k === 'engine' || k === 'exhaust' ? 3 : 4);
+    }
+    for (const w of this.wheelNodes) {
+      if (w.rim) { w.rim.visible = stage >= 3; w.rim.position.x = 0; }
+      if (w.caliper) { w.caliper.visible = stage >= 3; }
+    }
     if (this.glow) this.glow.visible = stage >= 4;
     this.paint.u.uReveal.value = stage >= 2 ? 1 : 0;
     this.paint2.color.set(stage >= 2 ? this.cfg.color2 : '#8b8f96');
+  }
+
+  /** Station 1 (Stamping): progressively place the stamped floor pan, engine bay cradle, and pillar/roof cage onto the frame rails. */
+  setStampingProgress(st) {
+    const sm = (a, b, x) => THREE.MathUtils.smoothstep(x, a, b);
+    const kFloor = sm(0.24, 0.42, st);
+    const kBay = sm(0.46, 0.66, st);
+    const kCage = sm(0.68, 0.88, st);
+    this.model.traverse((o) => {
+      if (!o.isMesh || !o.userData.restPos) return;
+      if (o.name === 'Floor_Carpet' || o.name === 'EngineBay_Liner') {
+        o.visible = kFloor > 0.01;
+        o.position.y = o.userData.restPos.y + (1 - kFloor) * 0.55;
+      } else if (o.name.startsWith('EngineBay_')) {
+        o.visible = kBay > 0.01;
+        o.position.y = o.userData.restPos.y + (1 - kBay) * 0.55;
+      } else if (o.name === 'Pillars' || o.name === 'Roof') {
+        o.visible = kCage > 0.01;
+        o.position.y = o.userData.restPos.y + (1 - kCage) * 0.65;
+      }
+    });
+  }
+
+  /** Station 5 (Final Assembly & QC): progressively install interior cockpit, glazing/bumpers/lights, and custom body kit parts. */
+  setFinalAssemblyProgress(st) {
+    const sm = (a, b, x) => THREE.MathUtils.smoothstep(x, a, b);
+    const kInt = sm(0.03, 0.18, st);
+    const kExt = sm(0.18, 0.34, st);
+    const kKit = sm(0.34, 0.48, st);
+    const intNames = /^(Dashboard|GaugeCluster|CenterConsole|GearShifter|GearKnob|Pedals|RearviewMirror|Seat|Steering|Coffin|Curtain)/;
+    const glassNames = /^(Cabin_Glass|Wipers|Coach_Window)/;
+    const frontNames = /^(Grille|Bumper_F|Splitter_Stock|Plate_F|Headlight)/;
+    const rearNames = /^(Bumper_R|Diffuser|Plate_R|Taillight|Reverse)/;
+    this.model.traverse((o) => {
+      if (!o.isMesh || o.name.startsWith('FP_') || !o.userData.restPos) return;
+      if (intNames.test(o.name)) {
+        o.visible = kInt > 0.01;
+        o.position.y = o.userData.restPos.y + (1 - kInt) * 0.45;
+      } else if (glassNames.test(o.name)) {
+        o.visible = kExt > 0.01;
+        o.position.y = o.userData.restPos.y + (1 - kExt) * 0.5;
+      } else if (frontNames.test(o.name)) {
+        o.visible = kExt > 0.01;
+        o.position.z = o.userData.restPos.z + (1 - kExt) * 0.42;
+      } else if (rearNames.test(o.name)) {
+        o.visible = kExt > 0.01;
+        o.position.z = o.userData.restPos.z - (1 - kExt) * 0.42;
+      }
+    });
+    for (const k of ['hood', 'roof', 'spoiler', 'front']) {
+      const p = this.partNodes[k];
+      if (!p || !p.userData.restPos) continue;
+      p.visible = kKit > 0.01;
+      p.position.y = p.userData.restPos.y + (1 - kKit) * 0.45;
+      if (k === 'front') p.position.z = p.userData.restPos.z + (1 - kKit) * 0.35;
+      if (k === 'spoiler') p.position.z = p.userData.restPos.z - (1 - kKit) * 0.35;
+    }
+    if (this.glow) this.glow.visible = st >= 0.45;
   }
 
   setReveal(v) {

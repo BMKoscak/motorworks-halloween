@@ -34,6 +34,9 @@ export class Factory {
     this.spider = plant.getObjectByName('GiantSpider');
     scene.attach(this.spider);
     this.spiderBase = this.spider.position.y;
+    // dyno cell: rollers + cooling fan spin and the wall display shows the live power curve, so they stay out of the batch
+    this.dyno = {};
+    for (const n of ['Dyno_Roller_F', 'Dyno_Roller_R', 'Dyno_Fan', 'Dyno_Screen']) { const o = plant.getObjectByName(n); if (o) { scene.attach(o); this.dyno[n] = o; } }
     this.floods = [];
     plant.traverse((o) => {
       if (o.isMesh && o.material.name === 'Lamp_Ceiling') {
@@ -309,7 +312,10 @@ export class Factory {
       return { group: rack, top: new THREE.Vector3(rack.position.x, 1.0, rack.position.z), robot: rb };
     });
     for (const dx of [-1.8, 1.8]) for (const dz of [-4.3, 4.3]) this._robot(SX[2] + dx, lz + dz, 'Tool_Spray', 2);
-    this.wheelBot = this._robot(SX[3] - 3.2, lz - 4.3, 'Tool_Gripper', 3);
+    this.paintRobots = this.robots.filter((r) => r.station === 2);
+    this.wheelBot = this._robot(SX[3] - 2.2, lz - 3.3, 'Tool_Gripper', 3);
+    for (const dz of [-3.2, 3.2]) this._robot(SX[4] - 1.2, lz + dz, 'Tool_Gripper', 4);
+    this.finalRobots = this.robots.filter((r) => r.station === 4);
     // paint booth enclosure
     const booth = new THREE.Group();
     const steel = new THREE.MeshStandardMaterial({ color: '#d8dde2', metalness: 0.4, roughness: 0.4 });
@@ -549,6 +555,7 @@ export class Factory {
     const smooth = (x0, x1, x) => THREE.MathUtils.smoothstep(x, x0, x1);
     const toCar = smooth(0.25, 0.4, s4) - smooth(0.72, 0.85, s4);
     this.bridge.position.z = this.bridgeBase + (this.stagePos.z - LAYOUT.lineZ) * (1 - toCar);
+    this.trolley.position.x = 1.45 * toCar;
     // hook drops 2.3 m to the staging stand to pick the engine up, 2.05 m into the open engine bay
     let lower = 0;
     if (s4 > 0.1 && s4 < 0.25) lower = Math.sin(((s4 - 0.1) / 0.15) * Math.PI) * 2.3;

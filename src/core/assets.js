@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export const MODEL_FILES = [
   'car_muscle', 'car_pickup', 'car_coupe', 'car_hearse', 'car_sedan', 'parts', 'wheels',
   'robot_arm', 'press', 'crane', 'garage_door', 'sliding_door', 'barrier', 'cemetery_gate', 'forklift', 'lift', 'scanner',
-  'plant', 'jumbotron', 'diner', 'gas_station', 'hardware', 'police_station', 'house_a', 'house_b', 'props',
+  'plant', 'jumbotron', 'roads', 'cinema', 'diner', 'gas_station', 'hardware', 'police_station', 'house_a', 'house_b', 'props',
   'character', 'skeleton',
 ];
 

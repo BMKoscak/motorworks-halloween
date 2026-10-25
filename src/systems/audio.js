@@ -252,6 +252,15 @@ export class AudioSystem {
     hum.connect(lp).connect(g).connect(this.sfx); hum.start();
     return { stop: () => { clearInterval(id); try { hum.stop(); } catch (e) { /* stopped */ } } };
   }
+  /** A civilian car horn somewhere in the world (distance-attenuated). */
+  honkAt(pos, listener, len = 0.38) {
+    if (!this.ctx) return;
+    const d = listener ? listener.pos.distanceTo(pos) : 10;
+    const v = Math.max(0, 1 - d / 70) * 0.12;
+    if (v < 0.004) return;
+    this.tone(415, len, 'square', v); this.tone(523, len, 'square', v * 0.8);
+  }
+
   chimeShort() { this.tone(1046, 0.15, 'sine', 0.12); this.tone(1318, 0.2, 'sine', 0.1, 0.08); }
 
   horn(on) {

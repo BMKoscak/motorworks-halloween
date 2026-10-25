@@ -161,8 +161,45 @@ def build_car(key, s):
         top = r + s["R"] - 0.02
         box("WheelWell_%s" % ("F" if zc > 0 else "R"), (2 * (s["wx"] - 0.16), top - s["yb"], 2 * s["R"] * 0.92),
             (0, (top + s["yb"]) / 2, zc), DARK(), pivot=(0, 0, 0), parent=body)
-    box("Underbody", (W - 0.3, 0.06, abs(s["front"][0][0]) + abs(s["rear"][0][0]) - 0.4),
-        (0, s["yb"] + 0.02, (s["front"][0][0] + s["rear"][0][0]) / 2), DARK(), pivot=(0, 0, 0), parent=body)
+    ub_len = abs(s["front"][0][0]) + abs(s["rear"][0][0]) - 0.4
+    ub_zc = (s["front"][0][0] + s["rear"][0][0]) / 2
+    box("Underbody", (W - 0.3, 0.06, ub_len),
+        (0, s["yb"] + 0.02, ub_zc), DARK(), pivot=(0, 0, 0), parent=body)
+    # structural ladder-frame rails & crossmembers (visible at Stage 0 chassis stamping)
+    rail_x = s["wx"] - 0.28
+    chassis_specs = [((0.11, 0.12, ub_len + 0.15), (sx * rail_x, s["yb"] + 0.06, ub_zc)) for sx in (1, -1)]
+    for cz_m in (s["af"], s["af"] * 0.45, 0.0, s["ar"] * 0.5, s["ar"]):
+        chassis_specs.append(((rail_x * 2, 0.09, 0.11), (0, s["yb"] + 0.05, cz_m)))
+    boxes("Chassis_Rails", chassis_specs, mat("ChassisSteel", (0.22, 0.23, 0.25), 0.75, 0.4), (0, 0, 0), body)
+    # under-hood engine bay liner (sloped with hood deck), strut towers, radiator, battery & brake booster
+    hz_back, hy_back = s["hood"][1][0], s["hood"][1][1] - 0.022
+    hz_front, hy_front = s["hood"][2][0], s["hood"][2][1] - 0.022
+    def bay_h(z):
+        t = (z - hz_back) / max(0.01, hz_front - hz_back)
+        return hy_back + t * (hy_front - hy_back)
+    bay_w = W - 0.28
+    z_b0, z_b1 = hz_back + 0.06, hz_front - 0.08
+    y_b0, y_b1 = bay_h(z_b0), bay_h(z_b1)
+    profile("EngineBay_Liner", [(z_b0, y_b0 - 0.02), (z_b0, y_b0 + 0.008), (z_b1, y_b1 + 0.008), (z_b1, y_b1 - 0.02)],
+            -bay_w / 2, bay_w / 2, DARK(), (0, 0, 0), body)
+    profile("EngineBay_Walls_L", [(z_b0, y_b0), (z_b0, y_b0 + 0.06), (z_b1, y_b1 + 0.06), (z_b1, y_b1)],
+            bay_w / 2 - 0.04, bay_w / 2, DARK(), (0, 0, 0), body)
+    profile("EngineBay_Walls_R", [(z_b0, y_b0), (z_b0, y_b0 + 0.06), (z_b1, y_b1 + 0.06), (z_b1, y_b1)],
+            -bay_w / 2, -(bay_w / 2 - 0.04), DARK(), (0, 0, 0), body)
+    z_st = (z_b0 + z_b1) * 0.52
+    y_st = bay_h(z_st)
+    for sx in (1, -1):
+        cyl("EngineBay_Strut_%d" % sx, 0.13, 0.10, (sx * (bay_w / 2 - 0.16), y_st + 0.04, z_st),
+            mat("ChassisSteel", (0.22, 0.23, 0.25), 0.75, 0.4), seg=12, pivot=(0, 0, 0), parent=body)
+    beams("EngineBay_StrutBar", [((-(bay_w / 2 - 0.16), y_st + 0.095, z_st), ((bay_w / 2 - 0.16), y_st + 0.095, z_st), 0.028)],
+          0.028, CHROME(), (0, 0, 0), body)
+    z_rad = z_b1 - 0.08
+    box("EngineBay_Radiator", (bay_w * 0.68, 0.11, 0.07), (0, bay_h(z_rad) + 0.045, z_rad),
+        mat("Aluminum", (0.65, 0.68, 0.72), 0.85, 0.3), pivot=(0, 0, 0), parent=body)
+    z_bat, z_bst = z_b1 - 0.24, z_b0 + 0.16
+    boxes("EngineBay_Aux", [((0.22, 0.11, 0.16), (-(bay_w / 2 - 0.18), bay_h(z_bat) + 0.045, z_bat)),
+                            ((0.16, 0.10, 0.16), ((bay_w / 2 - 0.18), bay_h(z_bst) + 0.045, z_bst))],
+          mat("BatteryBlack", (0.08, 0.09, 0.1), 0.3, 0.6), (0, 0, 0), body)
     cw = s["cw"]
     profile("Cabin_Glass", s["glass"], -cw / 2, cw / 2, GLASS(), (0, 0, 0), body, bevel=0.03)
     rw = s.get("roof_w", cw + 0.03)
@@ -215,6 +252,12 @@ def build_car(key, s):
                         props={"hinge": "y", "open": -1.1 * sx})
             box("%s_%s_Handle" % (nm, side), (0.02, 0.03, 0.14), (sx * (hw + 0.035), y1 - 0.12, zb + 0.18), CHROME(),
                 pivot=(sx * hw, (y0 + y1) / 2, zf), parent=d)
+            # interior door card + armrest
+            ix = sx * (hw - 0.062)
+            boxes("%s_%s_Inner" % (nm, side), [
+                ((0.022, (y1 - y0) * 0.86, abs(zf - zb) * 0.88), (ix, (y0 + y1) / 2, (zf + zb) / 2)),
+                ((0.055, 0.05, abs(zf - zb) * 0.48), (ix - sx * 0.02, (y0 + y1) * 0.52, (zf + zb) / 2)),
+            ], INTERIOR(), (sx * hw, (y0 + y1) / 2, zf), d)
             if nm == "Door":
                 mz = zf - 0.12
                 boxes("%s_%s_Mirror" % (nm, side), [((0.16, 0.09, 0.1), (sx * (hw + 0.12), y1 + 0.08, mz)),
@@ -225,6 +268,7 @@ def build_car(key, s):
     if s["bumper_f"]:
         y, z = s["bumper_f"]
         box("Bumper_F", (W + 0.03, 0.16, 0.16), (0, y, z), CHROME(), pivot=(0, 0, 0), parent=body)
+        box("Plate_F", (0.32, 0.15, 0.02), (0, y - 0.02, z + 0.085), PLATE(), pivot=(0, 0, 0), parent=body)
         y, z = s["bumper_r"]
         box("Bumper_R", (W + 0.03, 0.16, 0.16), (0, y, z), CHROME(), pivot=(0, 0, 0), parent=body)
         box("Plate_R", (0.32, 0.16, 0.02), (0, y + 0.17, z + (0.03 if z < 0 else -0.03) - 0.02), PLATE(), pivot=(0, 0, 0), parent=body)
@@ -232,6 +276,10 @@ def build_car(key, s):
         box("Splitter_Stock", (W - 0.1, 0.06, 0.25), (0, s["yb"] + 0.02, zf_front - 0.02), GRILLE(), pivot=(0, 0, 0), parent=body)
         box("Diffuser", (W - 0.4, 0.12, 0.2), (0, s["yb"] + 0.08, s["rear"][0][0] - 0.03), GRILLE(), pivot=(0, 0, 0), parent=body)
         box("Plate_R", (0.32, 0.16, 0.02), (0, 0.55, -2.31), PLATE(), pivot=(0, 0, 0), parent=body)
+    # windshield wipers
+    wz0, wy0 = s["glass"][0][0] - 0.02, s["glass"][0][1] + 0.02
+    beams("Wipers", [((dx_w, wy0, wz0), (dx_w - 0.38, wy0 + 0.05, wz0 - 0.06), 0.016) for dx_w in (0.42, -0.06)],
+          0.016, DARK(), (0, 0, 0), body)
     gy, gz, gw, gh = s["grille"]
     box("Grille", (gw, gh, 0.05), (0, gy, gz), GRILLE(), pivot=(0, 0, 0), parent=body)
     if key in ("muscle", "pickup", "hearse"):
@@ -257,12 +305,28 @@ def build_car(key, s):
     # ---- interior
     fl, belt, dz, dx = s["floor"], s["belt"], s["dash_z"], s["driver_x"]
     box("Dashboard", (s["cw"] - 0.05, 0.22, 0.2), (0, belt - 0.13, dz), INTERIOR(), pivot=(0, 0, 0), parent=body)
+    boxes("GaugeCluster", [
+        ((0.36, 0.11, 0.12), (dx, belt - 0.03, dz - 0.01)),
+        ((0.1, 0.08, 0.015), (dx - 0.08, belt - 0.03, dz - 0.072)),
+        ((0.1, 0.08, 0.015), (dx + 0.08, belt - 0.03, dz - 0.072)),
+        ((0.22, 0.09, 0.02), (0, belt - 0.09, dz - 0.095)),
+    ], mat("GaugeGlow", (0.12, 0.65, 0.45), 0.1, 0.3, emit=(0.1, 0.75, 0.5), emit_strength=1.2), (0, 0, 0), body)
     box("Floor_Carpet", (W - 0.14, 0.03, 0.9), (0, fl + 0.005, dz - 0.5), INTERIOR(), pivot=(0, 0, 0), parent=body)
     sf = s["seat_front"]
+    box("CenterConsole", (0.22, 0.20, abs(dz - sf) + 0.28), (0, fl + 0.11, (dz + sf) / 2 - 0.06), INTERIOR(), pivot=(0, 0, 0), parent=body)
+    beams("GearShifter", [((0, fl + 0.21, sf + 0.16), (0, fl + 0.38, sf + 0.12), 0.022)], 0.022, CHROME(), (0, 0, 0), body)
+    sphere("GearKnob", 0.034, (0, fl + 0.40, sf + 0.11), CHROME(), pivot=(0, 0, 0), parent=body, seg=10)
+    boxes("Pedals", [((0.055, 0.09, 0.02), (dx + pdx, fl + 0.12, dz - 0.08), Matrix.Rotation(math.radians(-25), 3, 'X'))
+                     for pdx in (-0.11, 0.0, 0.10)], DARK(), (0, 0, 0), body)
+    ry_m = s["roof"][0][1] - 0.06
+    rz_m = s["glass"][1][0] + 0.12
+    boxes("RearviewMirror", [((0.20, 0.055, 0.03), (0, ry_m, rz_m)), ((0.02, 0.06, 0.02), (0, ry_m + 0.04, rz_m + 0.01))],
+          INTERIOR(), (0, 0, 0), body)
     for sx in (1, -1):
         boxes("Seat_%s" % ("L" if sx > 0 else "R"),
               [((0.5, 0.12, 0.5), (sx * dx, fl + 0.14, sf)),
-               ((0.5, 0.56, 0.12), (sx * dx, fl + 0.46, sf - 0.27), Matrix.Rotation(math.radians(-12), 3, 'X'))],
+               ((0.5, 0.56, 0.12), (sx * dx, fl + 0.46, sf - 0.27), Matrix.Rotation(math.radians(-12), 3, 'X')),
+               ((0.28, 0.16, 0.09), (sx * dx, fl + 0.80, sf - 0.34), Matrix.Rotation(math.radians(-8), 3, 'X'))],
               SEAT(), (sx * dx, fl, sf), body)
     if s["bench_rear"]:
         boxes("Seat_Rear", [((1.4, 0.12, 0.42), (0, fl + 0.14, s["seat_rear"])),
@@ -301,7 +365,7 @@ def build_car(key, s):
     hood.rotation_euler = (-0.95, 0, 0)
     trunk.rotation_euler = (s["trunk_open"], 0, 0)
     for ob in bpy.data.objects:
-        if ob.name.startswith("Door_L") and "Handle" not in ob.name and "Mirror" not in ob.name:
+        if ob.name == "Door_L":
             ob.rotation_euler = (0, 0, -1.1)  # game Y == blender Z
     for nm, sx, z in (("FL", 1, s["af"]), ("FR", -1, s["af"]), ("RL", 1, s["ar"]), ("RR", -1, s["ar"])):
         cyl("PreviewTire_" + nm, r, 0.26, (sx * s["wx"], r, z), mat("Rubber", (0.04, 0.04, 0.045), 0, 0.9), axis='x', seg=24)
@@ -403,15 +467,24 @@ def build_parts():
     for i, (nm, n_cyl, turbo) in enumerate((("Engine_V6", 3, False), ("Engine_V8", 4, False), ("Engine_TwinTurbo", 4, True))):
         x = 54 + i * 3
         g = grp(nm, x, "engine")
-        box(nm + "_Block", (0.62, 0.4, 0.75), (x, 0.0, 0), mat("EngineBlock", (0.35, 0.05, 0.05) if i else (0.15, 0.15, 0.16), 0.6, 0.4), pivot=(x, 0, 0), parent=g)
+        blk_mat = mat("EngineBlock", (0.35, 0.05, 0.05) if i else (0.15, 0.15, 0.16), 0.6, 0.4)
+        box(nm + "_Block", (0.62, 0.4, 0.75), (x, 0.0, 0), blk_mat, pivot=(x, 0, 0), parent=g)
+        box(nm + "_OilPan", (0.48, 0.14, 0.68), (x, -0.24, 0), DARK(), pivot=(x, 0, 0), parent=g)
         for sx in (1, -1):
             boxes(nm + "_Heads_%d" % sx, [((0.2, 0.16, 0.7), (x + sx * 0.25, 0.25, 0), Matrix.Rotation(math.radians(sx * -25), 3, 'Z'))], C, (x, 0, 0), g)
             for k in range(n_cyl):
                 beams(nm + "_Header_%d_%d" % (sx, k), [((x + sx * 0.36, 0.1, -0.25 + k * 0.5 / max(1, n_cyl - 1)), (x + sx * 0.5, -0.2, -0.25 + k * 0.17), 0.04)], 0.04, mat("Header", (0.5, 0.4, 0.3), 1, 0.35), (x, 0, 0), g)
-        box(nm + "_Intake", (0.3, 0.1, 0.55), (x, 0.28, 0), mat("EngineBlock", (0.35, 0.05, 0.05)), pivot=(x, 0, 0), parent=g)
+        box(nm + "_Intake", (0.3, 0.1, 0.55), (x, 0.28, 0), blk_mat, pivot=(x, 0, 0), parent=g)
+        cyl(nm + "_AirCleaner", 0.22, 0.07, (x, 0.36, 0.02), C, seg=18, pivot=(x, 0, 0), parent=g)
+        # front accessory drive (crank pulley, water pump pulley, alternator, serpentine belt)
+        for px_d, py_d, pr_d in ((0.0, -0.08, 0.10), (0.0, 0.10, 0.075), (0.20, 0.14, 0.065), (-0.20, 0.12, 0.065)):
+            cyl("%s_Pulley_%d_%d" % (nm, int(px_d * 100), int(py_d * 100)), pr_d, 0.04, (x + px_d, py_d, 0.40), C, axis='z', seg=14, pivot=(x, 0, 0), parent=g)
+        beams(nm + "_Belt", [((x, -0.08, 0.40), (x + 0.20, 0.14, 0.40), 0.025), ((x + 0.20, 0.14, 0.40), (x - 0.20, 0.12, 0.40), 0.025),
+                             ((x - 0.20, 0.12, 0.40), (x, -0.08, 0.40), 0.025)], 0.025, DARK(), (x, 0, 0), g)
         if turbo:
             for sx in (1, -1):
                 lathe(nm + "_Turbo_%d" % sx, [(0.0, -0.08), (0.12, -0.06), (0.13, 0.0), (0.12, 0.06), (0.0, 0.08)], (x + sx * 0.42, 0.05, 0.3), C, axis='x', seg=14, pivot=(x, 0, 0), parent=g)
+                beams(nm + "_ChargePipe_%d" % sx, [((x + sx * 0.42, 0.16, 0.30), (x + sx * 0.16, 0.34, 0.12), 0.045)], 0.045, C, (x, 0, 0), g)
     export_glb("parts.glb")
     for i, g in enumerate([o for o in root.children]):  # preview only: lay parts out in a grid
         g.location = g2b(((i % 5) * 2.4, 0, -(i // 5) * 2.4))

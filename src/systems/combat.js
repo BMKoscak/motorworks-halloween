@@ -150,6 +150,8 @@ export class Combat {
     const aimHit = this.trace(ray.o, ray.d, w.range, true);
     const target = aimHit ? aimHit.point : ray.o.clone().addScaledVector(ray.d, w.range);
     this._muzzleFx(muzzle, flat, w);
+    // the water tower stands far beyond the town colliders: let the secrets system test the crosshair ray against it
+    if (g.secrets && (!aimHit || aimHit.point.distanceTo(ray.o) > 30)) g.secrets.shot(ray.o, ray.d);
     if (w.projectile) this._launch(muzzle, target.clone().sub(muzzle).normalize());
     else {
       for (let k = 0; k < (w.pellets || 1); k++) {

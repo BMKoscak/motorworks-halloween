@@ -1,8 +1,8 @@
 {
   "elevenlabs": {
     "apiKeyPresent": false,
-    "apiCalls": 82,
-    "charactersSynthesized": 5854,
+    "apiCalls": 131,
+    "charactersSynthesized": 8620,
     "voiceIdsUsed": [
       "8vYCG1Q6bAbJWXdRuCIr",
       "RDSy0QN68yhrjuOgqzQ4",
@@ -22,7 +22,17 @@
       "iP95p4xoKVk53GoZ742B",
       "XjGYkUkzth8BPs29fmcV",
       "Nggzl2QAXh3OijoXD116",
-      "2UyW0L6yjNuo3ZH3XnoV"
+      "2UyW0L6yjNuo3ZH3XnoV",
+      "EMYWJ6jws25NB7xJgDxG",
+      "RhcROc65RG054lfxtUIT",
+      "1BfrkuYXmEwp8AWqSLWk",
+      "9GVWvaD23xXLseHJlxy8",
+      "W3C2vBPukr5b5jvoXhPK",
+      "Vs5CmVCVJwW4odQS2pVf",
+      "o9B86nZP8mMLaT5FBEzP",
+      "DduhIyyKkOosbP8VefhP",
+      "sfb7P99ZKEnBPrm3Hqam",
+      "qhH5VOAvpCwvNpmn2srO"
     ],
     "plannedVoiceIds": {
       "foreman": "8vYCG1Q6bAbJWXdRuCIr",
@@ -47,53 +57,64 @@
       "kid_g": "Nggzl2QAXh3OijoXD116",
       "fence": "2UyW0L6yjNuo3ZH3XnoV",
       "clerk": "t1yzxMpe9zK42bXmI1T2",
-      "attendant": "tmHt9OXLAa0z2IPF4k0Y"
+      "attendant": "tmHt9OXLAa0z2IPF4k0Y",
+      "boxoffice": "EMYWJ6jws25NB7xJgDxG",
+      "usher": "RhcROc65RG054lfxtUIT",
+      "vendor": "ZQF62XTHtHemfMB0pp0G",
+      "projectionist": "1BfrkuYXmEwp8AWqSLWk",
+      "narrator": "9GVWvaD23xXLseHJlxy8",
+      "hero": "W3C2vBPukr5b5jvoXhPK",
+      "villain": "Vs5CmVCVJwW4odQS2pVf",
+      "dynotech": "o9B86nZP8mMLaT5FBEzP",
+      "marshal": "DduhIyyKkOosbP8VefhP",
+      "rival": "sfb7P99ZKEnBPrm3Hqam",
+      "payphone": "qhH5VOAvpCwvNpmn2srO"
     },
     "quotaHit": false,
-    "cacheStatus": "82 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run)",
+    "cacheStatus": "131 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run)",
     "note": "Generated through the ElevenLabs connector (Flows, eleven_v4); the local SAPI pipeline stays as the fallback for new or changed lines",
     "connector": "ElevenLabs MCP connector (Flows, eleven_v4)",
-    "creditsSpent": 6243,
+    "creditsSpent": 9788,
     "flowId": "fj08eJgNX2F3WEMKUxW8",
     "model": "eleven_v4",
     "estimateBeforeSpend": "145 credits / .026 for one line; total run ~4,700 credits"
   },
   "dialogue": {
-    "lines": 82,
-    "totalCharacters": 5854,
+    "lines": 131,
+    "totalCharacters": 8620,
     "engines": {
-      "elevenlabs": 82
+      "elevenlabs": 131
     },
-    "totalBytes": 8556597
+    "totalBytes": 13081746
   },
   "qa": {
-    "runs": 16,
-    "lastRun": "2026-10-23T13:54:40.281Z",
-    "lastPassed": 30,
-    "lastTotal": 30,
-    "allPassRuns": 5,
-    "totalChecksPassed": 352
+    "runs": 26,
+    "lastRun": "2026-10-25T06:38:48.512Z",
+    "lastPassed": 42,
+    "lastTotal": 42,
+    "allPassRuns": 7,
+    "totalChecksPassed": 693
   },
   "llm": {
     "model": "claude-opus-5-5 (Claude Code desktop agent)",
-    "apiCalls": "~370 (phase 1 ~210 + phase 2 ~160)",
+    "apiCalls": "~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150)",
     "callsNote": "approx. agent turns / tool round-trips, counted from the session",
-    "inputTokensDisplay": "~180M processed (est.; prompt-cache reads; phase 2 context grew to ~960k)",
-    "outputTokensDisplay": "~420k (est.; phase 2 added ~9k lines of code/scripts/docs)",
-    "estimatedCostDisplay": "metered - Claude Pro subscription (phase 2 pushed the 5-hour window to ~85%, weekly ~57%)",
+    "inputTokensDisplay": "~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M)",
+    "outputTokensDisplay": "~540k (est.)",
+    "estimatedCostDisplay": "metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%)",
     "contextAtFinish": "~620k / 1M tokens (measured via session usage API)",
     "note": "The agent cannot read exact per-call token counters; figures marked est. are estimates, the context size and plan usage were measured."
   },
   "summary": {
-    "buildTime": "7h 14m",
+    "buildTime": "48h 14m",
     "startedAt": "2026-10-23T06:41:18Z",
-    "finishedAt": "2026-10-23T13:55:06.632Z",
-    "llmCalls": "~370 (phase 1 ~210 + phase 2 ~160)",
-    "inputTokens": "~180M processed (est.; prompt-cache reads; phase 2 context grew to ~960k)",
-    "outputTokens": "~420k (est.; phase 2 added ~9k lines of code/scripts/docs)",
-    "estimatedCost": "metered - Claude Pro subscription (phase 2 pushed the 5-hour window to ~85%, weekly ~57%)",
-    "glbAssets": 28,
-    "qaPasses": "30/30"
+    "finishedAt": "2026-10-25T06:55:46.252Z",
+    "llmCalls": "~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150)",
+    "inputTokens": "~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M)",
+    "outputTokens": "~540k (est.)",
+    "estimatedCost": "metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%)",
+    "glbAssets": 30,
+    "qaPasses": "42/42"
   },
   "phases": [
     {
@@ -105,77 +126,112 @@
     {
       "name": "Blender asset pipeline (27 GLBs)",
       "start": "2026-10-23T07:40:06.597Z",
-      "end": "2026-10-23T13:30:21.865Z",
-      "minutes": 350
+      "end": "2026-10-24T16:01:13.401Z",
+      "minutes": 1941
     },
     {
       "name": "Dialogue synthesis (54 lines)",
-      "start": "2026-10-23T12:07:37.916Z",
-      "end": "2026-10-23T12:07:50.153Z",
-      "minutes": 1
+      "start": "2026-10-24T15:27:29.538Z",
+      "end": "2026-10-24T15:33:33.811Z",
+      "minutes": 6
     },
     {
       "name": "Engine, world & gameplay code",
       "start": "2026-10-23T07:50:54.739Z",
-      "end": "2026-10-23T12:59:44.235Z",
-      "minutes": 309
+      "end": "2026-10-24T16:34:37.823Z",
+      "minutes": 1964
     },
     {
       "name": "Automated QA loop",
-      "start": "2026-10-23T13:48:04.458Z",
-      "end": "2026-10-23T13:54:40.287Z",
-      "minutes": 7
+      "start": "2026-10-25T06:29:31.549Z",
+      "end": "2026-10-25T06:55:30.771Z",
+      "minutes": 26
     },
     {
       "name": "Documentation",
-      "start": "2026-10-23T13:08:09.660Z",
-      "end": "2026-10-23T13:55:06.632Z",
-      "minutes": 47
+      "start": "2026-10-24T15:56:31.742Z",
+      "end": "2026-10-25T06:55:46.252Z",
+      "minutes": 899
     },
     {
       "name": "Phase 2 · Blender interiors, plant, props, characters",
       "start": "2026-10-23T11:45:00Z",
-      "end": "2026-10-23T13:04:40.215Z",
-      "minutes": 80
+      "end": "2026-10-24T15:35:23.843Z",
+      "minutes": 1670
     },
     {
       "name": "Phase 2 · ElevenLabs demographic voices (28 lines)",
-      "start": "2026-10-23T12:01:50.153Z",
-      "end": "2026-10-23T12:07:50.153Z",
+      "start": "2026-10-24T15:27:33.811Z",
+      "end": "2026-10-24T15:33:33.811Z",
       "minutes": 6
     },
     {
       "name": "Phase 2 · Game systems (10 upgrades)",
       "start": "2026-10-23T12:09:23.348Z",
-      "end": "2026-10-23T12:59:44.235Z",
-      "minutes": 50
+      "end": "2026-10-24T16:34:37.823Z",
+      "minutes": 1705
     },
     {
       "name": "Phase 2 · QA expansion & perf pass",
       "start": "2026-10-23T12:35:09.633Z",
-      "end": "2026-10-23T13:54:40.287Z",
-      "minutes": 80
+      "end": "2026-10-25T06:55:30.771Z",
+      "minutes": 2540
+    },
+    {
+      "name": "Phase 3 · streets.json + Blender road network (roads.glb)",
+      "start": "2026-10-24T15:00:00Z",
+      "end": "2026-10-24T16:39:32.120Z",
+      "minutes": 100
+    },
+    {
+      "name": "Phase 3 · Blender cinema, dyno cell, break room, props",
+      "start": "2026-10-24T16:39:32.120Z",
+      "end": "2026-10-24T16:00:53.787Z",
+      "minutes": 1
+    },
+    {
+      "name": "Phase 3 · ElevenLabs cast (49 lines, 11 voices)",
+      "start": "2026-10-24T15:27:29.391Z",
+      "end": "2026-10-24T15:33:33.811Z",
+      "minutes": 6
+    },
+    {
+      "name": "Phase 3 · cinema, activities, secrets, townsfolk, signals",
+      "start": "2026-10-24T15:11:47.720Z",
+      "end": "2026-10-24T16:34:37.823Z",
+      "minutes": 83
+    },
+    {
+      "name": "Phase 3 · QA expansion (12 checks)",
+      "start": "2026-10-24T16:34:37.823Z",
+      "end": "2026-10-25T06:55:30.771Z",
+      "minutes": 861
     }
   ],
   "assets": {
-    "glbFiles": 28,
-    "totalTriangles": 90350,
-    "totalBytes": 6734872,
+    "glbFiles": 30,
+    "totalTriangles": 165196,
+    "totalBytes": 11510456,
     "blenderRuns": [
       {
         "script": "build_vehicles.py",
         "ok": true,
-        "seconds": 8.9
+        "seconds": 12.2
       },
       {
         "script": "build_world.py",
         "ok": true,
-        "seconds": 23.6
+        "seconds": 35.5
       },
       {
         "script": "build_chars.py",
         "ok": true,
-        "seconds": 5.1
+        "seconds": 6.5
+      },
+      {
+        "script": "build_roads.py",
+        "ok": true,
+        "seconds": 11
       }
     ]
   },
@@ -215,5 +271,25 @@
       "doorbells + burglary",
       "fuel + gas station"
     ]
+  },
+  "phase3": {
+    "title": "Phase 3: Fright Night update (streets, cinema, Motorworks activities, secrets, townsfolk AI)",
+    "startedAt": "2026-10-24T15:00:00Z",
+    "elevenlabs": {
+      "lines": 49,
+      "characters": 2766,
+      "credits": 3545,
+      "voicesAdded": 11,
+      "model": "eleven_v4",
+      "takesPerLine": 1
+    },
+    "blender": "roads.glb: 319 objects, 29,620 tris, 1720 KB · cinema.glb: 423 objects, 17,096 tris, 1166 KB · plant.glb + props.glb extended (dyno cell, break room, receiving dock, secret annex, bus stop, arcade, vending, time clock, crate, payphone, UFO, popcorn)",
+    "llm": {
+      "calls": "~150 tool round-trips",
+      "inputTokens": "~95M processed (est., prompt-cache reads; context peaked ~890k/1M)",
+      "outputTokens": "~120k (est.)",
+      "plan": "Claude Pro: 5-hour window ~90%, weekly ~73% at finish (measured)"
+    },
+    "perf": "17.5 fps · 2036 draw calls · 0.61M triangles (QA snapshot, headless Chromium)"
   }
 }

@@ -79,6 +79,7 @@ export class AssemblyLine {
         const n = parts.length;
         const w0 = 0.16 + (i / n) * 0.7, w1 = 0.16 + ((i + 1) / n) * 0.7;
         const node = v.hinges[name].node;
+        node.visible = true;
         node.updateMatrixWorld(true);
         // clone the actual hinge part (with handles/mirrors) as the carried piece
         const clone = node.clone(true);
@@ -87,10 +88,12 @@ export class AssemblyLine {
         const center = new THREE.Box3().setFromObject(clone).getCenter(new THREE.Vector3());
         const mountQ = node.getWorldQuaternion(new THREE.Quaternion());
         const mountP = node.getWorldPosition(new THREE.Vector3());
-        clone.visible = false;
         this.game.scene.add(clone);
         node.visible = false;
-        this.carries.push({ name, robot, rack, node, clone, center, mountQ, mountP, w0, w1, phase: 'wait' });
+        const c = { name, robot, rack, node, clone, center, mountQ, mountP, w0, w1, idx: i, phase: 'wait' };
+        this._placeClone(c, rack.top.clone().add(new THREE.Vector3(0, 0.22 + i * 0.16, 0)), mountQ);
+        clone.visible = true;
+        this.carries.push(c);
       });
       robot.seam = parts.length === 0;
     }
@@ -175,15 +178,28 @@ export class AssemblyLine {
       const st = Math.min(1, this.stageT);
       switch (this.stage) {
         case 0:
+          v.setStampingProgress(st);
+          if (st > 0.42) this._once('s0_floor', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(0, 0.5, 0)), 14, '#ffd27a', 3); });
+          if (st > 0.66) this._once('s0_bay', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(1.3, 0.7, 0)), 14, '#9fd8ff', 3); });
+          if (st > 0.88) this._once('s0_cage', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(-0.2, 1.3, 0)), 16, '#ffd27a', 3); });
           break;
         case 1:
-          this._once('s1_body', () => { v.setBuildStage(1); v.setAllHinges(1); for (const k in v.hinges) v.hinges[k].t = 1; audio.hydraulic(); });
+          this._once('s1_body', () => { v.setBuildStage(1); v.setAllHinges(1); for (const k in v.hinges) { v.hinges[k].t = 1; v.hinges[k].node.visible = false; } audio.hydraulic(); });
           if (st > 0.15) this._once('s1_plan', () => this._planBodyShop());
           this._bodyShop(st);
           break;
         case 2:
           this._once('s2_paint', () => { this._clearJobs(); v.setBuildStage(1); for (const k in v.hinges) if (v.hinges[k].t > 0.5) v.setHinge(k, 0); });
           v.setReveal(smooth(0.15, 0.85, st));
+          if (st > 0.15 && st < 0.88 && f.paintRobots) {
+            const u = smooth(0.15, 0.88, st);
+            f.paintRobots.forEach((rb, i) => {
+              const side = Math.sign(rb.z - lz);
+              const sweepX = SX[2] + (rb.x < SX[2] ? -1.1 : 1.1) + Math.sin(u * Math.PI * 3 + i) * 0.95;
+              const sweepY = 0.85 + 0.45 * Math.sin(u * Math.PI * 5 + i * 1.4);
+              f.drive(rb, new THREE.Vector3(sweepX, sweepY, lz + side * 1.1));
+            });
+          }
           break;
         case 3: {
           this._once('s3_open', () => { v.setBuildStage(2); v.setHinge('Hood', 1); this._engineProp(); });
@@ -194,16 +210,28 @@ export class AssemblyLine {
             else if (this.engineProp.parent === this.game.scene) { f.hookPoint.attach(this.engineProp); this.engineProp.position.set(0, -0.55, 0); this.engineProp.rotation.set(0, Math.PI / 2, 0); this._once('engine_pick', () => audio.clunk()); }
             this.engineProp.visible = st < 0.55;
           }
-          if (st > 0.55) this._once('engine_in', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(1.4, 1.0, 0)), 16, '#9fd8ff', 3); });
+          // exhaust & underbody drivetrain rise with the hydraulic lift
+          if (v.partNodes.exhaust && v.partNodes.exhaust.userData.restPos) {
+            const kEx = smooth(0.30, 0.48, st);
+            v.partNodes.exhaust.visible = kEx > 0.02;
+            v.partNodes.exhaust.position.y = v.partNodes.exhaust.userData.restPos.y - (1 - kEx) * 0.55;
+            if (kEx >= 1) this._once('exhaust_in', () => audio.clunk());
+          }
+          if (st > 0.55) this._once('engine_in', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(1.45, 1.0, 0)), 18, '#9fd8ff', 3); });
           vs.showEngine = st > 0.55 && st < 0.92;
-          // loader arms push each wheel from its tyre rack onto the hub
+          // brake calipers mount first, then loader arms push each wheel from its tyre rack onto the hub
           v.root.updateMatrixWorld(true);
+          const kCal = smooth(0.45, 0.54, st);
           v.wheelNodes.forEach((w, i) => {
+            const side = w.name[1] === 'L' ? 1 : -1;
+            if (w.caliper) {
+              w.caliper.visible = st > 0.45;
+              w.caliper.position.x = (w.name[1] === 'R' ? 0.01 : -0.01) + side * 0.4 * (1 - kCal);
+            }
             const t0 = 0.58 + i * 0.06;
             if (!w.rim) return;
             const k = smooth(t0, t0 + 0.08, st);
-            w.rim.visible = w.caliper.visible = st > t0 - 0.04;
-            const side = w.name[1] === 'L' ? 1 : -1;
+            w.rim.visible = st > t0 - 0.04;
             w.rim.position.x = side * 2.6 * (1 - k);
             const hub = w.knuckle.getWorldPosition(new THREE.Vector3());
             const out = new THREE.Vector3(side, 0, 0).transformDirection(v.root.matrixWorld);
@@ -212,6 +240,10 @@ export class AssemblyLine {
               const wheelAt = hub.clone().addScaledVector(out, 2.6 * (1 - k) + 0.45);
               L.arm.position.lerp(new THREE.Vector3(wheelAt.x, 0, wheelAt.z + L.side * 0.65), 0.35);
             } else if (L) L.arm.position.lerp(L.home, 0.08);
+            if (f.wheelBot && w.name[1] === 'R' && st > t0 && st < t0 + 0.12) {
+              f.drive(f.wheelBot, hub.clone().add(new THREE.Vector3(0, 0, -0.25)));
+              if (k > 0.85 && Math.random() < 0.35) this.game.effects.sparks(hub, 6, '#ffd27a', 2.5);
+            }
             if (k >= 1) this._once('wheel_' + i, () => audio.clunk());
           });
           if (st > 0.9) this._once('s3_close', () => v.setHinge('Hood', 0));
@@ -219,6 +251,18 @@ export class AssemblyLine {
         }
         case 4: {
           this._once('s4_final', () => { v.setBuildStage(4); v.wheelNodes.forEach((w) => w.rim && (w.rim.position.x = 0)); f.loaders.forEach((l) => l.arm.position.copy(l.home)); });
+          v.setFinalAssemblyProgress(st);
+          if (st > 0.04 && st < 0.18) {
+            this._once('s4_int_open', () => { v.setHinge('Door_L', 0.85); v.setHinge('Door_R', 0.85); });
+            if (f.finalRobots) f.finalRobots.forEach((rb) => f.drive(rb, new THREE.Vector3(SX[4] - 0.2, 1.15, lz + Math.sign(rb.z - lz) * 0.65)));
+          }
+          if (st >= 0.18 && st < 0.34) {
+            this._once('s4_int_done', () => { v.setHinge('Door_L', 0); v.setHinge('Door_R', 0); audio.clunk(); });
+            if (f.finalRobots) f.finalRobots.forEach((rb, i) => f.drive(rb, new THREE.Vector3(SX[4] + (i ? 1.8 : -1.8), 0.85, lz + Math.sign(rb.z - lz) * 0.8)));
+          }
+          if (st >= 0.34 && st < 0.48) {
+            this._once('s4_trim_done', () => { audio.clunk(); this.game.effects.sparks(v.root.position.clone().add(new THREE.Vector3(1.8, 0.7, 0)), 12, '#ffd27a', 3); });
+          }
           const flick = st > 0.5 && st < 0.65 ? (Math.random() > 0.5 ? 1 : 0) : 1;
           Object.assign(vs, { headlights: flick, glowFlicker: st > 0.5 && st < 0.65 ? Math.random() : 0.9, brake: st > 0.55 && st < 0.62 });
           if (st > 0.65) this._once('qc_open', () => { v.setAllHinges(1); audio.doorOpen(); });
@@ -263,6 +307,8 @@ export class AssemblyLine {
     this.f.exitDoor.target = 0;
     const v = this.visual;
     this.visual = null;
+    v.setBuildStage(4);
+    v._buildStage = undefined;
     v.setAllHinges(0);
     const veh = new Vehicle(this.game, v, { kind: 'player', position: new THREE.Vector3(...LAYOUT.exitApron), heading: Math.PI / 2 });
     veh.owned = true;

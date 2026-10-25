@@ -1,0 +1,47 @@
+{
+  "_doc": "Single source of truth for the street network. Read by blender/build_roads.py (asphalt, markings, curbs, signals, signs -> roads.glb) and by src/systems/roadGraph.js (AI lanes) and town.js (minimap). Coordinates are game-space metres [x, z]. w = lane-centre offset from the centreline, width = full asphalt width, edge = white edge-line offset (parking lane outside it). surface 'lot' roads are AI-only (drawn by the parking-lot pad). graph:false roads are drawn but carry no AI lanes.",
+  "nodes": {
+    "M_W": [-196, 0], "LOT_W": [-50, 0], "ELM": [0, 0], "LOT_E": [55, 0], "EXIT": [76, 0], "M_E": [196, 0],
+    "HILL": [0, 144], "GATE": [0, 204], "CEM": [0, 222],
+    "LOT_SW": [-50, -48], "LOT_SE": [55, -48], "APRON": [76, -86], "SPUR": [58, -91],
+    "SW": [-196, -126], "APRON_S": [76, -126], "SE": [196, -126],
+    "NW": [-196, 95], "CIDER": [-140, 95], "NE": [196, 95], "OAK_CT": [140, 95]
+  },
+  "roads": [
+    { "id": "main_w", "a": "M_W", "b": "LOT_W", "w": 2.6, "width": 14, "edge": 4.4, "name": "MAIN ST" },
+    { "id": "main_lw", "a": "LOT_W", "b": "ELM", "w": 2.6, "width": 14, "edge": 4.4, "name": "MAIN ST" },
+    { "id": "main_le", "a": "ELM", "b": "LOT_E", "w": 2.6, "width": 14, "edge": 4.4, "name": "MAIN ST" },
+    { "id": "main_e1", "a": "LOT_E", "b": "EXIT", "w": 2.6, "width": 14, "edge": 4.4, "name": "MAIN ST" },
+    { "id": "main_e2", "a": "EXIT", "b": "M_E", "w": 2.6, "width": 14, "edge": 4.4, "name": "MAIN ST" },
+    { "id": "elm", "a": "ELM", "b": "HILL", "w": 2.6, "width": 12, "edge": 4.0, "name": "ELM AVE" },
+    { "id": "hill", "a": "HILL", "b": "GATE", "w": 2.4, "width": 10, "name": "HOLLOW HILL RD", "via": [[0, 152], [14, 166], [16, 176], [-10, 188], [-14, 196], [2, 201]] },
+    { "id": "gate_in", "a": "GATE", "b": "CEM", "w": 2.4, "width": 9, "graph": false, "name": "HOLLOW HILL RD" },
+    { "id": "exit", "a": "EXIT", "b": "APRON", "w": 2.4, "width": 9, "name": "FACTORY RD" },
+    { "id": "spur", "a": "APRON", "b": "SPUR", "w": 2.4, "width": 9, "graph": false, "name": "FACTORY RD", "via": [[74, -91]] },
+    { "id": "lot_e", "a": "LOT_E", "b": "LOT_SE", "w": 2.4, "width": 9, "surface": "lot" },
+    { "id": "lot_s", "a": "LOT_SE", "b": "LOT_SW", "w": 2.4, "width": 9, "surface": "lot" },
+    { "id": "lot_w", "a": "LOT_SW", "b": "LOT_W", "w": 2.4, "width": 9, "surface": "lot" },
+    { "id": "west_s", "a": "SW", "b": "M_W", "w": 2.6, "width": 11, "name": "MAPLE AVE" },
+    { "id": "west_n", "a": "M_W", "b": "NW", "w": 2.6, "width": 11, "name": "MAPLE AVE" },
+    { "id": "cider", "a": "NW", "b": "CIDER", "w": 2.2, "width": 8, "surface": "gravel", "name": "CIDER MILL LN" },
+    { "id": "east_s", "a": "M_E", "b": "SE", "w": 2.6, "width": 11, "name": "OAK AVE" },
+    { "id": "east_n", "a": "M_E", "b": "NE", "w": 2.6, "width": 11, "name": "OAK AVE" },
+    { "id": "oakct", "a": "NE", "b": "OAK_CT", "w": 2.4, "width": 9, "name": "OAK CT" },
+    { "id": "apron_s", "a": "APRON", "b": "APRON_S", "w": 2.4, "width": 9, "name": "FACTORY RD" },
+    { "id": "south_w", "a": "APRON_S", "b": "SW", "w": 2.6, "width": 11, "name": "PROVING GROUND RD" },
+    { "id": "south_e", "a": "SE", "b": "APRON_S", "w": 2.6, "width": 11, "name": "PROVING GROUND RD" }
+  ],
+  "deadEnds": ["GATE", "CIDER", "OAK_CT"],
+  "signals": {
+    "ELM": { "A": ["main_lw", "main_le"], "B": ["elm"], "offset": 0 },
+    "EXIT": { "A": ["main_e1", "main_e2"], "B": ["exit"], "offset": 11 }
+  },
+  "signalTiming": { "greenA": 16, "greenB": 10, "yellow": 3, "allRed": 1.5 },
+  "stops": { "LOT_W": ["lot_w"], "LOT_E": ["lot_e"], "M_W": ["main_w"], "M_E": ["main_e2"], "APRON_S": ["apron_s"] },
+  "crosswalks": [
+    { "id": "square", "x": -28, "z": 0, "axis": "x", "road": "main_lw" },
+    { "id": "cinema", "x": 90, "z": 0, "axis": "x", "road": "main_e2" },
+    { "id": "elm_mid", "x": 0, "z": 72, "axis": "z", "road": "elm" }
+  ],
+  "dragStrip": { "road": "south_w", "start": [-141, -126], "finish": [60, -126], "lengthM": 201 }
+}

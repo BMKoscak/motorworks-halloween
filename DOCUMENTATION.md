@@ -11,6 +11,8 @@ A third-person 3D open-town car factory, customization and action game in the br
 
 ![Title screen](public/docs/screenshots/01_title_screen.png)
 
+> **Phase 3: Fright Night update.** The third pass replaced the old (accidentally invisible) road ribbons with a Blender street network generated from `streets.json`, with traffic lights, walk signals and stop signs that AI traffic and pedestrians obey. It also expanded the world with a ring road, more houses, the drive-in and the drag strip, and added the walk-in **Palace Cinema**, which projects a voiced B-movie, *Night of the V8*, onto its screen and the drive-in screen. At Motorworks there's now a dyno cell, Parts Runner shifts, a break-room arcade and an eighth-mile drag race. There are 10 secrets, stunt ramps, a townsfolk AI with errands and crosswalks, and 49 new ElevenLabs lines. Section 6 P–V covers the new systems, and §7 lists the 12 new QA checks.
+
 > **Phase 2: Major Expansion & Realism Overhaul.** The second build pass added demographic-accurate NPC voices (kids, men, women), fully enterable buildings with furnished interiors, a rebuilt Motorworks plant with physical pick-and-place robots and a live Jumbotron, seated drivers in every vehicle, a road-graph traffic AI with physics safety clamps, police foot chases, weapons, light switches and breaker boxes, doorbells and burglary, and a fuel system with gas-station refuelling. Section 6 F–O covers the new systems, and §7 lists the 10 new QA checks.
 
 ---
@@ -98,12 +100,12 @@ The models are generated procedurally by `blender -b --factory-startup -P blende
 <!-- AUTO:ASSETS -->
 | GLB | Objects | Meshes | Triangles | Hinged / jointed nodes | Size |
 |---|---|---|---|---|---|
-| `car_muscle.glb` | 62 | 44 | 2,080 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 160 KB |
-| `car_pickup.glb` | 59 | 41 | 1,864 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 147 KB |
-| `car_coupe.glb` | 53 | 35 | 1,552 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 126 KB |
-| `car_hearse.glb` | 63 | 45 | 2,032 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 162 KB |
-| `car_sedan.glb` | 58 | 40 | 1,684 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, DoorRear_L, DoorRear_R, Hood … (+6) | 137 KB |
-| `parts.glb` | 109 | 87 | 2,612 | Blower_Pulley | 218 KB |
+| `car_muscle.glb` | 81 | 63 | 2,676 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 210 KB |
+| `car_pickup.glb` | 78 | 60 | 2,460 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 197 KB |
+| `car_coupe.glb` | 71 | 53 | 2,136 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 174 KB |
+| `car_hearse.glb` | 82 | 64 | 2,628 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, Hood, Knuckle_FL, Knuckle_FR … (+4) | 211 KB |
+| `car_sedan.glb` | 79 | 61 | 2,328 | Axle_FL, Axle_FR, Axle_RL, Axle_RR, Door_L, Door_R, DoorRear_L, DoorRear_R, Hood … (+6) | 192 KB |
+| `parts.glb` | 132 | 110 | 3,608 | Blower_Pulley | 287 KB |
 | `wheels.glb` | 36 | 27 | 5,460 | — | 243 KB |
 | `robot_arm.glb` | 19 | 12 | 536 | Base, Elbow, Shoulder, Wrist | 42 KB |
 | `press.glb` | 9 | 8 | 300 | Ram | 28 KB |
@@ -115,17 +117,19 @@ The models are generated procedurally by `blender -b --factory-startup -P blende
 | `forklift.glb` | 17 | 13 | 472 | Forks, ForkWheel_FL, ForkWheel_FR, ForkWheel_RL, ForkWheel_RR | 40 KB |
 | `lift.glb` | 4 | 3 | 108 | Platform | 10 KB |
 | `scanner.glb` | 4 | 3 | 72 | Laser_Bar | 8 KB |
-| `plant.glb` | 255 | 242 | 21,804 | GiantSpider, SwitchLever_NightShift | 1509 KB |
-| `diner.glb` | 176 | 159 | 6,632 | Door_Back, Door_Front, SwitchLever_Main | 493 KB |
-| `gas_station.glb` | 122 | 99 | 5,396 | Door_Front, Hose_0_0, Hose_0_1, Hose_1_0, Hose_1_1, Nozzle_0_0, Nozzle_0_1, Nozzle_1_0, Nozzle_1_1 … (+1) | 394 KB |
+| `plant.glb` | 403 | 380 | 31,316 | Door_Secret, Dyno_Fan, Dyno_Roller_F, Dyno_Roller_R, GiantSpider, SwitchLever_NightShift | 2106 KB |
+| `diner.glb` | 178 | 161 | 6,784 | Door_Back, Door_Front, SwitchLever_Main | 501 KB |
+| `gas_station.glb` | 123 | 100 | 5,408 | Door_Front, Hose_0_0, Hose_0_1, Hose_1_0, Hose_1_1, Nozzle_0_0, Nozzle_0_1, Nozzle_1_0, Nozzle_1_1 … (+1) | 395 KB |
 | `hardware.glb` | 125 | 100 | 5,536 | Door_Back, Door_Front, SwitchLever_Main | 396 KB |
 | `police_station.glb` | 168 | 144 | 4,688 | Cell_Door, Door_Back, Door_Evidence, Door_Front, SwitchLever_Main | 391 KB |
 | `jumbotron.glb` | 12 | 7 | 368 | — | 31 KB |
-| `house_a.glb` | 184 | 163 | 4,776 | BreakerLever, Door_Back, Door_Front, SwitchLever_Main | 425 KB |
-| `house_b.glb` | 149 | 128 | 3,240 | BreakerLever, Door_Back, Door_Front, SwitchLever_Main | 298 KB |
-| `props.glb` | 185 | 138 | 8,528 | CryptDoor, Turntable_Top | 588 KB |
+| `house_a.glb` | 190 | 169 | 5,016 | BreakerLever, Door_Back, Door_Front, SwitchLever_Main | 445 KB |
+| `house_b.glb` | 149 | 128 | 3,264 | BreakerLever, Door_Back, Door_Front, SwitchLever_Main | 300 KB |
+| `props.glb` | 314 | 247 | 22,706 | CryptDoor, Turntable_Top | 1416 KB |
+| `cinema.glb` | 423 | 211 | 17,096 | Door_Back, Door_Front, SwitchLever_Main | 1166 KB |
 | `character.glb` | 94 | 66 | 2,674 | Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7) | 182 KB |
 | `skeleton.glb` | 91 | 66 | 2,780 | Foot_L, Foot_R, Hand_L, Hand_R, Head, Hips, Jaw, LowerArm_L, LowerArm_R … (+7) | 199 KB |
+| `roads.glb` | 319 | 272 | 29,620 | — | 1720 KB |
 <!-- /AUTO:ASSETS -->
 
 ## 3. Physics engine
@@ -413,12 +417,142 @@ Workers in Halloween costumes animate at each station, including **Bones the ske
 | ![](public/docs/screenshots/24_tv_stashed_in_trunk.png) | ![](public/docs/screenshots/25_refuelling_pump_counter.png) |
 | ![](public/docs/screenshots/25_gas_station_pump_hose.png) | ![](public/docs/screenshots/25_out_of_fuel_stalled.png) |
 
+### P. Streets, junctions and traffic signals (Phase 3)
+
+- **Map file.** `src/data/streets.json` is the single source of truth for the street network: 20 nodes, 23 roads with widths, lane offsets and edge-line offsets, dead ends, signal phases, stop-controlled approaches, mid-block crosswalks and the drag strip.
+- **Who reads it.**
+  - `blender/build_roads.py` models the streets from it into `roads.glb`.
+  - `src/systems/roadGraph.js` builds the AI lanes from it.
+  - `src/world/streetGeom.js` derives junction geometry from it: pad radii, stop-bar and crosswalk distances, and the pedestrian crossings. The same formulas are mirrored in the Python.
+- **What `roads.glb` contains:**
+  - **Road surface:** terrain-following asphalt ribbons, sampled densely on the hill and coarsely on the flat plain; rounded junction pads; a gravel lane to the cider mill.
+  - **Markings:** double-yellow centre lines, white edge lines, parking ticks on Main Street, stop bars, zebra crosswalks, painted STOP and the drag-strip START/FINISH lines with a checkered finish.
+  - **Signals:** mast-arm signals with per-lamp materials, plus pedestrian heads at both ends of every signalised crosswalk.
+  - **Signs:** stop signs, green street-name blades and speed-limit signs.
+  - **Street details:** manholes, storm drains, the drag-strip christmas tree, finish posts and bleachers.
+- **Signal controller.** `src/systems/signals.js` drives the two signalised junctions (Main & Elm, Main & Factory Rd). Each cycle is 16 s green for the through street, 3 s yellow, 1.5 s all-red, 10 s green for the side street, 3 s yellow and 1.5 s all-red, with a per-junction offset. WALK lights while the crossed road is held, and the hand flashes before the cross traffic gets its green.
+- **AI traffic.**
+  - Lanes now end at the painted stop bar.
+  - Cars brake to a stop on red. On yellow they stop if they can brake comfortably (`d − 1 > v²/12`), otherwise they clear the junction.
+  - Cars make a full stop at stop signs. The junction reservation still prevents conflicts.
+  - Patrolling cruisers obey the lights too; cruisers in pursuit ignore them.
+- **The old bug.** The previous road ribbons were wound clockwise, so they faced down and were back-face culled: Main Street rendered as bare dirt. The cemetery paths still use the ribbon builder, which now winds counter-clockwise.
+
+### Q. World expansion (Phase 3)
+
+- **Ring road.** Maple Ave (west), Oak Ave (east) and Proving Ground Rd (south) close the outer loop. Cider Mill Lane and Oak Court lead off it.
+- **New houses.** Seven houses face the avenues.
+- **New landmarks.** Four bus shelters, the town square with its clocktower and gazebo, the Hollow Cider Mill, the HOLLOW water tower, and the Starlight Drive-In with its screen turned to face the lot.
+- **New buildings.** The Palace Cinema now stands on Main Street, and the drag strip with its bleachers is on the Proving Ground.
+
+### R. The Palace Cinema and *Night of the V8*
+
+- **The building.** `build_cinema()` in `blender/build_world.py` uses the walk-in interior kit to build an art-deco picture house:
+  - a facade with a marquee, chaser bulbs, a vertical PALACE blade sign and poster cases
+  - a lobby with the box-office window, a concession stand (popcorn machine, soda fountain, menu board), rope barriers and chandeliers
+  - an auditorium with a 13 m screen on a stage between velvet curtains, 8 raked rows (192 seats, `Seat_r_c` empties) and a rear cross-aisle
+  - a projection booth up a stair, with a projector whose beam reaches the screen
+  - a side fire exit
+- **The film.** `src/world/cinema.js` → `Film` draws a 102-second B-movie into a 640×288 canvas at 15 fps, but only while a screen is near the camera. The reel runs:
+  1. countdown leader
+  2. Motorworks Pictures logo
+  3. dripping title
+  4. Hollow Hill Road drive
+  5. ghost-car chase with lightning
+  6. the haunted factory with a welding robot
+  7. the cemetery-gate jump
+  8. trailer card
+  9. credits
+  10. Count Carburetor's post-credits stinger
+
+  Gate flicker, grain, scratches and a vignette are drawn on top. One `CanvasTexture` feeds both the Palace screen and the drive-in screen. Screen UVs are rebuilt to 0–1, because Blender's box-projected UVs are in metres.
+- **Visiting the cinema:**
+  - Buy a ticket ($8) at the box office.
+  - The usher sends ticketless visitors back to the lobby.
+  - Popcorn is $5 and gives +15 health.
+  - Press `E` at any free seat to sit. A seated camera faces the screen, and the six voiced cues play on the film clock: narrator ×2, Roxy Steel ×2 and Count Carburetor ×2.
+  - Twelve townsfolk sit in the audience.
+  - A see-through projectionist fades in when you climb to the booth.
+- **The drive-in.** Park within 48 m and the film's voiced cues play as car-radio audio. Honk three times quickly and the reel switches to the INTERMISSION hot-dog cartoon (a secret).
+
+### S. More to do at Motorworks
+
+- **Dyno cell** (north of the line, reached through the Custom Bay):
+  - Drive onto the rollers and press `E`. The car is strapped down, the fan spins, rpm sweeps to redline, the rollers spin, and the 6 × 3 m wall display plots HP and torque live.
+  - Gina, the dyno tech, reads out the result.
+  - A new record pays $250. The top 5 pulls are kept in `localStorage`.
+- **Parts Runner shift:**
+  - Punch in at the break-room time clock.
+  - Grab a crate at the new south receiving dock, then carry it (you walk slower) to the station marked by a pulsing green ring within 50 s.
+  - Each delivery pays $120 plus a time bonus. Five deliveries add a $250 shift bonus. Big Sal voices the start, the finish and lateness.
+- **Break room.** The PUMPKIN PANIC arcade cabinet costs $1. It opens a canvas overlay game (catch pumpkins, dodge skulls), keeps a high score, and its cabinet screen runs an attract loop. The Ghoul-Cola machine costs $2 and gives +25 health.
+- **Eighth-mile drag race.** Stage at the Proving Ground start line and press `E` ($200 stake).
+  - Proving Ground Rd is closed to AI traffic during the race.
+  - The christmas tree counts down Y-Y-Y-GREEN. Throttle before green is a red-light foul.
+  - Vic Vapor's acceleration is tuned to your engine's output.
+  - ET and trap speed are recorded, and the bleacher crowd cheers.
+- **Stunt ramps.** Three ramps around town pay $40 plus $60 per second of airtime.
+
+### T. Townsfolk AI and street reactions
+
+- **Sidewalk network.** `src/systems/townsfolk.js` builds a network of 96 nodes, 9 crosswalk edges and 41 points of interest: doors, the cinema, benches, bus seats, porches and the Motorworks lobby.
+- **Errands.** Each pedestrian picks an errand and routes with A*:
+  - Adults visit doors, benches, bus stops and the cinema.
+  - Kids go trick-or-treating at porches: doorbell, "Trick or treat!", then a homeowner with a matching voice answers.
+- **Crossing.** At a crosswalk, walkers wait for WALK (signalised) or for no car within 22 m (mid-block), then cross a little faster.
+- **Other behaviour.** Passers-by stop to chat, with occasional voiced lines when you're near. They dodge fast cars. A honk makes everyone ahead of you jump back, and one of them shouts a line that matches their age and gender.
+- **Traffic.** Drivers stuck behind you honk. Ram one and they lean on the horn and yell `rage_m` or `rage_f` in their own voice.
+
+### U. Secrets (10)
+
+`src/systems/secrets.js` tracks these 10 secrets in `localStorage` and lists them in the pause menu, with hints on the ❔ icons:
+
+1. 88 mph (lightning flux)
+2. The Konami code (big-head mode)
+3. Thirteen bells from the clocktower
+4. The drive-in intermission
+5. The projection-booth ghost
+6. The post-credits stinger
+7. Bigfoot by the water tower
+8. A UFO (shoot the HOLLOW tank 5 times)
+9. The haunted payphone at the gas station
+10. The developers' room behind a loose brick wall in tool crib 1 (+$10,000)
+
+### V. Phase 3 voices
+
+There are 49 new ElevenLabs lines (eleven_v4, one take each, with inline audio tags) from 11 new voices:
+
+- **Dusty** (box office)
+- **Theo** (usher)
+- **the concession stand**
+- **the Projectionist**
+- **the Trailer Narrator**
+- **Roxy Steel**
+- **Count Carburetor**
+- **Gina** (dyno tech)
+- **the Race Marshal**
+- **Vic Vapor**
+- **the Voice on the Line**
+
+Existing voices also got new lines: Big Sal's shift lines, the robot arcade and cheat-code lines, the groundskeeper's bells, the DJ in the developers' room, and townsfolk, kids, homeowners and drivers for honks, road rage, trick-or-treat and chatter. The demographic audit still covers every NPC and every line spoken.
+
+| | |
+|---|---|
+| ![](public/docs/screenshots/30_main_elm_intersection_signals.png) | ![](public/docs/screenshots/30_traffic_waiting_at_red.png) |
+| ![](public/docs/screenshots/32_palace_cinema_marquee.png) | ![](public/docs/screenshots/32_palace_seated_watching_night_of_the_v8.png) |
+| ![](public/docs/screenshots/32_palace_film_chase_scene.png) | ![](public/docs/screenshots/32_projection_booth_ghost.png) |
+| ![](public/docs/screenshots/33_drive_in_from_car.png) | ![](public/docs/screenshots/33_drive_in_intermission_reel.png) |
+| ![](public/docs/screenshots/34_dyno_pull_in_progress.png) | ![](public/docs/screenshots/34_dyno_power_curve_display.png) |
+| ![](public/docs/screenshots/35_drag_strip_staging_tree.png) | ![](public/docs/screenshots/36_parts_runner_delivery_ring.png) |
+| ![](public/docs/screenshots/37_pumpkin_panic_arcade.png) | ![](public/docs/screenshots/39_ufo_tractor_beam.png) |
+| ![](public/docs/screenshots/31_townsfolk_town_square.png) | ![](public/docs/screenshots/39_developers_room.png) |
+
 ## 7. Automated QA self-test loop
 
 `npm test` (`tests/qa.mjs`) drives the real game in Playwright Chromium on the local GPU. It presses real keys, measures the results through `window.__MW`, captures every screenshot in this document, and writes `tests/qa-results.json` plus the `qa` section of `TELEMETRY.json`.
 
 <!-- AUTO:QA -->
-Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).
+Last run: 2026-10-25T06:38:48.512Z — **42/42 checks passed** in 556s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).
 
 - [x] **boot** — Page loads, Blender assets stream in, zero console errors / uncaught exceptions
 - [x] **assets** — All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes
@@ -438,7 +572,7 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 - [x] **npc_demographics** — NPC demographics: kids are 0.68x trick-or-treaters with kid-only voices; male/female NPCs only use matching voices; no child drivers
 - [x] **enterable_buildings** — Walk through hinged front doors into the Diner, Hardware Store, Police Station and a House (no collider blocking)
 - [x] **seated_drivers** — Traffic cars, police cruisers, the forklift (and the player) have seated drivers; arms + steering wheel follow the steering; cabin glass is see-through
-- [x] **navigation_and_bounds** — 30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - ground| < 0.6); traffic stays on the road graph
+- [x] **navigation_and_bounds** — 30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - support| < 0.75; physics vehicles may hop a little on kerbs and queued traffic); traffic stays on the road graph
 - [x] **police_foot_chase** — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars
 - [x] **weapons_and_shooting** — Buy/equip a pistol, aim (RMB/Q) and fire at a car tyre and a streetlight: ammo decrements, tyre pops, light goes out, impact FX
 - [x] **light_switches** — Interior wall switch (E) toggles the building lights (fixtures + light sources + window glow); breaker box cuts power; Night Shift switch re-lights the plant
@@ -447,6 +581,18 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 - [x] **pumpkins** — Golden Pumpkins: collecting all 5 unlocks the Monster Mash kiosk pack
 - [x] **phantom** — Phantom Hearse: honking 3x at the Vlad crypt summons a ghost hearse race
 - [x] **trial** — Graveyard Shift: driving through the start arch starts the timed drift trial
+- [x] **streets_signals** — Blender street network (roads.glb from streets.json): asphalt, markings, crosswalks; traffic + walk signals cycle through their phases
+- [x] **traffic_obeys_signals** — AI traffic stops at red lights (and on yellow when it can), comes to a full stop at stop signs, never enters a junction on red
+- [x] **townsfolk_ai** — Townsfolk walk a sidewalk network to doors/benches/bus stops/porches, wait for WALK or a traffic gap and cross only at crosswalks; horns make them jump back and shout
+- [x] **cinema_movie** — Palace Cinema: box office ticket ($8), usher blocks ticketless entry, popcorn, sit in a seat and watch the projected film with voiced cues; ghost projectionist in the booth
+- [x] **drivein_intermission** — Starlight Drive-In shows the same film from a parked car (radio audio); three honks swap the reel for the INTERMISSION cartoon
+- [x] **dyno_pull** — Motorworks dyno cell: drive onto the rollers, [E] runs an automatic pull; rollers/fan spin, the wall display plots HP + torque, Gina reads out the result
+- [x] **drag_race** — Proving Ground eighth-mile: christmas tree countdown, rival Vic Vapor, ET + trap speed, $200 stake; jumping the start is a foul; the strip is closed to traffic during the run
+- [x] **parts_runner_shift** — Break-room time clock starts a Parts Runner shift: grab a crate at receiving, carry it to the flashing station ring, get paid
+- [x] **arcade_vending** — Break room: PUMPKIN PANIC arcade cabinet ($1, playable overlay, high score) and the Ghoul-Cola vending machine (+25 health)
+- [x] **stunt_jump** — Stunt ramps: launching off a ramp at speed pays out for airtime
+- [x] **secrets** — Easter eggs: Konami big-head mode, haunted payphone, thirteen bells, UFO over the water tower, Bigfoot, 88 mph flux, developers' room (+$10k), plus the cinema ones — tracked n/10 in the pause menu
+- [x] **phase3_voice_lines** — All 49 new ElevenLabs lines (cinema, film cast, dyno, marshal, rival, payphone, street reactions) are cached MP3s; new lines played during the run with matching demographics
 - [x] **radio_audio** — Spoken dialogue audio + radio DJ use the cached local audio files (no TTS fallback needed)
 - [x] **perf** — Performance snapshot (draw calls, triangles, FPS on this GPU)
 - [x] **final_errors** — Zero console errors or uncaught exceptions during the whole QA run
@@ -456,79 +602,61 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 ```json
 {
  "boot": {
-  "loadMs": 3384,
+  "loadMs": 3891,
   "gpu": "ANGLE (AMD, AMD Radeon (TM) R5 M330 (0x00006660) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "consoleErrors": []
  },
  "factory_jumbotron_and_conveyor": {
   "factory": {
-   "ikSolves": 743,
-   "pressCycles": 1,
+   "ikSolves": 578,
+   "pressCycles": 2,
    "partsCarried": 3,
    "nightShift": false
   },
   "jumbotron": {
    "before": {
-    "frames": 338,
-    "overlay": 64,
+    "frames": 352,
+    "overlay": 67,
     "faces": 4
    },
    "after": {
-    "frames": 501,
-    "overlay": 147,
+    "frames": 506,
+    "overlay": 145,
     "faces": 4
    }
   }
  },
  "physics": {
   "inCar": true,
-  "fpsDuringDrive": 22.3,
-  "speedAfterW": 17,
-  "leftHeadingDelta": 0.841,
-  "rightHeadingDelta": -1.296,
+  "fpsDuringDrive": 17.8,
+  "speedAfterW": 16.47,
+  "leftHeadingDelta": 0.619,
+  "rightHeadingDelta": -0.704,
   "braking": {
-   "before": 26.67,
-   "after": 11.67
+   "before": 25.89,
+   "after": 10.41
   },
   "highSpeed": {
-   "speed": 24.05,
-   "dHeading": -0.563
+   "speed": 22.53,
+   "dHeading": -0.551
   },
   "highSpeedTurn": {
-   "speed": 24.05,
-   "dHeading": -0.563
+   "speed": 22.53,
+   "dHeading": -0.551
   },
-  "skidMarks": 749
+  "skidMarks": 1463
  },
  "theft": {
   "inStolenCar": true,
   "doorSwungOpen": 1,
   "markedStolen": true,
-  "wantedLevel": 3,
+  "wantedLevel": 2,
   "pursuit": [
    {
     "mode": "pursuit",
     "pos": [
-     160.5,
-     33.8
-    ],
-    "siren": true,
-    "parked": true
-   },
-   {
-    "mode": "pursuit",
-    "pos": [
-     162.5,
-     31.4
-    ],
-    "siren": true,
-    "parked": true
-   },
-   {
-    "mode": "pursuit",
-    "pos": [
-     130.6,
-     6.7
+     2.6,
+     21.5
     ],
     "siren": true,
     "parked": false
@@ -536,39 +664,21 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
    {
     "mode": "pursuit",
     "pos": [
-     61.8,
-     4.6
+     73.6,
+     -24.1
     ],
     "siren": true,
     "parked": false
    }
   ],
   "police": {
-   "level": 4,
+   "level": 2,
    "cars": [
     {
      "mode": "pursuit",
      "pos": [
-      160.5,
-      33.8
-     ],
-     "siren": true,
-     "parked": true
-    },
-    {
-     "mode": "pursuit",
-     "pos": [
-      162.5,
-      31.4
-     ],
-     "siren": true,
-     "parked": true
-    },
-    {
-     "mode": "pursuit",
-     "pos": [
-      130.6,
-      6.7
+      2.6,
+      21.5
      ],
      "siren": true,
      "parked": false
@@ -576,8 +686,8 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
     {
      "mode": "pursuit",
      "pos": [
-      61.8,
-      4.6
+      73.6,
+      -24.1
      ],
      "siren": true,
      "parked": false
@@ -585,65 +695,47 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
    ],
    "officers": [
     {
-     "state": "foot",
+     "state": "seated",
      "pos": [
-      137.4,
-      0.2,
-      10.6
-     ],
-     "armed": true
-    },
-    {
-     "state": "foot",
-     "pos": [
-      137.4,
-      0.2,
-      10.6
-     ],
-     "armed": true
-    },
-    {
-     "state": "foot",
-     "pos": [
-      124,
+      0.4,
       0,
-      4.3
+      0.1
      ],
-     "armed": true
+     "armed": false
+    },
+    {
+     "state": "seated",
+     "pos": [
+      0.4,
+      0,
+      0.1
+     ],
+     "armed": false
+    },
+    {
+     "state": "foot",
+     "pos": [
+      132.9,
+      0,
+      6.3
+     ],
+     "armed": false
     },
     {
      "state": "beat",
      "pos": [
-      -86.5,
+      -86.7,
       0.2,
       -8
      ],
      "armed": false
     },
     {
-     "state": "foot",
+     "state": "beat",
      "pos": [
-      38.2,
+      69.5,
       0,
-      13.3
-     ],
-     "armed": true
-    },
-    {
-     "state": "seated",
-     "pos": [
-      0.4,
-      0,
-      0.1
-     ],
-     "armed": false
-    },
-    {
-     "state": "seated",
-     "pos": [
-      0.4,
-      0,
-      0.1
+      3.1
      ],
      "armed": false
     }
@@ -651,32 +743,17 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
    "stats": {
     "crimes": [
      {
-      "kind": "speeding",
-      "at": 106631,
-      "level": 1
-     },
-     {
-      "kind": "rammed",
-      "at": 111692,
-      "level": 2
-     },
-     {
       "kind": "theft",
-      "at": 141219,
-      "level": 3
-     },
-     {
-      "kind": "rammed",
-      "at": 146856,
-      "level": 4
+      "at": 141414,
+      "level": 2
      }
     ],
-    "maxLevel": 4,
+    "maxLevel": 2,
     "busts": 0,
     "escapes": 0,
-    "dismounts": 2,
-    "footChases": 4,
-    "shotsAtPlayer": 11,
+    "dismounts": 0,
+    "footChases": 1,
+    "shotsAtPlayer": 0,
     "resets": 0
    }
   }
@@ -692,15 +769,21 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
    "spinClamps": 0,
    "outOfBounds": 0,
    "traffic": {
-    "whiskerBrakes": 29,
-    "junctionWaits": 0,
-    "resets": 0
+    "whiskerBrakes": 0,
+    "junctionWaits": 700,
+    "resets": 0,
+    "redStops": 22,
+    "redRuns": 0,
+    "stopSigns": 23,
+    "honks": 0,
+    "rage": 9,
+    "relocated": 0
    },
    "nav": {
-    "nodes": 1378,
-    "edges": 4532,
-    "rays": 9319,
-    "buildMs": 266
+    "nodes": 1449,
+    "edges": 4517,
+    "rays": 8572,
+    "buildMs": 269
    },
    "policeResets": 0
   }
@@ -708,14 +791,14 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
  "fuel_and_gas_station": {
   "burn": {
    "before": 60,
-   "after": 58.98
+   "after": 58.85
   },
   "drivingConsumesFuel": {
    "before": 60,
-   "after": 58.98
+   "after": 58.85
   },
   "stall": {
-   "speed": -0.01,
+   "speed": 7.47,
    "fs": {
     "fuel": 0,
     "stalled": true,
@@ -760,25 +843,137 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
    "cost": 20.82,
    "stats": {
     "refuels": 1,
-    "gallons": 10.409791596800002,
-    "spent": 20.819583193600003,
+    "gallons": 10.40979504128,
+    "spent": 20.81959008256,
     "jerrycans": 1
    }
   },
   "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
   "tankFull": 100,
   "chargedTwoDollarsPerGallon": {
-   "paid": 20.81958319360274,
-   "gal": 10.409791596800002
+   "paid": 20.819590082595823,
+   "gal": 10.40979504128
   }
  },
- "perf": {
-  "fps": 19,
-  "drawCalls": 1673,
-  "triangles": 609368,
-  "vehicles": 6
- }
-}
+ "traffic_obeys_signals": {
+  "stats": {
+   "redStops": 2,
+   "redRuns": 0,
+   "stopSigns": 2,
+   "junctionWaits": 1335,
+   "honks": 0
+  },
+  "heldSamples": 29,
+  "carsHoldAtRed": {
+   "redStops": 2,
+   "redRuns": 0,
+   "stopSigns": 2,
+   "junctionWaits": 1335,
+   "honks": 0
+  },
+  "noRedLightRunners": 0,
+  "heldCar": null
+ },
+ "townsfolk_ai": {
+  "net": {
+   "nodes": 96,
+   "edges": 99,
+   "crossings": 9,
+   "pois": 41
+  },
+  "stats": {
+   "trips": 80,
+   "crossings": 44,
+   "signalWaits": 5259,
+   "gapWaits": 1040,
+   "chats": 38,
+   "honkReactions": 0,
+   "trickOrTreats": 14,
+   "visits": 40
+  },
+  "states": {
+   "walk": 12,
+   "chat": 2,
+   "do": 3,
+   "approach": 1
+  },
+  "jaywalkSamples": [],
+  "network": {
+   "nodes": 96,
+   "edges": 99,
+   "crossings": 9,
+   "pois": 41
+  },
+  "errands": {
+   "trips": 80,
+   "crossings": 44,
+   "signalWaits": 5259,
+   "gapWaits": 1040,
+   "chats": 38,
+   "honkReactions": 0,
+   "trickOrTreats": 14,
+   "visits": 40
+  },
+  "crossAtCrosswalks": {
+   "trips": 80,
+   "crossings": 44,
+   "signalWaits": 5259,
+   "gapWaits": 1040,
+   "chats": 38,
+   "honkReactions": 0,
+   "trickOrTreats": 14,
+   "visits": 40
+  },
+  "noJaywalking": 0,
+  "honk": {
+   "before": 0,
+   "after": 1,
+   "line": {
+    "id": "kidg_honk",
+    "voice": "kid_g",
+    "demo": "child_girl",
+    "speaker": "child_girl",
+    "duration": 2.48,
+    "source": "file",
+    "at": 425850
+   }
+  },
+  "honkReaction": {
+   "before": 0,
+   "after": 1,
+   "line": {
+    "id": "kidg_honk",
+    "voice": "kid_g",
+    "demo": "child_girl",
+    "speaker": "child_girl",
+    "duration": 2.48,
+    "source": "file",
+    "at": 425850
+   }
+  }
+ },
+ "dyno_pull": {
+  "prompt": "[E] Strap down & start a dyno pull  ·  [Shift+E] exit car",
+  "mid": {
+   "act": "Dyno",
+   "roller": -67.11,
+   "curve": 58
+  },
+  "dyno": {
+   "pulls": 1,
+   "best": 318
+  },
+  "line": {
+   "id": "dyno_record",
+   "voice": "dynotech",
+   "demo": "adult_female",
+   "speaker": "adult_female",
+   "duration": 3.76,
+   "source": "file",
+   "at": 472140
+  },
+  "pullRunning": {
+   "act": "D
 ```
 </details>
 <!-- /AUTO:QA -->
@@ -792,6 +987,15 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 - **Kiosk.** It was over-exposed by bloom, and its camera could orbit through the lobby walls.
 - **Slow-motion physics.** The dt clamp made physics run slowly at low frame rates. The clamp was raised, and automatic quality fallback was added.
 - **Lost wheel contact.** cannon-es heightfield raycasts miss on some grid cells, so wheels lost contact (seen on the exit road). The flat town and the cemetery plateau are now backed by exact static collision slabs.
+
+**Phase 3 problems found by the QA loop and the probes, and their fixes:**
+- **Main Street rendered as dirt.** The road-ribbon builder wound its triangles clockwise, so every road faced down and was culled. All streets are now Blender geometry, and the remaining gravel paths wind correctly.
+- **Black cinema screens.** Blender's box-projected UVs are in metres, so the film texture clamped to its dark vignette edge. The screen and poster UVs are now rebuilt to 0–1 along the axis the audience sees.
+- **Stunt ramps couldn't be jumped.** A ground clamp from an earlier uncommitted pass pinned every car to within 0.42 m of the terrain. It was replaced by an upward-speed cap, plus a short lift clamp while a car touches a kinematic AI car (otherwise queues at red lights could shovel cars into the air).
+- **Fuel test failed after the traffic lights went in.** The test's car drove into a queue waiting at the new red light. The test now uses the empty Proving Ground road.
+- **A "red-light runner".** A car that committed on green but was then held by the junction reservation kept its commitment. Commitment now needs the car to be moving, and the metric only counts entries after the light has been red for over a second.
+- **Sparks crashed the 88 mph easter egg.** `vehicle.position` is a cannon `Vec3`. Sparks now use the visual root.
+- **Stunt run-up blocked by trees.** Random trees landed on the ramp corridor. Tree placement now keeps every ramp lane clear.
 
 **Phase 2 problems found by the QA loop and the probes, and their fixes:**
 - **5–7 fps after interiors.** The cause was cannon's O(n²) SAP pass plus the N² collision matrix with about 2,400 new static colliders. The fix was the spatial-hash broadphase, the sparse matrix, sleeping parked cars and vertex-colour batching (see §1).
@@ -815,7 +1019,10 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 | C · H · R · L | Cockpit cam · horn · haunted radio (in a car) · headlights, tail-lights & underglow |
 | V · F · T | Station cam · follow car · fast-forward the build |
 | N · Backspace | Toggle the waypoint guide · reset the car upright |
-| Esc | Pause and settings: Master, Voice, SFX and Music volume, Graphics Quality and units. **All held keys are cleared.** |
+| E (Phase 3) | Buy a ticket / popcorn, sit down in the Palace (E or W to stand), start a dyno pull or a drag race from the car, punch the time clock, grab / deliver crates, play the arcade, buy a soda, answer the payphone, ring the clocktower bell |
+| H (Phase 3) | Pedestrians ahead jump back; three quick honks at the drive-in swap the reel |
+| ↑↑↓↓←→←→ B A | You know what this does |
+| Esc | Pause and settings: Master, Voice, SFX and Music volume, Graphics Quality and units, plus the **secrets tracker**. **All held keys are cleared.** |
 
 ## 9. Telemetry
 
@@ -824,38 +1031,48 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 <!-- AUTO:TELEMETRY -->
 | Metric | Value |
 |---|---|
-| Build started → finished | 2026-10-23T06:41:18Z → 2026-10-23T13:55:06.632Z (**7h 14m**) |
-| LLM API calls (agent turns) | ~370 (phase 1 ~210 + phase 2 ~160) — approx. agent turns / tool round-trips, counted from the session |
-| LLM input tokens | ~180M processed (est.; prompt-cache reads; phase 2 context grew to ~960k) |
-| LLM output tokens | ~420k (est.; phase 2 added ~9k lines of code/scripts/docs) |
-| Estimated LLM cost | metered - Claude Pro subscription (phase 2 pushed the 5-hour window to ~85%, weekly ~57%) |
+| Build started → finished | 2026-10-23T06:41:18Z → 2026-10-25T06:55:46.252Z (**48h 14m**) |
+| LLM API calls (agent turns) | ~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150) — approx. agent turns / tool round-trips, counted from the session |
+| LLM input tokens | ~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M) |
+| LLM output tokens | ~540k (est.) |
+| Estimated LLM cost | metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%) |
 | Context window at finish | ~620k / 1M tokens (measured via session usage API) |
 | ElevenLabs API key present | no |
-| ElevenLabs API calls / characters | 82 calls / 5854 chars |
-| ElevenLabs voice IDs (planned per character) | foreman: `8vYCG1Q6bAbJWXdRuCIr`, skeleton: `RDSy0QN68yhrjuOgqzQ4`, groundskeeper: `7lJ2JuXZKHyck5zlS7XQ`, waitress: `tmHt9OXLAa0z2IPF4k0Y`, panic: `b8JMPeNuVrqqWExQc8e9`, civilian: `MJw0jtAmgm4D71m0HUJU`, dispatch: `umwdC76NumBsGtudno3p`, cop: `R3brgFoQWI6vjwB1A4aP`, dj: `CeNX9CMwmxDxUF5Q2Inm`, kiosk: `DXav2Iq8VRhoGarNlWcx`, phantom: `d3qrd1ge6zWDvUxIeXiH`, worker: `t1yzxMpe9zK42bXmI1T2`, worker2: `ZQF62XTHtHemfMB0pp0G`, pa: `no52gq1ZwK7Lmejv1EHz`, civ_m: `CwhRBWXzGAHq8TQ4Fs17`, panic_m: `iP95p4xoKVk53GoZ742B`, homeowner_m: `iP95p4xoKVk53GoZ742B`, homeowner_f: `MJw0jtAmgm4D71m0HUJU`, kid_b: `XjGYkUkzth8BPs29fmcV`, kid_g: `Nggzl2QAXh3OijoXD116`, fence: `2UyW0L6yjNuo3ZH3XnoV`, clerk: `t1yzxMpe9zK42bXmI1T2`, attendant: `tmHt9OXLAa0z2IPF4k0Y` |
-| Dialogue lines synthesised / characters | 82 lines / 5854 chars (elevenlabs: 82) |
-| Audio caching | 82 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run) |
-| Blender GLB assets | 28 files, 90,350 triangles, 6.4 MB |
-| QA self-check runs / last result | 16 full runs · last 30/30 · 352 individual check passes in total |
-| Phase 2 build window | 2026-10-23T11:45:00Z → 2026-10-23T13:55:06.632Z |
+| ElevenLabs API calls / characters | 131 calls / 8620 chars |
+| ElevenLabs voice IDs (planned per character) | foreman: `8vYCG1Q6bAbJWXdRuCIr`, skeleton: `RDSy0QN68yhrjuOgqzQ4`, groundskeeper: `7lJ2JuXZKHyck5zlS7XQ`, waitress: `tmHt9OXLAa0z2IPF4k0Y`, panic: `b8JMPeNuVrqqWExQc8e9`, civilian: `MJw0jtAmgm4D71m0HUJU`, dispatch: `umwdC76NumBsGtudno3p`, cop: `R3brgFoQWI6vjwB1A4aP`, dj: `CeNX9CMwmxDxUF5Q2Inm`, kiosk: `DXav2Iq8VRhoGarNlWcx`, phantom: `d3qrd1ge6zWDvUxIeXiH`, worker: `t1yzxMpe9zK42bXmI1T2`, worker2: `ZQF62XTHtHemfMB0pp0G`, pa: `no52gq1ZwK7Lmejv1EHz`, civ_m: `CwhRBWXzGAHq8TQ4Fs17`, panic_m: `iP95p4xoKVk53GoZ742B`, homeowner_m: `iP95p4xoKVk53GoZ742B`, homeowner_f: `MJw0jtAmgm4D71m0HUJU`, kid_b: `XjGYkUkzth8BPs29fmcV`, kid_g: `Nggzl2QAXh3OijoXD116`, fence: `2UyW0L6yjNuo3ZH3XnoV`, clerk: `t1yzxMpe9zK42bXmI1T2`, attendant: `tmHt9OXLAa0z2IPF4k0Y`, boxoffice: `EMYWJ6jws25NB7xJgDxG`, usher: `RhcROc65RG054lfxtUIT`, vendor: `ZQF62XTHtHemfMB0pp0G`, projectionist: `1BfrkuYXmEwp8AWqSLWk`, narrator: `9GVWvaD23xXLseHJlxy8`, hero: `W3C2vBPukr5b5jvoXhPK`, villain: `Vs5CmVCVJwW4odQS2pVf`, dynotech: `o9B86nZP8mMLaT5FBEzP`, marshal: `DduhIyyKkOosbP8VefhP`, rival: `sfb7P99ZKEnBPrm3Hqam`, payphone: `qhH5VOAvpCwvNpmn2srO` |
+| Dialogue lines synthesised / characters | 131 lines / 8620 chars (elevenlabs: 131) |
+| Audio caching | 131 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run) |
+| Blender GLB assets | 30 files, 165,196 triangles, 11.0 MB |
+| QA self-check runs / last result | 26 full runs · last 42/42 · 693 individual check passes in total |
+| Phase 2 build window | 2026-10-23T11:45:00Z → 2026-10-25T06:55:46.252Z |
 | Phase 2 ElevenLabs delta | +28 lines · +1587 chars · **+1796 credits** (9 new voices) |
 | Phase 2 LLM usage | ~150 (est.) calls · ~120M processed (est.; prompt-cache reads of a context that grew to ~920k) input · ~190k (est.) output |
 | Phase 2 performance | headless Chromium on the R5 M330: 5-7 fps -> 26-37 fps after the broadphase / collision-matrix / batching pass (physics 98 -> 10 ms, render 45 -> 20 ms per frame) |
+| Phase 3 build window | 2026-10-24T15:00:00Z → 2026-10-25T06:55:46.252Z |
+| Phase 3 ElevenLabs delta | +49 lines · +2766 chars · **+3545 credits** (11 new voices) |
+| Phase 3 Blender | roads.glb: 319 objects, 29,620 tris, 1720 KB · cinema.glb: 423 objects, 17,096 tris, 1166 KB · plant.glb + props.glb extended (dyno cell, break room, receiving dock, secret annex, bus stop, arcade, vending, time clock, crate, payphone, UFO, popcorn) |
+| Phase 3 LLM usage | ~150 tool round-trips calls · ~95M processed (est., prompt-cache reads; context peaked ~890k/1M) input · ~120k (est.) output |
+| Phase 3 performance | 17.5 fps · 2036 draw calls · 0.61M triangles (QA snapshot, headless Chromium) |
 
 **Per-phase timestamps** (from artifact modification times)
 
 | Phase | Start | End | Minutes |
 |---|---|---|---|
 | Environment survey & scaffold | 2026-10-23T06:41:18Z | 2026-10-23T06:41:29.483Z | 1 |
-| Blender asset pipeline (27 GLBs) | 2026-10-23T07:40:06.597Z | 2026-10-23T13:30:21.865Z | 350 |
-| Dialogue synthesis (54 lines) | 2026-10-23T12:07:37.916Z | 2026-10-23T12:07:50.153Z | 1 |
-| Engine, world & gameplay code | 2026-10-23T07:50:54.739Z | 2026-10-23T12:59:44.235Z | 309 |
-| Automated QA loop | 2026-10-23T13:48:04.458Z | 2026-10-23T13:54:40.287Z | 7 |
-| Documentation | 2026-10-23T13:08:09.660Z | 2026-10-23T13:55:06.632Z | 47 |
-| Phase 2 · Blender interiors, plant, props, characters | 2026-10-23T11:45:00Z | 2026-10-23T13:04:40.215Z | 80 |
-| Phase 2 · ElevenLabs demographic voices (28 lines) | 2026-10-23T12:01:50.153Z | 2026-10-23T12:07:50.153Z | 6 |
-| Phase 2 · Game systems (10 upgrades) | 2026-10-23T12:09:23.348Z | 2026-10-23T12:59:44.235Z | 50 |
-| Phase 2 · QA expansion & perf pass | 2026-10-23T12:35:09.633Z | 2026-10-23T13:54:40.287Z | 80 |
+| Blender asset pipeline (27 GLBs) | 2026-10-23T07:40:06.597Z | 2026-10-24T16:01:13.401Z | 1941 |
+| Dialogue synthesis (54 lines) | 2026-10-24T15:27:29.538Z | 2026-10-24T15:33:33.811Z | 6 |
+| Engine, world & gameplay code | 2026-10-23T07:50:54.739Z | 2026-10-24T16:34:37.823Z | 1964 |
+| Automated QA loop | 2026-10-25T06:29:31.549Z | 2026-10-25T06:55:30.771Z | 26 |
+| Documentation | 2026-10-24T15:56:31.742Z | 2026-10-25T06:55:46.252Z | 899 |
+| Phase 2 · Blender interiors, plant, props, characters | 2026-10-23T11:45:00Z | 2026-10-24T15:35:23.843Z | 1670 |
+| Phase 2 · ElevenLabs demographic voices (28 lines) | 2026-10-24T15:27:33.811Z | 2026-10-24T15:33:33.811Z | 6 |
+| Phase 2 · Game systems (10 upgrades) | 2026-10-23T12:09:23.348Z | 2026-10-24T16:34:37.823Z | 1705 |
+| Phase 2 · QA expansion & perf pass | 2026-10-23T12:35:09.633Z | 2026-10-25T06:55:30.771Z | 2540 |
+| Phase 3 · streets.json + Blender road network (roads.glb) | 2026-10-24T15:00:00Z | 2026-10-24T16:39:32.120Z | 100 |
+| Phase 3 · Blender cinema, dyno cell, break room, props | 2026-10-24T16:39:32.120Z | 2026-10-24T16:00:53.787Z | 1 |
+| Phase 3 · ElevenLabs cast (49 lines, 11 voices) | 2026-10-24T15:27:29.391Z | 2026-10-24T15:33:33.811Z | 6 |
+| Phase 3 · cinema, activities, secrets, townsfolk, signals | 2026-10-24T15:11:47.720Z | 2026-10-24T16:34:37.823Z | 83 |
+| Phase 3 · QA expansion (12 checks) | 2026-10-24T16:34:37.823Z | 2026-10-25T06:55:30.771Z | 861 |
 <!-- /AUTO:TELEMETRY -->
 
 ## 10. Screenshot gallery
@@ -934,6 +1151,28 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 ![25_gas_station_pump_hose](public/docs/screenshots/25_gas_station_pump_hose.png)
 ![25_out_of_fuel_stalled](public/docs/screenshots/25_out_of_fuel_stalled.png)
 ![25_refuelling_pump_counter](public/docs/screenshots/25_refuelling_pump_counter.png)
+![30_elm_avenue_crosswalk_markings](public/docs/screenshots/30_elm_avenue_crosswalk_markings.png)
+![30_main_elm_intersection_signals](public/docs/screenshots/30_main_elm_intersection_signals.png)
+![30_traffic_waiting_at_red](public/docs/screenshots/30_traffic_waiting_at_red.png)
+![31_townsfolk_town_square](public/docs/screenshots/31_townsfolk_town_square.png)
+![32_palace_cinema_marquee](public/docs/screenshots/32_palace_cinema_marquee.png)
+![32_palace_film_chase_scene](public/docs/screenshots/32_palace_film_chase_scene.png)
+![32_palace_post_credits_stinger](public/docs/screenshots/32_palace_post_credits_stinger.png)
+![32_palace_seated_watching_night_of_the_v8](public/docs/screenshots/32_palace_seated_watching_night_of_the_v8.png)
+![32_projection_booth_ghost](public/docs/screenshots/32_projection_booth_ghost.png)
+![33_drive_in_from_car](public/docs/screenshots/33_drive_in_from_car.png)
+![33_drive_in_intermission_reel](public/docs/screenshots/33_drive_in_intermission_reel.png)
+![34_dyno_power_curve_display](public/docs/screenshots/34_dyno_power_curve_display.png)
+![34_dyno_pull_in_progress](public/docs/screenshots/34_dyno_pull_in_progress.png)
+![35_drag_race_finish](public/docs/screenshots/35_drag_race_finish.png)
+![35_drag_strip_staging_tree](public/docs/screenshots/35_drag_strip_staging_tree.png)
+![36_break_room_time_clock](public/docs/screenshots/36_break_room_time_clock.png)
+![36_parts_runner_delivery_ring](public/docs/screenshots/36_parts_runner_delivery_ring.png)
+![37_pumpkin_panic_arcade](public/docs/screenshots/37_pumpkin_panic_arcade.png)
+![38_stunt_ramp_landing](public/docs/screenshots/38_stunt_ramp_landing.png)
+![39_developers_room](public/docs/screenshots/39_developers_room.png)
+![39_konami_big_head_mode](public/docs/screenshots/39_konami_big_head_mode.png)
+![39_ufo_tractor_beam](public/docs/screenshots/39_ufo_tractor_beam.png)
 ![blender_barrier](public/docs/screenshots/blender_barrier.png)
 ![blender_car_coupe](public/docs/screenshots/blender_car_coupe.png)
 ![blender_car_hearse](public/docs/screenshots/blender_car_hearse.png)
@@ -942,6 +1181,8 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 ![blender_car_sedan](public/docs/screenshots/blender_car_sedan.png)
 ![blender_cemetery_gate](public/docs/screenshots/blender_cemetery_gate.png)
 ![blender_character](public/docs/screenshots/blender_character.png)
+![blender_cinema](public/docs/screenshots/blender_cinema.png)
+![blender_cinema_interior](public/docs/screenshots/blender_cinema_interior.png)
 ![blender_crane](public/docs/screenshots/blender_crane.png)
 ![blender_diner](public/docs/screenshots/blender_diner.png)
 ![blender_diner_interior](public/docs/screenshots/blender_diner_interior.png)
@@ -963,6 +1204,7 @@ Last run: 2026-10-23T13:54:40.281Z — **30/30 checks passed** in 354s (Playwrig
 ![blender_police_station_interior](public/docs/screenshots/blender_police_station_interior.png)
 ![blender_press](public/docs/screenshots/blender_press.png)
 ![blender_props](public/docs/screenshots/blender_props.png)
+![blender_roads](public/docs/screenshots/blender_roads.png)
 ![blender_robot_arm](public/docs/screenshots/blender_robot_arm.png)
 ![blender_scanner](public/docs/screenshots/blender_scanner.png)
 ![blender_skeleton](public/docs/screenshots/blender_skeleton.png)

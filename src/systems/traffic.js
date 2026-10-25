@@ -50,7 +50,36 @@ export class Traffic {
     this.parked = [];
     this.driving = [];
     this.graph = new RoadGraph();
-    this.stats = { whiskerBrakes: 0, junctionWaits: 0, resets: 0 };
+    this.stats = { whiskerBrakes: 0, junctionWaits: 0, resets: 0, redStops: 0, redRuns: 0, stopSigns: 0, honks: 0, rage: 0, relocated: 0 };
+    this.closed = null;
+  }
+
+  /** Close roads (drag race): cars on them are moved elsewhere and junction choices avoid them until openRoads(). */
+  closeRoads(ids) {
+    this.closed = new Set(ids);
+    for (const c of this.driving) if (this._isClosed(c.seg)) this._relocate(c);
+  }
+
+  openRoads() { this.closed = null; }
+
+  _isClosed(seg) {
+    if (!this.closed || !seg) return false;
+    return this.closed.has(seg.road) || (seg.kind !== 'lane' && seg.next[0] && this.closed.has(seg.next[0].road));
+  }
+
+  _pickNext(seg) {
+    const opts = seg.next.filter((s) => !this._isClosed(s));
+    return opts.length ? pick(opts) : null;
+  }
+
+  _relocate(c) {
+    const open = this.graph.lanes.filter((l) => !this._isClosed(l));
+    const far = open.filter((l) => l.pts[0].distanceTo(this.game.player.position) > 60);
+    const l = pick(far.length ? far : open);
+    c.seg = l; c.s = Math.min(l.length - 2, 4); c.speed = 0; c.nextSeg = null;
+    for (const n of Object.values(this.graph.nodes)) if (n.busy === c) n.busy = null;
+    this._place(c, 0);
+    this.stats.relocated++;
   }
 
   spawnParked(spots) {
@@ -77,7 +106,7 @@ export class Traffic {
     }
   }
 
-  spawnDriving(n = 9) {
+  spawnDriving(n = 12) {
     for (const { seg, s } of this.graph.spawnPoints(n)) this._spawnCar(seg, s);
   }
 
@@ -94,41 +123,41 @@ export class Traffic {
     const driver = makePerson(this.game.assets, randomAdult(), 'driver');
     seatDriver(vis, driver);
     const car = { visual: vis, body: b, seg, s, speed: 0, target: 9 + Math.random() * 3.5, driver, kind: 'driving', stopT: 0, spin: 0, cooldown: 0, steer: 0,
-      heading: 0, wait: 0, fuel: 25 + Math.random() * 60, id: Math.random().toString(36).slice(2, 7) };
+      heading: 0, wait: 0, blockedT: 0, fuel: 25 + Math.random() * 60, id: Math.random().toString(36).slice(2, 7) };
     b.userData.entry = car;
     this.driving.push(car);
     this._place(car, 0);
     return car;
   }
 
-  /** Something blocks the lane ahead: dynamic obstacles (cars, peds, player) + 3 whisker rays vs static colliders. */
+  /** Something blocks the lane ahead: dynamic obstacles (cars, peds, player) along the car's path. */
   _blocked(car, p, dir) {
     const g = this.game;
-    const check = (q, r = 2.2, reach = 12) => {
+    const lookDir = car.seg.at(Math.min(car.seg.length, car.s + 3.5)).dir;
+    const fwd = dir.clone().lerp(lookDir, 0.45).normalize();
+    const check = (q, r = 2.0, reach = 11) => {
       const dx = q.x - p.x, dz = q.z - p.z;
-      const along = dx * dir.x + dz * dir.z;
-      const lat = Math.abs(dx * dir.z - dz * dir.x);
-      return along > 0.5 && along < reach && lat < r;
+      const along = dx * fwd.x + dz * fwd.z;
+      const lat = Math.abs(dx * fwd.z - dz * fwd.x);
+      return along > 1.2 && along < reach && lat < r;
     };
-    const reach = 7 + car.speed * 0.6;
-    if (!g.player.vehicle && check(g.player.position, 1.6, reach)) return 'player';
-    if (g.player.vehicle && check(g.player.vehicle.position, 2.2, reach)) return 'car';
-    for (const o of this.driving) if (o !== car && check(o.body.position, 1.9, reach)) return 'car';
-    for (const c of g.police.cars) if (check(c.position, 2.2, reach)) return 'police';
-    for (const pk of this.parked) if (check(pk.body.position, 1.7, reach)) return 'parked';
-    for (const ped of g.npcs.walkers()) if (check(ped.char.root.position, 1.4, reach)) return 'ped';
-    // whiskers: centre and ±18° rays up to 12 m against buildings/walls (static colliders)
-    if ((car._wt = (car._wt || 0) + 1) % 4 === 0) {
-      const o = new THREE.Vector3(p.x, p.y + 0.7, p.z).addScaledVector(dir, 2.4);
-      car.whisker = false;
-      for (const a of [0, WHISKER, -WHISKER]) {
-        const d = dir.clone().applyAxisAngle(_up, a);
-        const hit = g.physics.rayStatic(o, o.clone().addScaledVector(d, Math.min(12, reach)));
-        const ud = hit && hit.body && hit.body.userData;
-        if (ud && ud.tag !== 'curb' && ud.tag !== 'floor' && ud.kind !== 'ground') { car.whisker = true; this.stats.whiskerBrakes++; break; }
-      }
+    const reach = 6.5 + car.speed * 0.55;
+    if (!g.player.vehicle && check(g.player.position, 1.5, reach)) return 'player';
+    if (g.player.vehicle && check(g.player.vehicle.position, 2.0, reach)) return 'car';
+    for (const o of this.driving) {
+      if (o === car) continue;
+      // Cars already clearing a junction connector have right-of-way over cars waiting on lanes
+      if (car.seg.kind !== 'lane' && o.seg.kind === 'lane' && o.speed < 0.5) continue;
+      // Ignore oncoming cars in opposite lanes so curves/turns never cause mutual deadlocks
+      const oDir = o.seg.at(o.s).dir;
+      if (oDir.dot(dir) < -0.25) continue;
+      if (check(o.body.position, 1.75, reach)) return 'car';
     }
-    return car.whisker ? 'wall' : null;
+    for (const c of g.police.cars) if (check(c.position, 2.0, reach)) return 'police';
+    for (const pk of this.parked) if (check(pk.body.position, 1.55, Math.min(8, reach))) return 'parked';
+    for (const ped of g.npcs.walkers()) if (check(ped.char.root.position, 1.3, Math.min(8, reach))) return 'ped';
+    car.whisker = false;
+    return null;
   }
 
   _place(car, dt) {
@@ -153,8 +182,10 @@ export class Traffic {
     while (car.s > car.seg.length) {
       car.s -= car.seg.length;
       const prev = car.seg;
+      // QA instrumentation: a car leaving a signalised lane must have had green/yellow (or been committed on yellow)
+      if (prev.kind === 'lane' && prev.control && prev.control.control === 'signal' && !car.committed && this.game.signals.forApproach(prev.to, prev.road) === 'red' && this.game.signals.forApproach(prev.to, prev.road, 1.2) === 'red') this.stats.redRuns++;
       if (prev.kind !== 'lane' && this.graph.nodes[prev.node].busy === car) this.graph.nodes[prev.node].busy = null;
-      car.seg = car.nextSeg || pick(prev.next);
+      car.seg = car.nextSeg || this._pickNext(prev) || pick(prev.next);
       car.nextSeg = null;
       if (car.seg.kind !== 'lane') this.graph.nodes[car.seg.node].busy = car;
     }
@@ -179,13 +210,41 @@ export class Traffic {
       else if (c.seg.length - c.s < 14) target = Math.min(target, 7);
       target = Math.min(target, Math.max(4, 12 - bend * 9));
       c.blocked = this._blocked(c, p, dir);
-      if (c.blocked) target = 0;
-      // junction reservation: wait at the stop line until the junction is clear
-      if (c.seg.kind === 'lane' && c.seg.length - c.s < 1.2) {
-        c.nextSeg ||= pick(c.seg.next);
+      c.honkCd = Math.max(0, (c.honkCd || 0) - dt);
+      if ((c.blocked === 'player' || (c.blocked === 'car' && this.game.player.vehicle && this.game.player.vehicle.position.distanceTo(c.body.position) < 14)) && c.blockedT > 2.2 && c.honkCd <= 0) {
+        c.honkCd = 5 + Math.random() * 4;
+        this.stats.honks++;
+        this.game.audio.honkAt(c.body.position, this.game.listener);
+      }
+      if (c.blocked) {
+        c.blockedT = (c.blockedT || 0) + dt;
+        // Break any car-vs-car deadlock after 2.5s so traffic always flows
+        if (c.blocked === 'car' && c.blockedT > 2.5) target = 3.5;
+        else target = 0;
+      } else {
+        c.blockedT = 0;
+      }
+      // junction control at the end of each lane: traffic lights (stop on red, and on yellow when there is room to
+      // brake), stop signs (full stop), then the junction reservation so only one car crosses a node at a time
+      const ctrl = c.seg.kind === 'lane' ? c.seg.control : null;
+      const toEnd = c.seg.length - c.s;
+      if (ctrl && ctrl.control === 'signal' && toEnd < 32) {
+        const light = this.game.signals.forApproach(c.seg.to, c.seg.road);
+        if (!c.committed && (light === 'red' || (light === 'yellow' && toEnd - 1 > (c.speed * c.speed) / 12))) {
+          target = Math.min(target, toEnd < 2.4 ? 0 : Math.max(0, (toEnd - 1.4) * 0.8));
+          if (!c.redHold) this.stats.redStops++;
+          c.redHold = true;
+        } else { c.redHold = false; if (light === 'green' || light === 'yellow') c.committed = toEnd < 3 && c.speed > 3; }
+        if (c.committed && c.speed < 1) c.committed = false; // held at the line (junction busy): no longer committed
+      } else c.committed = false;
+      if (c.seg.kind === 'lane' && toEnd < 1.2) {
+        c.nextSeg ||= this._pickNext(c.seg);
+        if (!c.nextSeg) { this._relocate(c); continue; }
         const node = this.graph.nodes[c.nextSeg.node];
-        if (node.busy && node.busy !== c && this.driving.includes(node.busy) && (c.wait += dt) < 5) { target = 0; this.stats.junctionWaits += dt > 0 ? 0 : 0; }
-        else if (c.stopT <= 0 && !c.stopped && c.seg.next.length > 1) { c.stopT = 0.9; c.stopped = true; }
+        if (node.busy && (!this.driving.includes(node.busy) || node.busy.seg.node !== node.id)) node.busy = null;
+        if (c.redHold) target = 0;
+        else if (node.busy && node.busy !== c && (c.wait += dt) < 3.5) { target = 0; this.stats.junctionWaits++; }
+        else if (c.stopT <= 0 && !c.stopped && ctrl && ctrl.control === 'stop') { c.stopT = 1.1; c.stopped = true; this.stats.stopSigns = (this.stats.stopSigns || 0) + 1; }
       } else { c.wait = 0; if (c.seg.kind === 'lane' && c.s < 3) c.stopped = false; }
       if (c.stopT > 0) { c.stopT -= dt; target = 0; }
       c.speed += THREE.MathUtils.clamp(target - c.speed, -dt * 9, dt * 3);
@@ -256,9 +315,21 @@ export class Traffic {
   }
 
   /** A civilian car got rammed or shot at: stop for a moment. */
-  bump(body, secs = 3 + Math.random() * 2) {
+  bump(body, secs = 3 + Math.random() * 2, impact = 0) {
     const c = this.driving.find((d) => d.body === body);
-    if (c) { c.cooldown = secs; c.speed = 0; }
+    if (!c) return null;
+    c.cooldown = secs; c.speed = 0;
+    // road rage: a real hit gets a long honk and a shouted line from the driver (their own voice/gender)
+    if (impact > 5 && !(c.rageCd > this.game.time)) {
+      c.rageCd = this.game.time + 12;
+      this.stats.rage++;
+      const g = this.game, drv = c.driver;
+      setTimeout(() => {
+        if (!this.driving.includes(c)) return;
+        g.audio.honkAt(c.body.position, g.listener, 1.2);
+        if (c.body.position.distanceTo(g.player.position) < 25) g.npcs.speak({ profile: drv.profile, char: drv }, drv.profile.ageGroup === 'adult_female' ? 'rage_f' : 'rage_m');
+      }, 700);
+    }
     return c;
   }
 }

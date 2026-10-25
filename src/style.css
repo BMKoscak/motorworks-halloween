@@ -150,3 +150,9 @@ input[type=range] { accent-color: var(--orange); }
   #minimap { width: 120px; height: 120px; }
   .btn { min-width: 180px; }
 }
+
+/* ---- Phase 3: Pumpkin Panic arcade overlay */
+#arcade { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(5, 2, 10, 0.82); z-index: 40; }
+#arcade canvas { width: min(92vw, 640px); aspect-ratio: 480 / 390; image-rendering: pixelated; border: 6px solid #7b2cbf; border-radius: 10px; box-shadow: 0 0 40px #39ff1466; background: #0a0414; }
+#arcade .arc-hint { margin-top: 10px; color: #ffd23f; font: 600 14px/1.4 system-ui, sans-serif; letter-spacing: 0.04em; }
+#secrets-list { max-width: 640px; line-height: 1.6; }

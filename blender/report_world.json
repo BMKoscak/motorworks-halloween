@@ -81,7 +81,7 @@
    "Gate_L",
    "Gate_R"
   ],
-  "bytes": 284632
+  "bytes": 284660
  },
  {
   "file": "forklift.glb",
@@ -119,32 +119,36 @@
  },
  {
   "file": "plant.glb",
-  "objects": 255,
-  "meshes": 242,
-  "tris": 21804,
+  "objects": 403,
+  "meshes": 380,
+  "tris": 31316,
   "hinges": [
+   "Door_Secret",
+   "Dyno_Fan",
+   "Dyno_Roller_F",
+   "Dyno_Roller_R",
    "GiantSpider",
    "SwitchLever_NightShift"
   ],
-  "bytes": 1544804
+  "bytes": 2156288
  },
  {
   "file": "diner.glb",
-  "objects": 176,
-  "meshes": 159,
-  "tris": 6632,
+  "objects": 178,
+  "meshes": 161,
+  "tris": 6784,
   "hinges": [
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 504948
+  "bytes": 512808
  },
  {
   "file": "gas_station.glb",
-  "objects": 122,
-  "meshes": 99,
-  "tris": 5396,
+  "objects": 123,
+  "meshes": 100,
+  "tris": 5408,
   "hinges": [
    "Door_Front",
    "Hose_0_0",
@@ -157,7 +161,7 @@
    "Nozzle_1_1",
    "SwitchLever_Main"
   ],
-  "bytes": 402964
+  "bytes": 404428
  },
  {
   "file": "hardware.glb",
@@ -169,7 +173,7 @@
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 405964
+  "bytes": 405584
  },
  {
   "file": "police_station.glb",
@@ -183,7 +187,7 @@
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 400540
+  "bytes": 400568
  },
  {
   "file": "jumbotron.glb",
@@ -195,39 +199,51 @@
  },
  {
   "file": "house_a.glb",
-  "objects": 184,
-  "meshes": 163,
-  "tris": 4776,
+  "objects": 190,
+  "meshes": 169,
+  "tris": 5016,
   "hinges": [
    "BreakerLever",
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 435216
+  "bytes": 456152
  },
  {
   "file": "house_b.glb",
   "objects": 149,
   "meshes": 128,
-  "tris": 3240,
+  "tris": 3264,
   "hinges": [
    "BreakerLever",
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 305456
+  "bytes": 307272
  },
  {
   "file": "props.glb",
-  "objects": 185,
-  "meshes": 138,
-  "tris": 8528,
+  "objects": 314,
+  "meshes": 247,
+  "tris": 22706,
   "hinges": [
    "CryptDoor",
    "Turntable_Top"
   ],
-  "bytes": 602076
+  "bytes": 1449820
+ },
+ {
+  "file": "cinema.glb",
+  "objects": 423,
+  "meshes": 211,
+  "tris": 17096,
+  "hinges": [
+   "Door_Back",
+   "Door_Front",
+   "SwitchLever_Main"
+  ],
+  "bytes": 1193728
  }
 ]

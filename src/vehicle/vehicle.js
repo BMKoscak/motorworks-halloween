@@ -100,6 +100,7 @@ export class Vehicle {
   _onCollide(e) {
     const imp = Math.abs(e.contact.getImpactVelocityAlongNormal());
     const other = e.body === this.body ? e.target : e.body;
+    if (other.userData && other.userData.civilian) this.civContact = performance.now();
     if (imp > 3 && performance.now() - this.lastImpact > 250) {
       this.lastImpact = performance.now();
       const ri = e.contact.bi === this.body ? e.contact.ri : e.contact.rj;
@@ -162,9 +163,9 @@ export class Vehicle {
     if (this.engineHealth <= 0) this.stalled = true;
     const dead = this.stalled;
     // speed-sensitive steering with smoothing
-    const maxSteer = THREE.MathUtils.lerp(0.62, 0.17, THREE.MathUtils.clamp(abs / 38, 0, 1));
+    const maxSteer = THREE.MathUtils.lerp(0.64, 0.22, THREE.MathUtils.clamp(abs / 40, 0, 1));
     const target = THREE.MathUtils.clamp(c.steer, -1, 1) * maxSteer;
-    const rate = Math.sign(target) !== Math.sign(this.steer) || Math.abs(target) < Math.abs(this.steer) ? 5.5 : 3.2;
+    const rate = Math.sign(target) !== Math.sign(this.steer) || Math.abs(target) < Math.abs(this.steer) ? 7.5 : 4.0;
     this.steer += THREE.MathUtils.clamp(target - this.steer, -rate * dt, rate * dt);
     veh.setSteeringValue(this.steer, 0);
     veh.setSteeringValue(this.steer, 1);
@@ -239,6 +240,10 @@ export class Vehicle {
     const b = this.body, v = this.visual;
     const q = new THREE.Quaternion(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w);
     const off = new THREE.Vector3(0, -this.cy, 0).applyQuaternion(q);
+    // no runaway launches off kerbs or collisions (ramps and jumps still fly: only the upward speed is capped)
+    if (b.velocity.y > 9) b.velocity.y = 9;
+    // kinematic AI cars must not shovel a car up into the air (riding up a queue at a red light)
+    if (this.civContact && performance.now() - this.civContact < 400 && b.velocity.y > 1.2) b.velocity.y = 1.2;
     v.root.position.set(b.position.x + off.x, b.position.y + off.y, b.position.z + off.z);
     v.root.quaternion.copy(q);
     const fx = this.game.effects;

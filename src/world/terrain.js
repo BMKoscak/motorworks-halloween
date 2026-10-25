@@ -3,13 +3,13 @@ import { LAYOUT } from '../config.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
-export const BOUNDS = { x0: -220, x1: 220, z0: -160, z1: 360 };
+export const BOUNDS = { x0: -240, x1: 240, z0: -176, z1: 360 };
 
 /** Single source of truth for ground height (physics heightfield + visual mesh + roads). */
 export function terrainHeight(x, z) {
   let h = LAYOUT.cemetery.h * smooth((z - 148) / (214 - 148));
-  const dx = Math.max(0, Math.abs(x) - 192);
-  const dz = Math.max(0, -140 - z) + Math.max(0, z - 338);
+  const dx = Math.max(0, Math.abs(x) - 208);
+  const dz = Math.max(0, -148 - z) + Math.max(0, z - 338);
   const e = dx + dz;
   if (e > 0) h += Math.pow(e, 1.25) * 0.9 + Math.sin(x * 0.07) * Math.cos(z * 0.05) * Math.min(e, 6);
   return h;
@@ -41,7 +41,7 @@ export function buildTerrain(scene, physics) {
   physics.addHeightfield(terrainHeight, x0, x1, z0, z1, es);
   // cannon-es heightfield raycasts occasionally miss on certain cells, which drops wheel contact;
   // the town and the cemetery plateau are perfectly flat, so back them with exact static slabs.
-  physics.addStaticBox(new THREE.Vector3(0, -0.5, -10), { x: 190, y: 0.5, z: 140 }, null, { tag: 'floor' });
+  physics.addStaticBox(new THREE.Vector3(0, -0.5, -4), { x: 208, y: 0.5, z: 152 }, null, { tag: 'floor' });
   physics.addStaticBox(new THREE.Vector3(0, LAYOUT.cemetery.h - 0.5, 276), { x: 75, y: 0.5, z: 62 }, null, { tag: 'floor' });
   const nx = (x1 - x0) / es, nz = (z1 - z0) / es;
   const geo = new THREE.PlaneGeometry(x1 - x0, z1 - z0, nx, nz);
@@ -79,6 +79,23 @@ const asphaltTex = () => noiseTex(256, '#2b2a2e', 26, (g, s) => {
 });
 const gravelTex = () => noiseTex(128, '#5d554c', 50);
 
+/** Textures for the Blender street mesh (world-projected UVs at 4 m per tile): grey asphalt with patches and cracks,
+ * pale worn paint, gravel. Colours are multiplied with the Blender material colours. */
+export function roadTextures() {
+  if (roadTextures.cache) return roadTextures.cache;
+  const asphalt = noiseTex(256, '#d8d8dc', 46, (g, s) => {
+    g.globalAlpha = 0.18;
+    for (let i = 0; i < 14; i++) { g.fillStyle = Math.random() < 0.5 ? '#000' : '#fff'; g.fillRect(Math.random() * s, Math.random() * s, 20 + Math.random() * 60, 10 + Math.random() * 40); }
+    g.globalAlpha = 0.5; g.strokeStyle = '#111'; g.lineWidth = 1;
+    for (let i = 0; i < 6; i++) { g.beginPath(); let x = Math.random() * s, y = Math.random() * s; g.moveTo(x, y); for (let k = 0; k < 6; k++) { x += (Math.random() - 0.5) * 40; y += (Math.random() - 0.5) * 40; g.lineTo(x, y); } g.stroke(); }
+    g.globalAlpha = 1;
+  });
+  const paint = noiseTex(64, '#e8e8e8', 70);
+  const gravel = noiseTex(128, '#ffffff', 90);
+  for (const t of [asphalt, paint, gravel]) t.repeat.set(1, 1);
+  return (roadTextures.cache = { asphalt, paint, gravel });
+}
+
 export function catmull(points, step = 2) {
   const pts = points.map((p) => new THREE.Vector3(p[0], 0, p[1]));
   if (pts.length < 3) {
@@ -112,7 +129,7 @@ export function addRoad(scene, points, width, kind = 'asphalt', priority = 1, li
     }
     if (i > 0) {
       const k = i * 2;
-      idx.push(k - 2, k, k - 1, k - 1, k, k + 1);
+      idx.push(k - 2, k - 1, k, k - 1, k + 1, k); // counter-clockwise seen from above (faces up)
     }
   }
   const geo = new THREE.BufferGeometry();

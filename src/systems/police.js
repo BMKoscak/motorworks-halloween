@@ -85,6 +85,10 @@ class Cruiser {
     if (wall(hitL) && !wall(hitR)) ang -= 0.6;
     if (wall(hitR) && !wall(hitL)) ang += 0.6;
     if (wall(hitF) && local.length() > 10) ang += (wall(hitL) ? -1 : 1) * 0.8;
+    if (desiredSpeed <= 0.5) {
+      v.setControls({ throttle: 0, steer: 0, brake: 1, handbrake: true });
+      return;
+    }
     let throttle = Math.abs(ang) > 1.3 ? 0.35 : 1;
     const speed = v.speed;
     if (speed > desiredSpeed) throttle = speed > desiredSpeed + 3 ? -0.5 : 0;
@@ -98,16 +102,37 @@ class Cruiser {
     v.setControls({ throttle, steer, handbrake: aggressive && Math.abs(ang) > 1.1 && speed > 12 });
   }
 
-  /** Follow the road graph's right-hand lanes. */
-  patrol(dt, graph) {
+  /** Follow the road graph's right-hand lanes (optionally choosing turns toward `goalPt`); on patrol, stop for red lights. */
+  patrol(dt, graph, goalPt = null, speed = 12) {
     const v = this.vehicle;
     const pos = new THREE.Vector3(v.body.position.x, 0, v.body.position.z);
-    if (!this.seg || this.seg.at(this.s).p.distanceTo(pos) > 14) { const n = graph.nearest(pos); this.seg = n.seg; this.s = n.s; }
+    if (!this.seg || this.seg.at(this.s).p.distanceTo(pos) > 16) { const n = graph.nearest(pos); this.seg = n.seg; this.s = n.s; }
+    const held = () => !goalPt && this.seg.kind === 'lane' && this.seg.control && this.seg.control.control === 'signal' &&
+      this.game.signals.forApproach(this.seg.to, this.seg.road) !== 'green';
     while (this.seg.at(this.s).p.distanceTo(pos) < 9) {
+      if (held() && this.s + 2 > this.seg.length) { this.s = this.seg.length; break; }
       this.s += 2;
-      if (this.s > this.seg.length) { this.s -= this.seg.length; this.seg = pick(this.seg.next); }
+      if (this.s > this.seg.length) {
+        this.s -= this.seg.length;
+        if (goalPt && this.seg.next.length > 1) {
+          let best = this.seg.next[0], bd = Infinity;
+          for (const nx of this.seg.next) {
+            const endP = (nx.next[0] || nx).pts.at(-1);
+            const d = Math.hypot(endP.x - goalPt.x, endP.z - goalPt.z);
+            if (d < bd) { bd = d; best = nx; }
+          }
+          this.seg = best;
+        } else {
+          this.seg = pick(this.seg.next);
+        }
+      }
     }
-    this.drive(dt, this.seg.at(this.s).p, this.seg.kind === 'lane' ? 12 : 6, false);
+    if (held()) {
+      const stopAt = this.seg.at(this.seg.length).p;
+      const d = stopAt.distanceTo(pos);
+      if (d < 26) speed = d < 3.2 ? 0 : Math.min(speed, (d - 2.8) * 0.8);
+    }
+    this.drive(dt, this.seg.at(this.s).p, this.seg.kind === 'lane' ? speed : Math.min(speed, 9), !!goalPt);
   }
 }
 
@@ -369,18 +394,23 @@ export class Police {
       const v = c.vehicle;
       const d = Math.hypot(c.position.x - target.x, c.position.z - target.z);
       if (c.mode === 'pursuit' && this.level > 0) {
+        c.seen = this._sees(c.position, target);
+        if (c.seen) anySees = true;
         if (c.parked) { v.setControls({ throttle: 0, steer: 0, handbrake: true }); v.siren = true; }
         else {
-          const tv = pv ? pv.body.velocity : { x: 0, z: 0 };
-          const lead = Math.min(1.8, d / 30);
-          const aim = target.clone().add(new THREE.Vector3(tv.x * lead, 0, tv.z * lead));
-          c.drive(dt, aim, d < 15 ? 22 : 44, true);
+          if (!c.seen && d > 22) {
+            c.patrol(dt, g.traffic.graph, target, 28);
+          } else {
+            const tv = pv ? pv.body.velocity : { x: 0, z: 0 };
+            const lead = Math.min(1.8, d / 30);
+            const aim = target.clone().add(new THREE.Vector3(tv.x * lead, 0, tv.z * lead));
+            const boxSpeed = pv && pv.speedAbs < 2.5 && d < 8 ? (d < 6 ? 0 : 6) : (d < 15 ? 20 : 44);
+            c.drive(dt, aim, boxSpeed, boxSpeed > 15);
+          }
           v.siren = true;
           // dismount: close to an on-foot player, blocked for a while, or the player is where cars can't go
           if (!pv && (d < 14 || (offRoad && d < 45) || c.blockedT > 4)) this._dismount(c);
         }
-        c.seen = this._sees(c.position, target);
-        if (c.seen) anySees = true;
       } else {
         c.mode = 'patrol';
         v.siren = false;

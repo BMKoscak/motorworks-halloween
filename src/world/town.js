@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { LAYOUT, PLANT } from '../config.js';
-import { terrainHeight, addRoad, addPad, addSidewalk } from './terrain.js';
+import { terrainHeight, addPad, addSidewalk, roadTextures } from './terrain.js';
+import { STREETS, roadLine } from './streetGeom.js';
 import { cobwebTexture, bannerTexture } from './atmosphere.js';
 import { G } from '../core/physics.js';
 import { bakeProp } from './buildings.js';
@@ -221,30 +222,73 @@ export class LeafPiles {
   }
 }
 
+/**
+ * Places roads.glb: asphalt/paint get worn-noise textures (and polygon offset so paint never z-fights), signal / ped /
+ * drag-tree lamps are pulled out as live meshes with their own material for the Signals system, everything else batches.
+ */
+function buildStreets(game) {
+  const { scene, assets, physics, batcher } = game;
+  const root = assets.clone('roads');
+  scene.add(root);
+  root.updateMatrixWorld(true);
+  physics.collidersFrom(root, { tag: 'pole' });
+  const tex = roadTextures();
+  const mats = {};
+  const lamps = [];
+  const spots = {};
+  root.traverse((o) => {
+    if (o.name.startsWith('Spot_')) spots[o.name.slice(5)] = o.getWorldPosition(new THREE.Vector3());
+    if (!o.isMesh) return;
+    const n = o.material.name;
+    if (/^(SigLamp|PedLamp|DragLamp)_/.test(o.name)) { lamps.push(o); return; }
+    if (n === 'Asphalt' || n === 'Gravel' || n.startsWith('RoadPaint')) {
+      o.material = mats[n] ||= Object.assign(o.material.clone(), {
+        map: n === 'Asphalt' ? tex.asphalt : n === 'Gravel' ? tex.gravel : tex.paint, roughness: n.startsWith('RoadPaint') ? 0.6 : 0.95,
+        polygonOffset: true, polygonOffsetFactor: n.startsWith('RoadPaint') ? -4 : -1, polygonOffsetUnits: n.startsWith('RoadPaint') ? -8 : -2,
+      });
+      o.castShadow = false;
+    }
+    if (/^(Paint_|Road_)/.test(o.name)) o.castShadow = false;
+  });
+  // live lamps: re-parent to the scene keeping their world transform, one material each so they switch independently
+  const live = [];
+  for (const o of lamps) {
+    const owner = o.parent;
+    o.removeFromParent();
+    o.applyMatrix4(owner.matrixWorld);
+    o.material = o.material.clone();
+    o.castShadow = false;
+    o.userData = { ...owner.userData, ...o.userData };
+    scene.add(o);
+    live.push(o);
+  }
+  batcher.add(root);
+  scene.remove(root);
+  return { lamps: live, spots };
+}
+
 /** Builds Main Street, Elm Avenue, the suburbs, decorations and returns gameplay anchors. */
 export function buildTown(game) {
   const { scene, assets, physics, batcher } = game;
   const out = { roads: [], buildings: [], spots: {}, parking: [], pedestrianPaths: [], lightPoints: [] };
-  const road = (pts, w, kind = 'asphalt', pr = 1) => {
-    const line = addRoad(scene, pts, w, kind, pr);
-    out.roads.push({ line, width: w, kind });
-    return line;
-  };
-  // ---------------------------------------------------------------- roads & ground
-  const M = LAYOUT.mainStreet;
-  out.mainLine = road([[M.x0, 0], [M.x1, 0]], M.width, 'asphalt', 2);
-  out.elmLine = road([[0, 7], [0, 146]], LAYOUT.elm.width, 'asphalt', 1);
-  out.hillLine = road(LAYOUT.hillRoad, 10, 'asphalt', 1);
-  out.exitLine = road(LAYOUT.exitRoad, 9, 'asphalt', 1);
+  // ---------------------------------------------------------------- streets (Blender roads.glb, generated from streets.json)
+  // asphalt, junction pads, paint, crosswalks, signals, signs and the drag strip are one Blender asset; the centrelines
+  // for the minimap and roadside props come from the same streets.json the AI lanes use.
+  for (const r of STREETS.roads) if ((r.surface || 'asphalt') !== 'lot') out.roads.push({ line: roadLine(r), width: r.width, kind: r.surface || 'asphalt', id: r.id, name: r.name });
+  out.hillLine = out.roads.find((r) => r.id === 'hill').line;
+  out.streets = buildStreets(game);
   addPad(scene, -60, 60, -59.6, -7.2, '#29282c', 3, true); // plant parking lot
   addPad(scene, 28, 62, 12, 34, '#2c2b30', 3); // gas forecourt
   addPad(scene, -76, -44, 8, 15, '#2c2b30', 3); // diner lot
   addPad(scene, 110, 150, 8, 13.5, '#2c2b30', 3); // police lot
+  addPad(scene, -42, -16, 12, 34, '#3a3632', 3); // Town Square & Autumn Park plaza
+  addPad(scene, 102, 168, -116, -72, '#29282c', 3, true); // Starlight Drive-In lot
+  addPad(scene, -172, -132, 66, 96, '#4a4035', 3); // Old Cider Mill yard
   out.buildings.push({ x0: -60, x1: 60, z0: -110, z1: -60 });
   // sidewalks with curbs (cars bump over them)
   const sw = (x0, x1, z0, z1) => addSidewalk(scene, physics, x0, x1, z0, z1);
-  sw(M.x0, -6.5, 7, 11); sw(6.5, M.x1, 7, 11);
-  sw(M.x0, -62, -11, -7); sw(62, 71, -11, -7); sw(81, M.x1, -11, -7);
+  sw(-188, -6.5, 7, 11); sw(6.5, 188, 7, 11);
+  sw(-188, -62, -11, -7); sw(62, 71, -11, -7); sw(81, 188, -11, -7);
   sw(-9.5, -6, 11, 146); sw(6, 9.5, 11, 146);
   out.pedestrianPaths.push([[-180, 9], [-20, 9]], [[20, 9], [180, 9]], [[-7.8, 14], [-7.8, 140]], [[7.8, 14], [7.8, 140]], [[-190, -9], [-64, -9]], [[84, -9], [190, -9]]);
 
@@ -283,6 +327,9 @@ export function buildTown(game) {
   const gas = place('gas_station', LAYOUT.gas[0], LAYOUT.gas[2], Math.PI, { building: 'gas', name: 'Moonbeam Gas & Mart' }); bbox(gas);
   const hw = place('hardware', LAYOUT.hardware[0], LAYOUT.hardware[2], Math.PI, { building: 'hardware', name: "Hank's Hardware" }); bbox(hw);
   const ps = place('police_station', LAYOUT.policeStation[0], LAYOUT.policeStation[2], Math.PI, { building: 'police', name: 'Police Station' }); bbox(ps);
+  // Palace Cinema: marquee over the north Main Street sidewalk, film projected by the Cinema system
+  const cinema = place('cinema', 88, 27.5, Math.PI, { building: 'cinema', name: 'Palace Cinema', keep: true }); bbox(cinema);
+  game.cinema.setupCinema(cinema, cinema.userData.building);
   out.spots.dinerDoor = new THREE.Vector3(-58.5, 0, 15.2);
   out.spots.policeDoor = new THREE.Vector3(130, 0, 11.5);
 
@@ -303,12 +350,29 @@ export function buildTown(game) {
     scene.remove(h);
   };
   for (const [f, x] of [['house_a', -175], ['house_b', -150], ['house_a', -120], ['house_b', -92], ['house_b', 100], ['house_a', 128], ['house_b', 155], ['house_a', 182]]) addHouse(f, x, -30, 0);
-  for (const [f, x] of [['house_b', -175], ['house_a', -100], ['house_a', 85], ['house_b', 175]]) addHouse(f, x, 32, Math.PI);
+  for (const [f, x] of [['house_b', -175], ['house_a', -100], ['house_b', 175]]) addHouse(f, x, 32, Math.PI);
   for (const z of [42, 66, 90, 114, 136]) {
     addHouse(z % 48 ? 'house_a' : 'house_b', -24, z, Math.PI / 2);
     addHouse(z % 36 ? 'house_b' : 'house_a', 24, z, -Math.PI / 2);
   }
+  for (const [f, x, z, r] of [['house_a', 144, 74, 0], ['house_b', 170, 74, 0], ['house_b', -142, -74, Math.PI], ['house_a', -114, -74, Math.PI]]) addHouse(f, x, z, r);
+  // Maple Avenue (west) and Oak Avenue (east) residential frontage
+  for (const [f, z] of [['house_a', 54], ['house_b', 78], ['house_b', -60], ['house_a', -102]]) addHouse(f, -180, z, -Math.PI / 2);
+  for (const [f, z] of [['house_b', 50], ['house_a', -62], ['house_b', -100]]) addHouse(f, 180, z, Math.PI / 2);
   out.houses = houses;
+
+  // ---------------------------------------------------------------- landmarks & world expansion props
+  bbox(prop('Clocktower', -22, 23, 0));
+  game.lights.add(new THREE.Vector3(-22, 10, 23), '#ffe4a0', 14, false, 24);
+  bbox(prop('Gazebo', -34, 24, 0));
+  game.lights.add(new THREE.Vector3(-34, 3.2, 24), '#ffb36b', 12, false, 18);
+  bbox(prop('Barn_CiderMill', -152, 78, 0));
+  game.lights.add(new THREE.Vector3(-152, 4.5, 84), '#ff9a3c', 12, true, 20);
+  bbox(prop('WaterTower', -155, -92, 0));
+  const driveIn = prop('DriveIn_Screen', 135, -72, Math.PI, { keep: true }); bbox(driveIn);
+  game.cinema.setupDriveIn(driveIn);
+  game.lights.add(new THREE.Vector3(135, 8, -80), '#cfd8ff', 18, true, 32);
+  prop('TestTrack_Arch', 0, -126, Math.PI / 2);
 
   // ---------------------------------------------------------------- Halloween yards
   const fwd = (rot) => new THREE.Vector3(Math.sin(rot), 0, Math.cos(rot));
@@ -356,7 +420,30 @@ export function buildTown(game) {
     prop('Lantern_Post', p.x + 6.2, p.z, 0, { lightColor: '#ffa040', lightI: 10 });
   }
   for (let x = -40; x <= 40; x += 20) prop('Streetlight', x, -35, Math.PI / 2, { lightColor: '#ffe0b0' });
-  for (const [x, z] of [[-30, 9], [52, 9], [-140, 9], [120, -9]]) prop('Bench', x, z + (z > 0 ? 1.2 : -1.2), z > 0 ? Math.PI : 0);
+  out.benchSpots = [];
+  for (const [x, z] of [[-30, 9], [52, 9], [-140, 9], [120, -9], [-28, 19], [-28, 29]]) {
+    const bz = z + (z > 0 ? 1.2 : -1.2), rot = z > 0 ? Math.PI : 0;
+    prop('Bench', x, bz, rot);
+    out.benchSpots.push({ p: new THREE.Vector3(x, terrainHeight(x, bz) + 0.49, bz), yaw: rot });
+  }
+  // bus shelters behind the Main Street sidewalks (townsfolk wait here)
+  out.busStops = [];
+  for (const [x, z, rot] of [[-100, 12.6, Math.PI], [-160, 12.6, Math.PI], [120, -12.6, 0], [-120, -12.6, 0]]) {
+    const o = prop('BusStop', x, z, rot, { keep: true });
+    const seat = o.getObjectByName('Spot_BusSeat');
+    const sp = seat ? seat.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(x, 0.45, z);
+    sp.y = terrainHeight(x, z) + 0.675;
+    out.busStops.push({ seat: sp, yaw: rot });
+    bbox(o);
+    batcher.add(o); scene.remove(o);
+  }
+  for (let x = -160; x <= 160; x += 40) prop('Streetlight', x, -133, 0, { shootable: 'streetlight' });
+  for (let z = -100; z <= 80; z += 45) {
+    if (Math.abs(z) > 15) {
+      prop('Streetlight', -203, z, Math.PI / 2, { shootable: 'streetlight' });
+      prop('Streetlight', 203, z, -Math.PI / 2, { shootable: 'streetlight' });
+    }
+  }
   // breakables: hydrants, barrels, hay bales along the streets
   const brk = [];
   for (let x = -170; x <= 170; x += 45) brk.push(['Hydrant', x + 5, 10.2, 0]);
@@ -386,8 +473,8 @@ export function buildTown(game) {
     physics.collidersFrom(b);
     return b;
   };
-  out.banners = [banner(-34, 0, Math.PI / 2, 'HAPPY HALLOWEEN', '#ff7a10'), banner(96, 0, Math.PI / 2, 'TRUNK-OR-TREAT TONIGHT', '#7b2cbf'),
-    banner(0, 60, 0, 'SPOOKTACULAR', '#ff7a10'), banner(0, 156, 0, 'CEMETERY ▲ FOG AHEAD', '#3a5a3a')];
+  out.banners = [banner(-34, 0, Math.PI / 2, 'HAPPY HALLOWEEN', '#ff7a10'), banner(150, 0, Math.PI / 2, 'TRUNK-OR-TREAT TONIGHT', '#7b2cbf'),
+    banner(0, 60, 0, 'SPOOKTACULAR', '#ff7a10'), banner(0, 140, 0, 'CEMETERY ▲ FOG AHEAD', '#3a5a3a')];
 
   // ---------------------------------------------------------------- trees (batched, 4 foliage tints)
   const tints = ['#e2671c', '#c43a12', '#f0a020', '#a8481a', '#d98c1a'];
@@ -399,16 +486,26 @@ export function buildTown(game) {
     t.scale.setScalar(s * rnd(0.8, 1.25));
     place(t, x, z, rnd(0, 6.28));
   };
-  const clearOf = (x, z, r) => !out.buildings.some((b) => x > b.x0 - r && x < b.x1 + r && z > b.z0 - r && z < b.z1 + r);
-  for (let x = -190; x <= 190; x += 17) {
+  // stunt ramps (StuntJumps builds them): keep their run-up and landing corridors free of trees
+  out.ramps = [[156, -50, Math.PI / 2], [-120, -112, -Math.PI / 2], [40, -140, Math.PI / 2]];
+  const inRampLane = (x, z) => out.ramps.some(([rx, rz, yaw]) => {
+    const fx = Math.sin(yaw), fz = Math.cos(yaw), dx = x - rx, dz = z - rz;
+    const along = dx * fx + dz * fz, lat = Math.abs(dx * fz - dz * fx);
+    return along > -48 && along < 34 && lat < 6;
+  });
+  const clearOf = (x, z, r) => !inRampLane(x, z) && !out.buildings.some((b) => x > b.x0 - r && x < b.x1 + r && z > b.z0 - r && z < b.z1 + r);
+  for (let x = -184; x <= 184; x += 17) {
     for (const z of [14.5, -14.5]) if (clearOf(x, z, 1.5) && Math.abs(x) > 12 && !(z < 0 && x > -64 && x < 82)) tree(x + rnd(-3, 3), z + Math.sign(z) * rnd(0, 2));
   }
   for (let z = 18; z <= 140; z += 14) for (const x of [-13, 13]) if (clearOf(x, z, 1)) tree(x + rnd(-1, 1), z + rnd(-3, 3));
   let placed = 0;
-  for (let i = 0; i < 900 && placed < 190; i++) {
-    const x = rnd(-205, 205), z = rnd(-150, 212);
+  for (let i = 0; i < 950 && placed < 205; i++) {
+    const x = rnd(-215, 215), z = rnd(-155, 212);
     const nearRoad = Math.abs(z) < 16 || (Math.abs(x) < 16 && z > 0 && z < 150) || (z > 140 && z < 225 && Math.abs(x) < 26) ||
-      (x > -66 && x < 82 && z < -6 && z > -118) || (x > 68 && x < 84 && z < 0 && z > -100);
+      (x > -66 && x < 82 && z < -6 && z > -118) || (x > 68 && x < 84 && z < 0 && z > -132) ||
+      Math.abs(Math.abs(x) - 196) < 11 || Math.abs(z + 126) < 11 ||
+      (z > 62 && z < 105 && Math.abs(x) > 125) || (x > 96 && x < 174 && z > -122 && z < -68) ||
+      (x > -46 && x < -14 && z > 10 && z < 38);
     if (nearRoad || !clearOf(x, z, 4)) continue;
     tree(x, z, z > 150 ? 1.1 : 1);
     placed++;
@@ -427,6 +524,7 @@ export function buildTown(game) {
     [-100, -5.6, -Math.PI / 2], [-150, -5.6, -Math.PI / 2], [130, 5.6, Math.PI / 2], [160, -5.6, -Math.PI / 2], [-60, 13, Math.PI / 2],
     [-66, 13, Math.PI / 2], [40, 18, 0], [118, 12.6, Math.PI / 2], [-30, -30, 0], [-24, -30, 0], [30, -30, Math.PI], [-4.6, 60, 0],
     [4.6, 100, Math.PI], [-120, -18, 0], [150, 18, Math.PI], [-175, 18, Math.PI],
+    [122, -94, 0], [131, -96, 0], [140, -96, 0], [149, -94, 0], [126, -106, 0], [144, -106, 0],
   ];
   return out;
 }
