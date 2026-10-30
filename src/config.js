@@ -155,8 +155,11 @@ export function configPrice(c) {
 
 export const CIVILIAN_COLORS = ['#7a1f1f', '#1d3b5a', '#e8e4d8', '#2f4f2f', '#5a5a5a', '#8c6d3a', '#2a2a2a', '#9aa3ad', '#6b2a52', '#b05d1e'];
 
+// msaa: composer multisampling · ao: GTAO ambient occlusion · env: sky reflections (PMREM) · grade: vignette/split-tone/grain
+// shadowExtent: half-size (m) of the sun shadow frustum · headShadows: player headlights cast shadows · cull: car draw range (m)
 export const QUALITY = {
-  low: { pixelRatio: 0.75, shadows: false, bloom: false, leaves: 150, fog: 10, shadowSize: 512 },
-  medium: { pixelRatio: 1, shadows: true, bloom: true, leaves: 350, fog: 24, shadowSize: 1024 },
-  high: { pixelRatio: Math.min(window.devicePixelRatio || 1, 2), shadows: true, bloom: true, leaves: 600, fog: 40, shadowSize: 2048 },
+  low: { pixelRatio: 0.75, shadows: false, bloom: false, leaves: 150, fog: 10, shadowSize: 512, msaa: 0, ao: false, env: false, grade: false, shadowExtent: 50, headlights: false, headShadows: false, cull: 150 },
+  medium: { pixelRatio: 1, shadows: true, bloom: true, leaves: 350, fog: 24, shadowSize: 1024, msaa: 2, ao: false, env: true, grade: true, shadowExtent: 60, headlights: true, headShadows: false, cull: 170 },
+  high: { pixelRatio: Math.min(window.devicePixelRatio || 1, 2), shadows: true, bloom: true, leaves: 600, fog: 40, shadowSize: 2048, msaa: 4, ao: false, env: true, grade: true, shadowExtent: 70, headlights: true, headShadows: false, cull: 185 },
+  ultra: { pixelRatio: Math.min(window.devicePixelRatio || 1, 2), shadows: true, bloom: true, leaves: 900, fog: 44, shadowSize: 4096, msaa: 4, ao: true, env: true, grade: true, shadowExtent: 80, headlights: true, headShadows: true, cull: 200 },
 };

@@ -373,6 +373,39 @@
       "elevenVoiceName": "Feagol Dollum - Raspy Whisper",
       "elevenPitch": 1,
       "demo": "spirit"
+    },
+    "farmer": {
+      "name": "Old Man Hollis (50 Ft Pumpkin)",
+      "sapi": "Microsoft David Desktop",
+      "rate": -2,
+      "pitch": 0.82,
+      "fx": "film",
+      "eleven": "7lJ2JuXZKHyck5zlS7XQ",
+      "elevenVoiceName": "Romulus II Deep Mysterious",
+      "elevenPitch": 1,
+      "demo": "film"
+    },
+    "sheriff": {
+      "name": "Sheriff Mabel Gourd (50 Ft Pumpkin)",
+      "sapi": "Microsoft Zira Desktop",
+      "rate": 0,
+      "pitch": 0.94,
+      "fx": "film",
+      "eleven": "W3C2vBPukr5b5jvoXhPK",
+      "elevenVoiceName": "Kira X - Video Game, Bold & Cinematic",
+      "elevenPitch": 0.96,
+      "demo": "film"
+    },
+    "pumpkin": {
+      "name": "The Pumpkin (50 Ft Pumpkin)",
+      "sapi": "Microsoft David Desktop",
+      "rate": -4,
+      "pitch": 0.62,
+      "fx": "film",
+      "eleven": "d3qrd1ge6zWDvUxIeXiH",
+      "elevenVoiceName": "Final Boss - Evil Villain",
+      "elevenPitch": 0.9,
+      "demo": "film"
     }
   },
   "lines": {
@@ -899,6 +932,34 @@
     "civilian_5": [
       "civilian",
       "Did you see the new traffic lights on Main Street? Fancy."
+    ],
+    "p_narr_1": [
+      "narrator",
+      "It started as a seed. One hungry little seed, in Old Man Hollis's pumpkin patch."
+    ],
+    "p_farmer_1": [
+      "farmer",
+      "I fed it moonlight, fertilizer and a little motor oil. Now the darn thing won't stop growing!"
+    ],
+    "p_pumpkin_1": [
+      "pumpkin",
+      "Feed me. Feed me... horsepower!"
+    ],
+    "p_sheriff_1": [
+      "sheriff",
+      "Everybody off Main Street! It's rolling this way, and it is hungry!"
+    ],
+    "p_sheriff_2": [
+      "sheriff",
+      "Time to carve this gourd. Hold on to your hats!"
+    ],
+    "p_narr_2": [
+      "narrator",
+      "Attack of the Fifty Foot Pumpkin. This Halloween, nobody is safe from the patch."
+    ],
+    "p_pumpkin_2": [
+      "pumpkin",
+      "Seeds... so... many... seeds."
     ]
   }
 }

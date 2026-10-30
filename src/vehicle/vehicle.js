@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { G } from '../core/physics.js';
 import { ENGINES, TRANSMISSIONS, TIRES } from '../config.js';
+import { CarDamage } from './damage.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 let VEH_ID = 0;
@@ -38,6 +39,9 @@ export class Vehicle {
     visual.opts.physics = true;
     visual.model.position.y = 0;
     this._build(opts.position || new THREE.Vector3(), opts.heading || 0);
+    this.pull = 0; // steering bias from bent suspension (CarDamage)
+    this.headDamage = 0;
+    if (this.kind === 'player') this.damage = new CarDamage(this);
     game.scene.add(visual.root);
     game.vehicles.push(this);
     this.sync();
@@ -129,6 +133,16 @@ export class Vehicle {
     this.sync();
   }
 
+  /** Pin the car on a spot (staging lines): x/z and yaw are held, height stays with the suspension, nothing accumulates. */
+  hold(x, z, heading) {
+    const b = this.body;
+    b.position.x = x; b.position.z = z;
+    b.quaternion.setFromEuler(0, heading, 0);
+    b.velocity.x = 0; b.velocity.z = 0;
+    if (b.velocity.y > 0) b.velocity.y = 0;
+    b.angularVelocity.setZero();
+  }
+
   /** Fuel burn per second at full throttle & redline, by engine (V8 blower and twin-turbo drink more). */
   get burnRate() { return { v6: 0.32, v8sc: 0.46, tt: 0.56 }[this.tune.eng.id] || 0.35; }
 
@@ -164,7 +178,7 @@ export class Vehicle {
     const dead = this.stalled;
     // speed-sensitive steering with smoothing
     const maxSteer = THREE.MathUtils.lerp(0.64, 0.22, THREE.MathUtils.clamp(abs / 40, 0, 1));
-    const target = THREE.MathUtils.clamp(c.steer, -1, 1) * maxSteer;
+    const target = THREE.MathUtils.clamp(c.steer + (abs > 3 ? this.pull : 0), -1, 1) * maxSteer;
     const rate = Math.sign(target) !== Math.sign(this.steer) || Math.abs(target) < Math.abs(this.steer) ? 7.5 : 4.0;
     this.steer += THREE.MathUtils.clamp(target - this.steer, -rate * dt, rate * dt);
     veh.setSteeringValue(this.steer, 0);
@@ -267,6 +281,8 @@ export class Vehicle {
       throttle: this.controls.throttle, siren: this.siren, hazard: this.hazard, headlights: this.kind === 'player' ? v.lights.head : true,
       glowFlicker: this.kind === 'player' && !v.lights.head ? 0 : undefined });
     for (const w of this.flats.map((f, i) => (f ? i : -1)).filter((i) => i >= 0)) v.wheelNodes[w].knuckle.position.y -= 0.1;
+    // smashed headlights: dim, with a loose-wire flicker
+    if (this.headDamage > 0.6) v.headMat.emissiveIntensity *= Math.random() < 0.08 ? 0.05 : 1 - (this.headDamage - 0.5) * 1.1;
     if (this.driver) { this.driver.steer = THREE.MathUtils.clamp(this.steer * 2.2, -1, 1); this.driver.update(dt, 'drive'); }
   }
 

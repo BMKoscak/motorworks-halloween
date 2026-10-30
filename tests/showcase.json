@@ -1,0 +1,13 @@
+[
+  { "name": "car_closeup", "pre": "(() => { const g = window.__MW.game; window.__MW.spawnTestCar({ finish: 'pearl', color: '#5b1a8c', livery: 'flames' }, -40, 8, 1.1); window.__MW.teleport(-48, 14); return true; })()", "cam": [-35.2, 1.6, 12.4, -40, 0.8, 8], "wait": 1500 },
+  { "name": "car_rear_three_quarter", "cam": [-44.5, 1.4, 4.5, -40, 0.7, 8], "wait": 900 },
+  { "name": "main_elm_intersection", "cam": [-14, 7.5, -16, 2, 0.5, 6], "wait": 1200 },
+  { "name": "main_street_wide", "cam": [-40, 3.2, 14, -22, 1, 4], "wait": 1000 },
+  { "name": "palace_cinema", "pre": "(() => { const c = window.__MW.game.cinema; const p = c.local(0, 0, 18); window.__MW.__cine = [p.x + 8, 4.5, p.z + (c.rot ? -10 : 10), c.center.x, 4, c.center.z - 14 * Math.cos(c.rot)]; return window.__MW.__cine; })()", "camExpr": "window.__MW.__cine", "wait": 1200 },
+  { "name": "factory_line", "cam": [-12, 9, -60, 10, 1, -95], "wait": 1200 },
+  { "name": "factory_floor_low", "cam": [-38, 3.2, -71, -22, 8.4, -83], "wait": 1000 },
+  { "name": "cemetery_gate", "cam": [10, 15, 196, 0, 11, 224], "wait": 1200 },
+  { "name": "cemetery_crypt", "cam": [4, 12.5, 290, 0, 12, 312], "wait": 1000 },
+  { "name": "drag_strip", "cam": [-150, 6, -112, -100, 1, -126], "wait": 1000 },
+  { "name": "town_overview", "cam": [-90, 60, 90, 20, 0, -20], "wait": 1500 }
+]

@@ -21,10 +21,11 @@ export class LightPool {
       this.lights.push(l);
     }
     this.t = 0;
+    this.scale = 1; // street-lamp brightness from the day/night cycle (Atmosphere.lampFactor)
   }
   /** Returns the source so owners (switches, breakers, gunshots) can turn it off: source.on = false. */
-  add(pos, color = '#ffb36b', intensity = 18, flicker = false, range = 22) {
-    const s = { pos: pos.clone(), color: new THREE.Color(color), intensity, flicker, range, ph: Math.random() * 100, on: true };
+  add(pos, color = '#ffb36b', intensity = 18, flicker = false, range = 22, indoor = false) {
+    const s = { pos: pos.clone(), color: new THREE.Color(color), intensity, flicker, range, ph: Math.random() * 100, on: true, indoor };
     this.sources.push(s);
     this.dirty = true;
     return s;
@@ -52,7 +53,7 @@ export class LightPool {
       l.distance = s.range;
       let k = 1;
       if (s.flicker) { const f = Math.sin(this.t * 13 + s.ph) * Math.sin(this.t * 7.3 + s.ph * 2); k = f > 0.6 ? 0.15 : 0.85 + 0.15 * Math.sin(this.t * 30 + s.ph); }
-      l.intensity = s.intensity * k;
+      l.intensity = s.intensity * k * (s.indoor ? 1 : this.scale);
     });
   }
 }

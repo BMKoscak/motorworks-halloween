@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { bakeInto, ownedMeshes } from '../core/bake.js';
 import { drawLivery, tireLetteringTexture } from './livery.js';
 import { UNDERGLOW, ENGINES } from '../config.js';
@@ -17,7 +18,7 @@ function finishParams(finish) {
   switch (finish) {
     case 'matte': return { metalness: 0.05, roughness: 0.82, clearcoat: 0, clearcoatRoughness: 1, iridescence: 0, sheen: 0, rust: 0 };
     case 'metallic': return { metalness: 0.85, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.15, iridescence: 0, sheen: 0, rust: 0 };
-    case 'pearl': return { metalness: 0.55, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 1, sheen: 1, rust: 0 };
+    case 'pearl': return { metalness: 0.55, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 0.45, sheen: 1, rust: 0 }; // 0.45: full iridescence washed the base colour out once the sky reflections arrived
     case 'rust': return { metalness: 0.3, roughness: 0.7, clearcoat: 0, clearcoatRoughness: 1, iridescence: 0, sheen: 0, rust: 1 };
     default: return { metalness: 0.12, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.06, iridescence: 0, sheen: 0, rust: 0 };
   }
@@ -109,6 +110,7 @@ export class CarVisual {
     this.cfg = { ...cfg };
     this.root = new THREE.Group();
     this.root.name = 'CarVisual';
+    this.root.userData.cullTree = true; // hidden => its ~185 child nodes skip the per-frame matrix pass (core/sceneCull.js)
     this.model = assets.clone('car_' + cfg.body);
     this.root.add(this.model);
     const ud = (this.model.getObjectByName('Car_' + cfg.body) || this.model).userData;
@@ -155,6 +157,36 @@ export class CarVisual {
       belt: door.max.y, doorZ: (door.min.z + door.max.z) / 2, cowlZ: this.n.Hood ? this.n.Hood.position.z : 0.8,
       roofZ0: roof.min.z, roofZ1: roof.max.z, length: bb.max.z - bb.min.z,
     };
+    // lamp heights for the turn-signal lamps (front: headlight row, rear: tail lights)
+    const lampY = (re, fallback) => {
+      const b = new THREE.Box3();
+      this.model.traverse((o) => { if (o.isMesh && re.test(o.name)) b.expandByObject(o); });
+      return b.isEmpty() ? fallback : (b.min.y + b.max.y) / 2;
+    };
+    this.info.headY = lampY(/^Headlight_[LR]/, 0.62);
+    this.info.tailY = lampY(/^Taillight/, 0.75);
+  }
+
+  /** Amber turn-signal lamps, built the first time this car signals: one merged mesh per side (front + rear corner),
+   * visible only during the blink's "on" phase, so a car that never signals costs nothing. */
+  _blinkers() {
+    if (this.blink) return this.blink;
+    const i = this.info, x = i.halfW - 0.13;
+    const mat = (shared.blinkMat ||= new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffa21a').multiplyScalar(3.2), toneMapped: true }));
+    const side = (sx) => {
+      const f = new THREE.BoxGeometry(0.17, 0.07, 0.05).translate(sx * x, i.headY - 0.1, i.maxZ - 0.01);
+      const r = new THREE.BoxGeometry(0.15, 0.07, 0.05).translate(sx * x, i.tailY + 0.09, i.minZ + 0.01);
+      const g = mergeGeometries([f, r]);
+      f.dispose(); r.dispose();
+      const m = new THREE.Mesh(g, mat);
+      m.visible = false;
+      m.castShadow = false;
+      m.userData.noAO = true;
+      this.root.add(m);
+      return m;
+    };
+    // the car's left is +x (Door_L / Headlight_L sit at +x)
+    return (this.blink = { L: side(1), R: side(-1) });
   }
 
   _materials() {
@@ -387,6 +419,13 @@ export class CarVisual {
       this.tailMat.emissiveIntensity = on ? 5 : 0.1;
       this.headMat.emissiveIntensity = on ? 3 : 0.4;
     }
+    // turn signals: 'L' | 'R' | null, ~85 flashes a minute
+    if (state.signal || this.blink) {
+      const b = this._blinkers();
+      const on = !!state.signal && Math.floor((performance.now() + (this.blinkPhase ||= Math.random() * 700)) / 350) % 2 === 0;
+      b.L.visible = on && state.signal === 'L';
+      b.R.visible = on && state.signal === 'R';
+    }
     if (this.glow) this.glow.material.opacity = state.glowFlicker !== undefined ? state.glowFlicker * 0.55 : 0.5;
     if (this.policeLamps.length) {
       const t = performance.now() / 1000;
@@ -525,5 +564,6 @@ export class CarVisual {
 
   dispose() {
     this.root.parent && this.root.parent.remove(this.root);
+    if (this.blink) { this.blink.L.geometry.dispose(); this.blink.R.geometry.dispose(); }
   }
 }

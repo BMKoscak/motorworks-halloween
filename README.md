@@ -14,7 +14,7 @@ A third-person 3D car factory, customization and open-town action game that runs
 ![cannon-es](https://img.shields.io/badge/physics-cannon--es-2f6db5?style=flat-square)
 ![Blender](https://img.shields.io/badge/models-Blender_5.2-e87d0d?style=flat-square&logo=blender&logoColor=white)
 ![ElevenLabs](https://img.shields.io/badge/voices-ElevenLabs-000?style=flat-square)
-![QA](https://img.shields.io/badge/automated_QA-42%2F42_passing-39ff14?style=flat-square)
+![QA](https://img.shields.io/badge/automated_QA-48%2F50_(2_known_flakes)-39ff14?style=flat-square)
 
 <img src="public/docs/screenshots/32_palace_cinema_marquee.png" alt="The Palace Cinema on Main Street" width="100%"/>
 
@@ -25,7 +25,23 @@ A third-person 3D car factory, customization and open-town action game that runs
 
 ---
 
-## 🆕 Phase 3: Fright Night update
+## 🆕 Phase 4: RTX graphics & the roadmap, done
+
+<img src="public/docs/screenshots/upgrade/compare_main_elm_intersection.png" alt="Main & Elm before and after the graphics upgrade" width="100%"/>
+
+- 🎨 **A new render pipeline for modern GPUs.** It adds 4× MSAA (the old composer never actually anti-aliased), **GTAO ambient occlusion**, **sky reflections** on paint and chrome, a Halloween colour grade, stable 4K shadows and **real headlight beams**. There's a new **Ultra** preset, picked automatically on RTX-class GPUs, and it falls back to High if the frame rate dips.
+- 🧊 **Every Blender model upgraded.** Boxes get rounded edges, car panels get round-edged profiles, curves get 2× the segments, and everything uses smooth-by-angle normals. That's 3.1× the triangles, with the colliders untouched.
+- ⚡ **Faster despite all that.** The simulation dropped from 13–16 ms to 4–7 ms a frame: physics skips 3,300 static colliders, the Jumbotron only renders when you can see it, and hidden subtrees and far shadows are culled. High now runs **45–100 fps where it ran 26–43**.
+- 🏁 **Drag-race fix.** Staging at the christmas tree no longer lifts your car about 100 m into the sky and drops it on green.
+- 🌗 **A day/night cycle.** Dusk, a moonlit night, an orange dawn and an overcast autumn day, with a HUD clock and a pause-menu time slider.
+- 🚦 **AI turn signals and overtaking.** Traffic blinks before turns and pulls around cars abandoned in the lane. Before, it rammed them.
+- 💥 **A damage model.** Dents, a sprung hood, flickering headlights, scuffed paint and bent alignment. The Custom Bay fixes it all. There's also a **🗄️ Garage** tab in the kiosk for saving and loading builds.
+- 🎬 **Palace Screen 2.** A new annex auditorium shows a second film, ***ATTACK OF THE 50 FT PUMPKIN***, which is also the drive-in's midnight movie.
+- 🎮 **Gamepad and 📱 touch controls.**
+
+Full build log, measurements and before/after shots: **[DOCUMENTATION.md §11](DOCUMENTATION.md#11-phase-4-build-log-rtx-graphics-performance-drag-race-fix-and-the-roadmap)**.
+
+## Phase 3: Fright Night update
 
 - 🛣️ **Real streets.** The whole road network is now a Blender asset generated from one `streets.json` map. It has asphalt with junction pads, double-yellow centre lines, edge lines, parking ticks, zebra crosswalks, stop bars, painted STOP, street-name signs, speed limits and manholes. **Working traffic lights with walk signals** run at Main & Elm and Main & Factory Rd, with stop signs everywhere else.
 - 🗺️ **A bigger town.** It now has an outer ring road (Maple Ave, Oak Ave and Proving Ground Rd), more houses, bus shelters and a town square with a clocktower and gazebo. You'll also find the Starlight Drive-In, the Hollow Cider Mill, a water tower and the Proving Ground drag strip with bleachers.
@@ -96,7 +112,9 @@ A third-person 3D car factory, customization and open-town action game that runs
 | <kbd>H</kbd> | Horn (try it at the drive-in…) | <kbd>R</kbd> | Haunted radio · reload |
 | <kbd>1</kbd>–<kbd>5</kbd> | Weapons | <kbd>L</kbd> | Car lights |
 | <kbd>V</kbd> / <kbd>F</kbd> / <kbd>T</kbd> | Station cam / follow car / fast-forward build | <kbd>N</kbd> | Toggle waypoint guide |
-| <kbd>G</kbd> | Drop carried item | <kbd>Esc</kbd> | Pause, settings & secrets |
+| <kbd>G</kbd> | Drop carried item | <kbd>Esc</kbd> | Pause, settings (graphics, time of day) & secrets |
+
+🎮 **Gamepad:** left stick to move, right stick to look, RT/LT for throttle and brake (fire and aim on foot), A to interact, B to exit the car, X to jump or drift, Y for the camera, RB for the horn, Start to pause. 📱 **Touch:** shown automatically on phones and tablets (or add `?touch=1`): a joystick, drag to look, and context buttons including gas and brake pedals.
 
 ## 🥚 Secrets (no spoilers)
 
@@ -117,9 +135,10 @@ The dev server prints its URL, http://localhost:3000. It also binds `0.0.0.0`, s
 |---|---|
 | `npm run dev` | Vite dev server on port 3000 |
 | `npm run build` | Production build into `dist/`, which is what GitHub Pages serves |
-| `npm run assets` | Regenerates all 30 `.glb` models with headless **Blender** (`blender/build_*.py`, including `build_roads.py`) |
+| `npm run assets` | Regenerates all 30 `.glb` models with headless **Blender** (`blender/build_*.py`). It finds Blender via `$BLENDER`, the Blender Foundation installer or the Steam install. `MW_DETAIL=1` rebuilds the original low-poly set (the default, 2, is the HD pass) |
 | `npm run dialogue` | Voice pipeline: ElevenLabs if `ELEVENLABS_API_KEY` is set, otherwise local TTS (cached, never re-billed) |
-| `npm test` | Automated **Playwright** QA loop: 42 checks plus documentation screenshots |
+| `npm test` | Automated **Playwright** QA loop: 50 checks plus documentation screenshots |
+| `node tests/views.mjs tests/showcase.json <dir> ultra` | Showcase screenshots plus fps / draw calls per view (`MW_HOUR=23` for night) |
 | `node scripts/build-docs.mjs` | Rebuilds `DOCUMENTATION.md`, `docs.html` and `TELEMETRY.json` |
 
 ## 🧱 How it's built
@@ -127,9 +146,10 @@ The dev server prints its URL, http://localhost:3000. It also binds `0.0.0.0`, s
 ```
 blender/          Procedural Blender scripts → public/models/*.glb (hinged doors, pivots, COL_ colliders, roads from streets.json)
 src/data/         streets.json (road network) · dialogue.json (voices + lines) · demographics
-src/core/         input · asset loading · cannon-es physics + grid broadphase · static batching · cameras
-src/world/        terrain · streets · town · cinema & film · cemetery · factory · jumbotron
-src/vehicle/      car visual + paint/livery shader · raycast vehicle · effects
+src/core/         render pipeline (MSAA, GTAO, grade) · input (keyboard, gamepad) · asset loading · cannon-es physics + grid broadphase · scene culling · static batching · cameras
+src/world/        terrain · streets · town · day/night atmosphere · headlights · cinema & films (2 screens) · cemetery · factory · jumbotron
+src/vehicle/      car visual + paint/livery shader · raycast vehicle · damage model · effects
+src/ui/           HUD · touch controls
 src/actors/       articulated characters · player controller · foot agents
 src/systems/      assembly · kiosk · traffic & signals · police · NPCs & townsfolk · activities · secrets · combat · burglary · fuel · audio
 tests/            Playwright QA suite + probes
@@ -143,11 +163,14 @@ See **[DOCUMENTATION.md](DOCUMENTATION.md)** for the full build log, QA report, 
 
 ## 🗺 Roadmap (WIP)
 
-- [ ] Turn signals and lane changes for AI traffic
-- [ ] A day/night cycle on Halloween night
-- [ ] Damage model, plus a garage to save and load builds
-- [ ] More films for the Palace and a second screen
-- [ ] Gamepad and mobile touch controls
+- [x] Turn signals and lane changes for AI traffic *(Phase 4: signals + overtaking)*
+- [x] A day/night cycle on Halloween night *(Phase 4)*
+- [x] Damage model, plus a garage to save and load builds *(Phase 4)*
+- [x] More films for the Palace and a second screen *(Phase 4: Screen 2 + Attack of the 50 ft Pumpkin)*
+- [x] Gamepad and mobile touch controls *(Phase 4)*
+- [ ] Multi-lane avenues with real lane changes
+- [ ] Persist the owned car (and its damage) between sessions
+- [ ] ElevenLabs takes for the Screen 2 cast (currently local voices)
 
 ## 🙏 Credits
 

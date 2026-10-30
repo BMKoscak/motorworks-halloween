@@ -36,6 +36,15 @@ const phases3 = [
   ['Phase 3 · cinema, activities, secrets, townsfolk, signals', mtime('src/world/streetGeom.js'), mtime('src/main.js')],
   ['Phase 3 · QA expansion (12 checks)', mtime('src/main.js'), mtime('tests/qa-results.json')],
 ];
+const P4_START = new Date('2026-10-30T18:35:00Z');
+const phases4 = [
+  ['Phase 4 · drag-race launch fix', P4_START, mtime('tests/dragprobe-after.json')],
+  ['Phase 4 · Blender HD pass (mwlib MW_DETAIL) + render pipeline', mtime('tests/dragprobe-after.json'), mtime('src/core/render.js')],
+  ['Phase 4 · perf pass (physics, culling, Jumbotron) + day/night', mtime('src/core/render.js'), mtime('src/world/atmosphere.js')],
+  ['Phase 4 · traffic signals/overtaking, damage, garage', mtime('src/systems/roadGraph.js'), mtime('src/vehicle/damage.js')],
+  ['Phase 4 · Palace Screen 2 + Attack of the 50 ft Pumpkin', mtime('src/vehicle/damage.js'), mtime('public/models/cinema.glb')],
+  ['Phase 4 · gamepad + touch, QA expansion, docs', mtime('src/ui/touch.js'), mtime('tests/qa-results.json')],
+];
 const prevT = readTelemetry();
 const tel = updateTelemetry({
   summary: {
@@ -44,7 +53,7 @@ const tel = updateTelemetry({
     estimatedCost: prevT.llm ? prevT.llm.estimatedCostDisplay : '—', glbAssets: manifest.assets.length,
     qaPasses: qa ? `${qa.passed}/${qa.total}` : '—',
   },
-  phases: [...phases, ...phases2, ...phases3].map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
+  phases: [...phases, ...phases2, ...phases3, ...phases4].map(([name, a, b]) => ({ name, start: fmt(a), end: fmt(b), minutes: a && b ? Math.max(1, Math.round((b - a) / 60000)) : null })),
   assets: { glbFiles: manifest.assets.length, totalTriangles: manifest.assets.reduce((s, a) => s + a.tris, 0), totalBytes: manifest.assets.reduce((s, a) => s + a.bytes, 0),
     blenderRuns: manifest.runs },
 });
@@ -158,7 +167,7 @@ img{max-width:100%;border-radius:10px;border:1px solid #3a2240;margin:6px 0}p im
 li img{max-width:48%;margin:4px}.cb{display:inline-block;width:20px;font-weight:800}.cb.ok{color:#39ff14}.cb.no{color:#ff2a3a}
 .top{position:sticky;top:0;background:rgba(18,8,20,.92);padding:8px 18px;border-bottom:1px solid #3a2240;z-index:2}.top a{margin-right:14px}
 .gallery img{width:32%;margin:.5%}@media(max-width:700px){.gallery img{width:100%}}
-</style></head><body><div class="top"><a href="./">▶ Play Motorworks</a><a href="#telemetry">Telemetry</a><a href="#automated-qa-self-test-loop">QA</a><a href="#screenshot-gallery">Gallery</a></div>
+</style></head><body><div class="top"><a href="./">▶ Play Motorworks</a><a href="#telemetry">Telemetry</a><a href="#automated-qa-self-test-loop">QA</a><a href="#screenshot-gallery">Gallery</a><a href="#11-phase-4-build-log-rtx-graphics-performance-drag-race-fix-and-the-roadmap">Phase 4</a></div>
 <main>${toHtml(md).replace(/<h2 id="screenshot-gallery">([\s\S]*?)<\/h2>\s*<p>/, '<h2 id="screenshot-gallery">$1</h2><p class="gallery">')}</main></body></html>`;
 writeFileSync(path.join(ROOT, 'public', 'docs.html'), html);
 console.log(`DOCUMENTATION.md + public/docs.html written (${shots.length} screenshots, QA ${tel.summary.qaPasses})`);

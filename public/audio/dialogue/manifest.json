@@ -1701,5 +1701,75 @@
   "text": "Did you see the new traffic lights on Main Street? Fancy.",
   "bytes": 73175,
   "hash": "a39e41cbeb5f"
+ },
+ "p_narr_1": {
+  "file": "p_narr_1.wav",
+  "hash": "171be8c4f7d8",
+  "engine": "sapi-local",
+  "voice": "narrator",
+  "sapiVoice": "Microsoft David Desktop",
+  "chars": 80,
+  "text": "It started as a seed. One hungry little seed, in Old Man Hollis's pumpkin patch.",
+  "bytes": 297878
+ },
+ "p_farmer_1": {
+  "file": "p_farmer_1.wav",
+  "hash": "7b81b103914d",
+  "engine": "sapi-local",
+  "voice": "farmer",
+  "sapiVoice": "Microsoft David Desktop",
+  "chars": 93,
+  "text": "I fed it moonlight, fertilizer and a little motor oil. Now the darn thing won't stop growing!",
+  "bytes": 380112
+ },
+ "p_pumpkin_1": {
+  "file": "p_pumpkin_1.wav",
+  "hash": "2f24a059b8ee",
+  "engine": "sapi-local",
+  "voice": "pumpkin",
+  "sapiVoice": "Microsoft David Desktop",
+  "chars": 31,
+  "text": "Feed me. Feed me... horsepower!",
+  "bytes": 272326
+ },
+ "p_sheriff_1": {
+  "file": "p_sheriff_1.wav",
+  "hash": "4b31434bc40d",
+  "engine": "sapi-local",
+  "voice": "sheriff",
+  "sapiVoice": "Microsoft Zira Desktop",
+  "chars": 67,
+  "text": "Everybody off Main Street! It's rolling this way, and it is hungry!",
+  "bytes": 242326
+ },
+ "p_sheriff_2": {
+  "file": "p_sheriff_2.wav",
+  "hash": "425e9dc78201",
+  "engine": "sapi-local",
+  "voice": "sheriff",
+  "sapiVoice": "Microsoft Zira Desktop",
+  "chars": 47,
+  "text": "Time to carve this gourd. Hold on to your hats!",
+  "bytes": 188306
+ },
+ "p_narr_2": {
+  "file": "p_narr_2.wav",
+  "hash": "bf978c4d1094",
+  "engine": "sapi-local",
+  "voice": "narrator",
+  "sapiVoice": "Microsoft David Desktop",
+  "chars": 80,
+  "text": "Attack of the Fifty Foot Pumpkin. This Halloween, nobody is safe from the patch.",
+  "bytes": 280678
+ },
+ "p_pumpkin_2": {
+  "file": "p_pumpkin_2.wav",
+  "hash": "aa7ba6028261",
+  "engine": "sapi-local",
+  "voice": "pumpkin",
+  "sapiVoice": "Microsoft David Desktop",
+  "chars": 29,
+  "text": "Seeds... so... many... seeds.",
+  "bytes": 261302
  }
 }

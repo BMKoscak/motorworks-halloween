@@ -37,6 +37,24 @@ export class Physics {
     this.onOutOfBounds = null;
     // safety clamps on every internal sub-step: no vehicle may exceed 45 m/s or spin faster than 12 rad/s
     w.addEventListener('postStep', () => this._clamp());
+    // Static colliders (~3,300 of the ~3,350 bodies) never move, yet cannon's per-body loops (gravity, solver mass
+    // bookkeeping, integration, clearForces, sleep ticks, the end-of-step pose slerp) visit every body each sub-step.
+    // world.bodies is swapped for the movers-only list while stepping; the statics stay reachable through the grid
+    // broadphase (contacts and raycasts), which reads the full list via world.allBodies.
+    this.all = w.bodies;
+    w.allBodies = this.all;
+    this.active = [];
+    const add = w.addBody.bind(w), remove = w.removeBody.bind(w);
+    const onFull = (fn) => (b) => { const swapped = w.bodies !== this.all; if (swapped) w.bodies = this.all; fn(b); if (swapped) w.bodies = this._refreshActive(); };
+    w.addBody = onFull(add);
+    w.removeBody = onFull(remove);
+  }
+
+  _refreshActive() {
+    const a = this.active;
+    a.length = 0;
+    for (const b of this.all) if (b.type !== CANNON.Body.STATIC || (b.userData && b.userData.moves)) a.push(b);
+    return a;
   }
 
   _clamp() {
@@ -137,7 +155,14 @@ export class Physics {
   }
 
   step(dt) {
-    this.world.step(1 / 60, dt, 8); // capped sub-steps: a slow frame never snowballs into a slower one
+    const w = this.world;
+    w.bodies = this._refreshActive();
+    try {
+      w.step(1 / 60, dt, 8); // capped sub-steps: a slow frame never snowballs into a slower one
+    } finally {
+      w.bodies = this.all;
+    }
+    this.stats.activeBodies = this.active.length;
   }
 }
 

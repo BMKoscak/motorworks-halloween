@@ -5,6 +5,9 @@ import { CarVisual } from '../vehicle/carVisual.js';
 
 const $ = (id) => document.getElementById(id);
 const money = (v) => '$' + Math.round(v).toLocaleString();
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const GARAGE_KEY = 'mw_garage';
+const GARAGE_SLOTS = 8;
 
 /**
  * 3D turntable configurator. mode 'order' builds a new car in the lobby; mode 'bay' restyles the
@@ -99,8 +102,52 @@ export class Kiosk {
 
   price() {
     if (this.mode === 'order') return configPrice(this.cfg);
-    // bay: paint + parts delta only
-    return Math.max(450, Math.round((configPrice(this.cfg) - configPrice({ ...this.original, ...{ finish: 'gloss', livery: 'none' } })) * 0.35 + 450));
+    // bay: paint + parts delta, plus knocking out any dents
+    return Math.max(450, Math.round((configPrice(this.cfg) - configPrice({ ...this.original, ...{ finish: 'gloss', livery: 'none' } })) * 0.35 + 450)) + this.repairCost();
+  }
+
+  repairCost() { return this.mode === 'bay' && this.vehicle && this.vehicle.damage ? this.vehicle.damage.repairCost : 0; }
+
+  // ------------------------------------------------------------------ garage (saved builds, Phase 4)
+  garage() { try { return JSON.parse(localStorage.getItem(GARAGE_KEY)) || []; } catch (e) { return []; } }
+
+  _storeGarage(list) { try { localStorage.setItem(GARAGE_KEY, JSON.stringify(list)); return true; } catch (e) { this.game.hud.toast('Could not save (browser storage blocked)', 'bad'); return false; } }
+
+  saveBuild(name) {
+    const list = this.garage();
+    const body = BODIES.find((b) => b.id === this.cfg.body);
+    const entry = { name: (name || '').trim().slice(0, 28) || `${body ? body.name.split(':').pop().trim() : 'Build'} #${list.length + 1}`, cfg: { ...this.cfg }, at: Date.now() };
+    list.unshift(entry);
+    if (list.length > GARAGE_SLOTS) list.length = GARAGE_SLOTS;
+    if (this._storeGarage(list)) { this.game.hud.toast(`💾 Saved "${entry.name}" to the garage`, 'good'); this.game.events.emit('garageSave', { name: entry.name, slots: list.length }); }
+    this.game.audio.blip(1200, 0.05);
+    this.render();
+    return entry.name;
+  }
+
+  loadBuild(i) {
+    const b = this.garage()[i];
+    if (!b) return false;
+    const cfg = { ...DEFAULT_CONFIG, ...b.cfg };
+    // locked Monster Mash parts stay locked until the pumpkins are found
+    const unlockedOr = (list, key) => { const o = list.find((x) => x.id === cfg[key]); if (!o || (o.locked && !this.unlocked)) cfg[key] = DEFAULT_CONFIG[key]; };
+    [[LIVERIES, 'livery'], [RIMS, 'rim'], [HOODS, 'hood'], [EXHAUSTS, 'exhaust']].forEach(([l, k]) => unlockedOr(l, k));
+    // the bay can't swap the chassis or the drivetrain: keep the car's own
+    if (this.mode === 'bay') for (const k of ['body', 'engine', 'trans', 'tires']) cfg[k] = this.cfg[k];
+    Object.assign(this.cfg, cfg);
+    this.changes++;
+    if (this.mode === 'order') this._rebuildPreview(); else this.vehicle.visual.applyConfig(this.cfg);
+    this.game.hud.toast(`📂 Loaded "${b.name}"`, 'good');
+    this.game.events.emit('garageLoad', { name: b.name });
+    this.render();
+    return true;
+  }
+
+  deleteBuild(i) {
+    const list = this.garage();
+    list.splice(i, 1);
+    this._storeGarage(list);
+    this.render();
   }
 
   confirm() {
@@ -135,7 +182,7 @@ export class Kiosk {
   _group(title, html) { return `<div class="k-group"><h4>${title}</h4>${html}</div>`; }
 
   render() {
-    const tabs = ['Body', 'Paint', 'Livery', 'Wheels', 'Stance', 'Body Kit', 'Lighting', 'Performance', 'Monster Mash'];
+    const tabs = ['Body', 'Paint', 'Livery', 'Wheels', 'Stance', 'Body Kit', 'Lighting', 'Performance', 'Monster Mash', 'Garage'];
     $('k-tabs').innerHTML = tabs.map((t) => {
       const dis = this.mode === 'bay' && (t === 'Body' || t === 'Performance');
       return `<button class="${this.tab === t ? 'on' : ''}" data-tab="${t}" ${dis ? 'disabled style="opacity:.35"' : ''}>${t}</button>`;
@@ -176,7 +223,21 @@ export class Kiosk {
             this._opts('rim', RIMS.filter((r) => r.locked)) + this._opts('hood', HOODS.filter((r) => r.locked)) + this._opts('exhaust', EXHAUSTS.filter((r) => r.locked)) + this._opts('livery', LIVERIES.filter((r) => r.locked)))
           : this._group('🔒 Monster Mash Pack', `<p>Find all <b>5 hidden Golden Pumpkins</b> around town to unlock glowing jack-o'-lantern rims, the Frankenstein blower and green lightning exhaust.</p><p class="hint">Found: ${this.game.state.pumpkins.length}/5</p>`);
         break;
+      case 'Garage': {
+        const list = this.garage();
+        const cards = list.map((b, i) => {
+          const body = BODIES.find((x) => x.id === b.cfg.body), eng = ENGINES.find((x) => x.id === b.cfg.engine);
+          return `<div class="garage-card"><span class="g-sw" style="background:${esc(b.cfg.color)}"></span><span class="g-sw" style="background:${esc(b.cfg.color2)}"></span>
+            <div class="g-info"><b>${esc(b.name)}</b><small>${body ? esc(body.name) : esc(b.cfg.body)} · ${eng ? esc(eng.name) : ''} · ${money(configPrice({ ...DEFAULT_CONFIG, ...b.cfg }))}</small></div>
+            <button class="btn" data-g-load="${i}">Load</button><button class="btn" data-g-del="${i}" title="Delete">✕</button></div>`;
+        }).join('');
+        html = this._group('Save this build', `<div class="slider-row"><input id="g-name" maxlength="28" placeholder="Name it… (e.g. Midnight Hearse)" /><button class="btn primary" id="g-save">💾 Save</button></div>
+            <p class="hint">${list.length}/${GARAGE_SLOTS} slots · saved in this browser${this.mode === 'bay' ? ' · the bay keeps this car\'s chassis and drivetrain when loading' : ''}</p>`) +
+          this._group('Your garage', cards || '<p class="hint">No saved builds yet.</p>');
+        break;
+      }
     }
+    if (this.mode === 'bay' && this.repairCost() > 0) html = this._group('🔧 Bodywork', `<p>Dents, scuffs and a bent front end get fixed with the respray: <b>${money(this.repairCost())}</b> (${this.vehicle.damage.percent}% damage).</p>`) + html;
     $('k-body').innerHTML = html;
     $('k-total').textContent = money(this.price());
     $('k-sub').textContent = this.mode === 'order' ? `Budget ${money(this.game.state.money)} · drag to orbit · scroll to zoom` : `Respray clears stolen status & police heat · ${money(this.game.state.money)}`;
@@ -187,6 +248,14 @@ export class Kiosk {
       else if (el.dataset.num) el.oninput = () => this.set(k, parseFloat(el.value));
       else el.onclick = () => !el.disabled && this.set(k, el.dataset.v);
     });
+    const save = $('g-save');
+    if (save) {
+      const name = $('g-name');
+      save.onclick = () => this.saveBuild(name.value);
+      name.onkeydown = (e) => { e.stopPropagation(); if (e.key === 'Enter') this.saveBuild(name.value); };
+    }
+    $('k-body').querySelectorAll('[data-g-load]').forEach((b) => (b.onclick = () => this.loadBuild(+b.dataset.gLoad)));
+    $('k-body').querySelectorAll('[data-g-del]').forEach((b) => (b.onclick = () => this.deleteBuild(+b.dataset.gDel)));
   }
 
   // ------------------------------------------------------------------ camera

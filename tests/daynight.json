@@ -1,0 +1,4 @@
+[
+  { "name": "main_street", "cam": [-40, 3.2, 14, -22, 1, 4], "wait": 1200 },
+  { "name": "town_overview", "cam": [-90, 60, 90, 20, 0, -20], "wait": 1200 }
+]

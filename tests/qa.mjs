@@ -51,6 +51,8 @@ await check('boot', 'Page loads, Blender assets stream in, zero console errors /
   await page.waitForFunction(() => window.__MW && window.__MW.ready(), null, { timeout: 180000 });
   r.details.loadMs = Date.now() - t;
   await MW(() => window.__MW.setQuality('medium'));
+  // Phase 4 day/night cycle: QA screenshots document the classic dusk look, so the clock is frozen at 18:00
+  await MW(() => window.__MW.setHour && window.__MW.setHour(18));
   r.details.gpu = await MW(() => { const gl = document.createElement('canvas').getContext('webgl2'); const e = gl.getExtension('WEBGL_debug_renderer_info'); return e ? gl.getParameter(e.UNMASKED_RENDERER_WEBGL) : 'unknown'; });
   await sleep(1200);
   r.screenshots.push(await shot('01_title_screen'));
@@ -210,18 +212,20 @@ await check('factory_jumbotron_and_conveyor', 'Live Jumbotron render-target feed
   const gaps = carries.filter((c) => c.maxGap !== null).map((c) => c.maxGap);
   assert(r, gaps.length > 0 && Math.max(...gaps) < 0.75, 'gripperStaysOnPart_m', gaps);
   assert(r, fs.ikSolves > 50, 'ikSolves', fs.ikSolves);
-  const j1 = await MW(() => window.__MW.jumbo());
-  r.details.jumbotron = { before: j0, after: j1 };
-  assert(r, j1.frames > j0.frames + 10 && j1.faces === 4, 'renderTargetFramesUpdated', j1.frames - j0.frames);
-  assert(r, j1.overlay > j0.overlay, 'overlayCanvasRedrawn', j1.overlay - j0.overlay);
   const roll = await MW(() => +window.__MW.game.factory.rollerSpin.toFixed(2));
   assert(r, Math.abs(roll) > 1, 'rollerSpin', roll);
+  // Phase 4: the feed only renders while a screen face is in view, so measure it while looking at the Jumbotron
+  const jv = await MW(() => window.__MW.jumbo());
   await MW(() => window.__MW.shot(-38, 3.2, -71, -22, 8.4, -83));
   await sleep(900);
   r.screenshots.push(await shot('16_jumbotron_live_feed'));
   await MW(() => window.__MW.shot(-22, 9.6, -76.5, -22, 8.6, -81));
   await sleep(700);
   r.screenshots.push(await shot('16_jumbotron_closeup'));
+  const j1 = await MW(() => window.__MW.jumbo());
+  r.details.jumbotron = { before: j0, viewStart: jv, after: j1 };
+  assert(r, j1.frames > jv.frames + 10 && j1.faces === 4, 'renderTargetFramesUpdated', j1.frames - jv.frames);
+  assert(r, j1.overlay > jv.overlay, 'overlayCanvasRedrawn', j1.overlay - jv.overlay);
   await MW(() => window.__MW.shot(6, 6.2, -70, -14, 1, -91));
   await sleep(700);
   r.screenshots.push(await shot('16_conveyor_skillet_press_feeder'));
@@ -1009,6 +1013,8 @@ await check('traffic_obeys_signals', 'AI traffic stops at red lights (and on yel
   const st = await MW(() => window.__MW.trafficStats());
   r.details.stats = { redStops: st.redStops, redRuns: st.redRuns, stopSigns: st.stopSigns, junctionWaits: st.junctionWaits, honks: st.honks };
   r.details.heldSamples = samples.filter((s) => s.red).length;
+  r.details.redCars = await MW(() => window.__MW.game.traffic.driving.filter((c) => c.redHold || c.blocked).map((c) => ({ road: c.seg.road || c.seg.node, kind: c.seg.kind, speed: +c.speed.toFixed(1), red: !!c.redHold, blocked: c.blocked, bt: +(c.blockedT || 0).toFixed(1), toEnd: +(c.seg.length - c.s).toFixed(1), x: +c.body.position.x.toFixed(0), z: +c.body.position.z.toFixed(0), sig: c.signal, ot: c.ot && c.ot.phase })));
+  r.details.playerCars = await MW(() => window.__MW.game.vehicles.filter((v) => v.kind === 'player').map((v) => [+v.position.x.toFixed(0), +v.position.z.toFixed(0)]));
   assert(r, st.redStops > 0 && samples.some((s) => s.stopped > 0), 'carsHoldAtRed', r.details.stats);
   assert(r, st.redRuns === 0, 'noRedLightRunners', st.redRuns);
   const held = await MW(() => { const g = window.__MW.game; const c = g.traffic.driving.find((d) => d.redHold && d.speed < 0.3); if (!c) return null; const p = c.body.position; window.__MW.shot(p.x - 10, 6, p.z + 9, p.x + 6, 1, p.z); return [p.x, p.z]; });
@@ -1087,7 +1093,7 @@ await check('cinema_movie', 'Palace Cinema: box office ticket ($8), usher blocks
   await sleep(700);
   assert(r, /popcorn/i.test(pp || '') && (await state()).money === m1 - 5, 'popcorn', pp);
   // sit down in row C and watch
-  await MW(() => { const c = window.__MW.game.cinema; const seat = c.seats.find((s) => s.row === 2 && s.col === 11 && !s.taken) || c.seats.find((s) => !s.taken && s.row === 3); window.__MW.game.player.teleport({ x: seat.pos.x, y: seat.pos.y - 0.4, z: seat.pos.z }, c.rot); });
+  await MW(() => { const c = window.__MW.game.cinema; const seat = c.seats.find((s) => s.screen === 1 && s.row === 2 && s.col === 11 && !s.taken) || c.seats.find((s) => s.screen === 1 && !s.taken && s.row === 3); window.__MW.game.player.teleport({ x: seat.pos.x, y: seat.pos.y - 0.4, z: seat.pos.z }, c.rot); });
   await sleep(600);
   const ps = await MW(() => window.__MW.prompt());
   await press('KeyE');
@@ -1171,7 +1177,9 @@ await check('drag_race', 'Proving Ground eighth-mile: christmas tree countdown, 
   await MW(() => { window.__MW.game.state.money = Math.max(window.__MW.game.state.money, 5000); });
   const pr = await MW(() => window.__MW.prompt());
   await press('KeyE');
-  await sleep(1500);
+  // Phase 4 regression: staging used to re-teleport from the chassis height every frame (+0.8 m a frame, ~100 m up)
+  let stageMaxY = 0;
+  for (let i = 0; i < 12; i++) { stageMaxY = Math.max(stageMaxY, await MW(() => window.__MW.game.player.vehicle.body.position.y)); await sleep(120); }
   const closed = await MW(() => window.__MW.trafficStats().closed);
   r.screenshots.push(await shot('35_drag_strip_staging_tree'));
   await sleep(2600);
@@ -1180,7 +1188,8 @@ await check('drag_race', 'Proving Ground eighth-mile: christmas tree countdown, 
   await page.keyboard.up('KeyW');
   const res = await MW(() => { const d = window.__MW.game.activities.drag; return { result: d.race && d.race.result, et: d.race && d.race.playerT, rival: d.race && d.race.rival.done, stats: d.stats, best: d.best }; });
   r.screenshots.push(await shot('35_drag_race_finish'));
-  r.details = { prompt: pr, closed, res };
+  r.details = { prompt: pr, closed, res, stageMaxY: +stageMaxY.toFixed(2) };
+  assert(r, stageMaxY < 1.5, 'stagedOnTheStrip', +stageMaxY.toFixed(2));
   assert(r, /drag race/i.test(pr || ''), 'prompt', pr);
   assert(r, closed && closed.includes('south_w'), 'stripClosed', closed);
   assert(r, (res.result === 'win' || res.result === 'lose') && res.et > 3 && res.et < 20, 'raced', res);
@@ -1341,6 +1350,210 @@ await check('radio_audio', 'Spoken dialogue audio + radio DJ use the cached loca
   assert(r, s.audio.linesPlayed >= 3, 'linesPlayed', s.audio.linesPlayed);
   assert(r, s.audio.fallbackTTS === 0, 'ttsFallbacks', s.audio.fallbackTTS);
   r.details.audio = s.audio;
+});
+
+// ============================================================================================ PHASE 4
+await check('phase4_render_pipeline', 'Ultra preset: MSAA composer targets, GTAO ambient occlusion, sky reflections (PMREM), colour grade, 4K sun shadows; quality presets switch cleanly', async (r) => {
+  await exitCar();
+  await MW(() => window.__MW.setQuality('ultra'));
+  await sleep(800);
+  const ultra = await MW(() => window.__MW.render());
+  await MW(() => window.__MW.shot(-40, 3.2, 14, -22, 1, 4));
+  await sleep(900);
+  r.screenshots.push(await shot('46_ultra_main_street'));
+  await MW(() => window.__MW.resume());
+  await MW(() => window.__MW.setQuality('low'));
+  await sleep(500);
+  const low = await MW(() => window.__MW.render());
+  await MW(() => window.__MW.setQuality('medium'));
+  r.details = { ultra, low };
+  assert(r, ultra.msaa === 4 && ultra.ao && ultra.env && ultra.grade && ultra.shadowSize === 4096, 'ultra', ultra);
+  assert(r, low.msaa === 0 && !low.ao && !low.env && !low.grade, 'low', low);
+});
+
+await check('phase4_perf_culling', 'Perf pass: static colliders stay out of cannon\'s per-body loops, far parked/traffic cars are culled, the Jumbotron only renders when its screen is in view', async (r) => {
+  await MW(() => window.__MW.teleport(-40, 20));
+  await MW(() => window.__MW.shot(-90, 60, 90, 20, 0, -20));
+  await sleep(1200);
+  const s = await MW(() => ({ ...window.__MW.render(), bodies: window.__MW.game.physics.all.length, jumbo: window.__MW.jumbo().frames }));
+  await sleep(1500);
+  const jumbo2 = await MW(() => window.__MW.jumbo().frames);
+  await MW(() => window.__MW.resume());
+  r.details = { ...s, jumboFramesWhileAway: jumbo2 - s.jumbo };
+  assert(r, s.activeBodies > 0 && s.activeBodies < 250 && s.bodies > 2000, 'activeBodies', { active: s.activeBodies, all: s.bodies });
+  assert(r, s.hiddenCars > 0, 'farCarsCulled', s.hiddenCars);
+  assert(r, jumbo2 - s.jumbo === 0, 'jumbotronIdleAway', jumbo2 - s.jumbo);
+});
+
+await check('phase4_day_night', 'Day/night cycle: the clock drives sun/moon, sky, fog, exposure, star field and street lamps; the HUD clock follows', async (r) => {
+  const at = async (h, name) => {
+    await MW((hh) => window.__MW.setHour(hh), h);
+    await MW(() => window.__MW.shot(-90, 60, 90, 20, 0, -20));
+    await sleep(900);
+    const t = await MW(() => ({ ...window.__MW.timeState(), hud: document.getElementById('hud-clock').textContent }));
+    r.screenshots.push(await shot(name));
+    await MW(() => window.__MW.resume());
+    return t;
+  };
+  const night = await at(23, '47_night_11pm'), noon = await at(12, '47_day_noon'), dusk = await at(18, '47_dusk_6pm');
+  await MW(() => { window.__MW.setHour(18, false); });
+  await sleep(1500);
+  const running = await MW(() => window.__MW.timeState().hour);
+  await MW(() => window.__MW.setHour(18));
+  r.details = { night, noon, dusk, runningHour: running };
+  assert(r, night.night && night.sunY < 0 && night.lamps > 0.9 && night.hud === '11:00 PM', 'night', night);
+  assert(r, !noon.night && noon.sunY > 0.6 && noon.lamps < 0.1 && noon.exposure < night.exposure, 'noon', noon);
+  assert(r, dusk.sunY > 0 && dusk.sunY < 0.2 && dusk.env, 'dusk', dusk);
+  assert(r, running > 18, 'clockRuns', running);
+});
+
+await check('phase4_traffic_ai', 'AI traffic: turn signals before junction turns; a car abandoned in the lane is seen, signalled around and overtaken (oncoming lane checked)', async (r) => {
+  // a clean stretch of Main Street: on foot, no pursuit, cruisers moved off the west end (they would correctly block the overtake)
+  await exitCar();
+  await MW(() => {
+    const g = window.__MW.game; g.police.clear();
+    for (const pc of g.police.cars) if (Math.abs(pc.position.z) < 12 && pc.position.x < -30) { pc.vehicle.teleport({ x: 0, y: 0, z: 110 }, 0); g.police.resetCar(pc.vehicle); } // up Elm Avenue
+    window.__MW.teleport(-40, 20);
+  });
+  await sleep(500);
+  await MW(() => {
+    const g = window.__MW.game, T = g.traffic;
+    const n = T.graph.nearest({ x: -150, y: 0, z: 2.6 }), c = T.driving[0];
+    for (const n2 of Object.values(T.graph.nodes)) if (n2.busy === c) n2.busy = null;
+    c.seg = n.seg; c.s = n.s; c.speed = 9; c.nextSeg = null; c.ot = null; c.lat = 0; c.cooldown = 0;
+    T._place(c, 0); c.body.velocity.set(0, 0, 0); // snap the kinematic body (a dt-based place would fling it through the obstacle)
+    for (const o of T.driving) if (o !== c && Math.abs(o.body.position.z) < 8 && o.body.position.x > -200 && o.body.position.x < -40) T._relocate(o);
+    // spawn the obstacle only now: a traffic car sitting on that spot would shove it down the street
+    window.__MW.spawnTestCar({ color: '#c0c4c8' }, -120, 2.6, Math.PI / 2);
+    g.ownedCar.setControls({ throttle: 0, steer: 0, handbrake: true });
+    window.__qaCar = c;
+  });
+  await sleep(300); // let the traffic update place the car on its new lane before sampling
+  let maxLat = 0, phases = new Set(), shotDone = false;
+  for (let i = 0; i < 90; i++) {
+    const s = await MW(() => { const g = window.__MW.game, c = window.__qaCar; return { x: c.body.position.x, lat: c.lat || 0, phase: c.ot ? c.ot.phase : null, blocked: c.blocked, bt: +(c.blockedT || 0).toFixed(1), bs: c.blockSpeed, cd: c.cooldown,
+      clear: g.traffic._oncomingClear(c, c.seg.at(c.s).p, c.seg.at(c.s).dir, 45), wanted: g.police.level, obst: g.ownedCar && [+g.ownedCar.position.x.toFixed(1), +g.ownedCar.position.z.toFixed(1)] }; });
+    (r.details.trace ||= []).push([+s.x.toFixed(1), s.blocked, s.bt, s.clear, s.wanted, s.obst]);
+    maxLat = Math.max(maxLat, s.lat); if (s.phase) phases.add(s.phase);
+    if (!shotDone && s.phase === 'pass') { await MW(() => { const p = window.__qaCar.body.position; window.__MW.shot(p.x - 9, 4.2, p.z - 9, p.x + 2, 0.8, p.z); }); await sleep(200); r.screenshots.push(await shot('48_traffic_overtake')); await MW(() => window.__MW.resume()); shotDone = true; }
+    if (s.x > -95 && !s.phase) break;
+    await sleep(200);
+  }
+  let sig = null;
+  for (let i = 0; i < 40 && !sig; i++) { sig = await MW(() => window.__MW.trafficAI().signalling.find((x) => !x.overtaking && x.kind === 'lane' && x.toEnd < 30)); if (!sig) await sleep(250); }
+  const ai = await MW(() => window.__MW.trafficAI());
+  r.details = { maxLat: +maxLat.toFixed(2), phases: [...phases], ai: { overtakes: ai.overtakes, done: ai.done, aborts: ai.aborts }, signal: sig };
+  assert(r, phases.has('out') && phases.has('pass') && phases.has('back') && maxLat > 4.5, 'overtook', { phases: [...phases], maxLat });
+  assert(r, ai.done >= 1, 'merged', ai.done);
+  assert(r, !!sig, 'turnSignal', sig);
+  await MW(() => { const g = window.__MW.game; if (g.ownedCar && !g.player.vehicle) g.ownedCar.remove(); g.ownedCar = null; });
+});
+
+await check('phase4_damage_model', 'Damage model: a wall crash dents the front panels, side hits scuff and bend the alignment, the Custom Bay bodywork repairs it all', async (r) => {
+  await carAt(10, -36, Math.PI, { color: '#1f8f3a', finish: 'metallic', livery: 'none' });
+  await MW(() => { const b = window.__MW.game.player.vehicle.body; b.velocity.set(0, 0, -19); });
+  await sleep(1800);
+  const crash = await MW(() => window.__MW.damage());
+  await MW(() => window.__MW.hitCar('left', 15));
+  const side = await MW(() => window.__MW.damage());
+  await MW(() => { const v = window.__MW.game.player.vehicle.visual.root; v.updateMatrixWorld(); const e = v.localToWorld(new v.position.constructor(4.2, 1.5, 0.6)), l = v.localToWorld(new v.position.constructor(0, 0.7, 0.2)); window.__MW.shot(e.x, e.y, e.z, l.x, l.y, l.z); });
+  await sleep(600);
+  r.screenshots.push(await shot('49_damage_dents'));
+  await MW(() => window.__MW.resume());
+  const hud = await MW(() => document.getElementById('hud').innerText.match(/body \d+% damaged/));
+  await MW(() => window.__MW.repairCar());
+  const fixed = await MW(() => window.__MW.damage());
+  r.details = { crash, side, hud: hud && hud[0], fixed };
+  assert(r, crash.zones.front > 0.2 && crash.dented > 0, 'frontCrash', crash);
+  assert(r, side.zones.left > 0.2 && side.pull > 0 && side.rust > 0, 'sideHit', side);
+  assert(r, !!hud, 'hudShowsDamage', hud);
+  assert(r, fixed.percent === 0 && fixed.dented === 0 && fixed.pull === 0, 'repaired', fixed);
+});
+
+await check('phase4_garage', 'Kiosk garage: save named builds (browser storage), list them in the Garage tab, load one back into the configurator', async (r) => {
+  await exitCar();
+  await page.evaluate(() => localStorage.removeItem('mw_garage'));
+  await MW(() => window.__MW.openKiosk());
+  await sleep(700);
+  await MW(() => { window.__MW.kioskSet('body', 'hearse'); window.__MW.kioskSet('color', '#5b1a8c'); window.__MW.kioskSet('livery', 'ribcage'); });
+  await MW(() => window.__MW.saveBuild('Midnight Hearse'));
+  await MW(() => { window.__MW.kioskSet('body', 'coupe'); window.__MW.kioskSet('color', '#ffb000'); });
+  await MW(() => window.__MW.saveBuild('Pumpkin Spice Coupe'));
+  await MW(() => window.__MW.kioskTab('Garage'));
+  await sleep(500);
+  r.screenshots.push(await shot('50_kiosk_garage'));
+  const list = await MW(() => window.__MW.garage());
+  await MW(() => window.__MW.loadBuild(1));
+  await sleep(500);
+  const cfg = await MW(() => { const c = window.__MW.kioskCfg(); return { body: c.body, color: c.color, livery: c.livery }; });
+  await MW(() => window.__MW.game.kiosk.close());
+  r.details = { list, loaded: cfg };
+  assert(r, list.length === 2 && list[0].name === 'Pumpkin Spice Coupe', 'saved', list);
+  assert(r, cfg.body === 'hearse' && cfg.color === '#5b1a8c' && cfg.livery === 'ribcage', 'loaded', cfg);
+});
+
+await check('phase4_screen2', 'Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie', async (r) => {
+  await MW(() => { const c = window.__MW.game.cinema; window.__MW.game.player.teleport(c.b.spots.BoxOffice.clone(), c.rot + Math.PI); });
+  await sleep(400);
+  const pr = await MW(() => window.__MW.prompt());
+  await MW(() => window.__MW.interact());
+  await sleep(400);
+  await MW(() => { const c = window.__MW.game.cinema; const s = c.seats.find((x) => x.screen === 2 && x.row === 2 && x.col === 7); window.__MW.game.player.teleport(s.pos.clone().setY(s.pos.y - 0.4), s.yaw); });
+  await sleep(500);
+  const seatPr = await MW(() => window.__MW.prompt());
+  await MW(() => window.__MW.interact());
+  await sleep(600);
+  await MW(() => { const g = window.__MW.game, f = g.cinema.films.pumpkin; g.time = Math.floor(g.time / f.length) * f.length + 23.8; });
+  await sleep(1600);
+  r.screenshots.push(await shot('51_screen2_seated'));
+  const c1 = await MW(() => { const c = window.__MW.game.cinema; return { seated: c.seat && c.seat.screen, film: c.seatFilm && c.seatFilm.id, watching: c.watching(), framesBy: c.stats.framesBy, dialog: window.__MW.state().dialogue.map((d) => d.id) }; });
+  await MW(() => window.__MW.game.cinema.stand());
+  await MW(() => window.__MW.setHour(0.5));
+  await sleep(300);
+  const drive = await MW(() => { const c = window.__MW.game.cinema; return { film: c.driveFilm().id, map: c.driveMat.map === c.driveFilm().tex }; });
+  await MW(() => window.__MW.setHour(18));
+  r.details = { prompt: pr, seatPrompt: seatPr, ...c1, drive };
+  assert(r, /Screen 2/.test(pr || '') && /Screen 2/.test(seatPr || ''), 'prompts', { pr, seatPr });
+  assert(r, c1.seated === 2 && c1.film === 'pumpkin' && c1.watching === 'palace2', 'seatedScreen2', c1);
+  assert(r, c1.framesBy && c1.framesBy.pumpkin > 5, 'filmDrawn', c1.framesBy);
+  assert(r, c1.dialog.includes('p_farmer_1'), 'cuePlayed', c1.dialog.slice(-4));
+  assert(r, drive.film === 'pumpkin' && drive.map, 'driveInMidnight', drive);
+});
+
+await check('phase4_gamepad', 'Gamepad (standard mapping): left stick walks, A interacts, RT/LT drive, Start pauses; menus and keyboard keep working', async (r) => {
+  await MW(() => {
+    const pad = { id: 'QA Virtual Pad (STANDARD GAMEPAD)', index: 0, connected: true, mapping: 'standard', timestamp: 0, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 })) };
+    window.__qaPad = pad;
+    window.__qaPadSet = (o) => { if (o.axes) pad.axes = o.axes.slice(); if (o.buttons) for (const [i, v] of Object.entries(o.buttons)) pad.buttons[i] = { pressed: v > 0.5, touched: v > 0, value: v }; };
+    window.__qaPadOrig = navigator.getGamepads;
+    navigator.getGamepads = () => [pad];
+    window.__MW.teleport(-40, -30);
+  });
+  await sleep(400);
+  const p0 = (await state()).pos;
+  await MW(() => window.__qaPadSet({ axes: [0, -1, 0, 0] })); await sleep(1300); await MW(() => window.__qaPadSet({ axes: [0, 0, 0, 0] }));
+  const p1 = (await state()).pos;
+  await MW(() => window.__MW.spawnTestCar({}, -30, -20, 0));
+  await sleep(300);
+  await MW(() => { const v = window.__MW.game.ownedCar.visual; v.root.updateMatrixWorld(true); const d = window.__MW.game.traffic.doorPoint(v); window.__MW.teleport(d.x, d.z); });
+  await sleep(500);
+  await MW(() => window.__qaPadSet({ buttons: { 0: 1 } })); await sleep(200); await MW(() => window.__qaPadSet({ buttons: { 0: 0 } }));
+  await sleep(1600);
+  const inCar = (await state()).inCar;
+  await MW(() => window.__qaPadSet({ buttons: { 7: 1 } })); await sleep(1800);
+  const speed = (await state()).speed;
+  await MW(() => window.__qaPadSet({ buttons: { 7: 0, 6: 1 } })); await sleep(1500); await MW(() => window.__qaPadSet({ buttons: { 6: 0 } }));
+  await MW(() => window.__qaPadSet({ buttons: { 9: 1 } })); await sleep(150); await MW(() => window.__qaPadSet({ buttons: { 9: 0 } }));
+  await sleep(300);
+  const mode = (await state()).mode;
+  await MW(() => { navigator.getGamepads = window.__qaPadOrig; window.__MW.game.pause(false); });
+  await sleep(300);
+  r.details = { walked: +Math.hypot(p1[0] - p0[0], p1[2] - p0[2]).toFixed(2), inCar, speed, mode };
+  assert(r, r.details.walked > 3, 'stickWalk', r.details.walked);
+  assert(r, inCar, 'aInteracts', inCar);
+  assert(r, speed > 6, 'rtThrottle', speed);
+  assert(r, mode === 'paused', 'startPauses', mode);
+  await exitCar();
 });
 
 await check('perf', 'Performance snapshot (draw calls, triangles, FPS on this GPU)', async (r) => {

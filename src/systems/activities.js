@@ -213,7 +213,9 @@ class DragRace {
       const steps = [[2.4, 'Y1'], [2.9, 'Y2'], [3.4, 'Y3']];
       for (const [at, n] of steps) S.setDrag(n, R.t >= at && R.t < 3.9);
       if (R.t >= 0.6 && R.t < 3.9 && v.controls.throttle > 0.3 && g.player.vehicle === v) { R.foul = true; this._end('foul'); return; }
-      if (R.t < 3.9) { v.teleport(new THREE.Vector3(this.start.x - 0.5, v.position.y, this.laneZ), Math.PI / 2); return; }
+      // hold on the line without re-teleporting: teleport() lifts by cy + 0.3 from the y it is given, so feeding it the
+      // chassis height every frame stacked ~0.8 m per frame and the car fell from the sky (and flipped) on green
+      if (R.t < 3.9) { v.hold(this.start.x - 0.5, this.laneZ, Math.PI / 2); return; }
       R.phase = 'run'; R.greenAt = R.t;
       S.setDrag('G', true);
       g.audio.tone(880, 0.5, 'square', 0.12);

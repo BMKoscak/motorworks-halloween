@@ -75,6 +75,16 @@ export class Segment {
     const k = (s - this.cum[i - 1]) / (this.cum[i] - this.cum[i - 1] || 1);
     return { p: a.clone().lerp(b, k), dir: b.clone().sub(a).setY(0).normalize() };
   }
+  /** Which way a junction connector turns, for turn signals: 'L', 'R' or null (straight on). Cached. */
+  turnSide() {
+    if (this._turn !== undefined) return this._turn;
+    if (this.kind === 'uturn') return (this._turn = 'L');
+    if (this.kind === 'lane') return (this._turn = null);
+    const a = this.at(0).dir, b = this.at(this.length).dir;
+    const cross = a.x * b.z - a.z * b.x; // < 0: turning towards the car's left (+x when facing +z)
+    return (this._turn = Math.abs(cross) < 0.35 ? null : cross < 0 ? 'L' : 'R');
+  }
+
   /** Curvature hint: heading change over the next `ahead` metres (radians). */
   bend(s, ahead = 8) {
     const a = this.at(s).dir, b = this.at(Math.min(this.length, s + ahead)).dir;
@@ -97,7 +107,7 @@ export class RoadGraph {
         // lanes end at the painted stop bar of signalised / stop-controlled approaches, else TRIM before the node
         const trimAt = (n) => { const ap = approach(n.id, r.id); return ap.stopDist ? ap.stopDist + 1.4 : n.dead ? 4 : TRIM; };
         const lane = trimLine(offsetLine(c, r.w), trimAt(from), trimAt(to));
-        const seg = new Segment(lane, 'lane', { road: r.id, from: from.id, to: to.id, control: approach(to.id, r.id) });
+        const seg = new Segment(lane, 'lane', { road: r.id, from: from.id, to: to.id, control: approach(to.id, r.id), w: r.w });
         this.lanes.push(seg);
         from.out.push(seg);
         to.in.push(seg);

@@ -1,0 +1,81 @@
+{
+ "crash": {
+  "zones": {
+   "front": 0.47,
+   "rear": 0,
+   "left": 0,
+   "right": 0
+  },
+  "percent": 21,
+  "dented": 19,
+  "hits": 1,
+  "pull": 0,
+  "hood": 0,
+  "rust": 0.12,
+  "repairCost": 400
+ },
+ "left": {
+  "zone": "left",
+  "k": 0.56,
+  "moved": 337,
+  "damage": 38
+ },
+ "right": {
+  "zone": "left",
+  "k": 0.39,
+  "moved": 319,
+  "damage": 52
+ },
+ "after": {
+  "zones": {
+   "front": 0.47,
+   "rear": 0,
+   "left": 0.67,
+   "right": 0
+  },
+  "percent": 52,
+  "dented": 28,
+  "hits": 3,
+  "pull": 0.06,
+  "hood": 0,
+  "rust": 0.28,
+  "repairCost": 950
+ },
+ "hud": null,
+ "repaired": {
+  "zones": {
+   "front": 0,
+   "rear": 0,
+   "left": 0,
+   "right": 0
+  },
+  "percent": 0,
+  "dented": 0,
+  "hits": 0,
+  "pull": 0,
+  "hood": 0,
+  "rust": 0,
+  "repairCost": 0
+ },
+ "save1": "Midnight Hearse",
+ "save2": "Pumpkin Spice Coupe",
+ "garage": [
+  {
+   "name": "Pumpkin Spice Coupe",
+   "body": "coupe",
+   "color": "#ffb000"
+  },
+  {
+   "name": "Midnight Hearse",
+   "body": "hearse",
+   "color": "#5b1a8c"
+  }
+ ],
+ "load": true,
+ "loadedCfg": {
+  "body": "hearse",
+  "color": "#5b1a8c",
+  "livery": "ribcage"
+ },
+ "errors": []
+}

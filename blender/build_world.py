@@ -1361,7 +1361,8 @@ def build_cinema():
     col("Slab", (w + 0.4, F, d + 0.4), (0, F / 2, 0), root)
     openwall("Wall_Front", (-hw, hd), (hw, hd), h, T, brick, root, doors=[(0, 1.8, 2.6)], passthrough=[(-6.5, 1.4, F + 1.05, F + 2.05)], y0=F, skin=(inner, -1))
     openwall("Wall_Back", (-hw, -hd), (hw, -hd), h, T, brick, root, y0=F, skin=(inner, 1))
-    openwall("Wall_West", (-hw, -hd), (-hw, hd), h, T, brick, root, y0=F, skin=(inner, 1))
+    # west wall: doorway from the lobby into the Screen 2 annex (Phase 4)
+    openwall("Wall_West", (-hw, -hd), (-hw, hd), h, T, brick, root, doors=[(11.9, 1.4, F + 2.4)], y0=F, skin=(inner, 1))
     openwall("Wall_East", (hw, -hd), (hw, hd), h, T, brick, root, doors=[(-1.0, 1.4, 2.4)], y0=F, skin=(inner, -1))
     # partition: the screen hangs on its auditorium side; doorways beside the screen
     openwall("Wall_Partition", (-hw, LZ), (hw, LZ), h - 0.6, 0.3, inner, root, passthrough=[(-8.6, 1.6, F, F + 2.7), (8.6, 1.6, F, F + 2.7)], y0=F)
@@ -1480,6 +1481,69 @@ def build_cinema():
     spot("Outside", (0, 0, hd + 1.6), root)
     spot("BackIn", (hw - 1.2, F, -1.0), root)
     spot("BackOut", (hw + 1.4, 0, -1.0), root)
+    # ---------------------------------------------------------------- Screen 2 annex (Phase 4)
+    # A second, smaller auditorium built onto the west side, entered from the lobby through the west-wall doorway at
+    # z = 11.9. Its screen (Cinema_Screen2) hangs on the annex's south wall, so its 6 x 14 seats (Seat2_row_col) face -z.
+    ax0, ax1, az0, az1, ah = -21.0, -hw, -12.0, 13.6, 6.5
+    acx, acz, aw, ad = (ax0 + ax1) / 2, (az0 + az1) / 2, ax1 - ax0, az1 - az0
+    box("Annex_Slab", (aw + 0.4, F, ad + 0.4), (acx, F / 2, acz), CONCRETE(), pivot=(0, 0, 0), parent=root)
+    col("Annex_Slab", (aw + 0.4, F, ad + 0.4), (acx, F / 2, acz), root)
+    openwall("Annex_West", (ax0, az0), (ax0, az1), ah, T, brick, root, y0=F, skin=(inner, 1))
+    openwall("Annex_South", (ax0, az0), (ax1, az0), ah, T, brick, root, y0=F, skin=(inner, 1))
+    openwall("Annex_North", (ax0, az1), (ax1, az1), ah, T, brick, root, y0=F, skin=(inner, -1))
+    # the shared wall's annex face (split around the doorway)
+    for k, (z0, z1) in enumerate(((az0 + 0.15, 11.15), (12.65, az1 - 0.15))):
+        box("Annex_EastSkin_%d" % k, (0.04, ah, z1 - z0), (ax1 - T / 2 - 0.03, F + ah / 2, (z0 + z1) / 2), inner, pivot=(0, 0, 0), parent=root)
+    box("Annex_Floor", (aw - 0.5, 0.02, ad - 0.5), (acx, F + 0.01, acz), carpet, pivot=(0, 0, 0), parent=root)
+    box("Annex_Ceiling", (aw, 0.15, ad), (acx, F + ah - 0.08, acz), mat("AudCeiling", (0.08, 0.04, 0.08), 0, 0.9), pivot=(0, 0, 0), parent=root)
+    col("Annex_Ceiling", (aw, 0.15, ad), (acx, F + ah - 0.08, acz), root)
+    box("Annex_Roof", (aw + 0.4, 0.25, ad + 0.4), (acx, F + ah + 0.12, acz), ROOF(), pivot=(0, 0, 0), parent=root)
+    box("Annex_Cornice", (aw + 0.6, 0.4, ad + 0.6), (acx, F + ah + 0.3, acz), TRIM(), pivot=(0, 0, 0), parent=root)
+    # screen, masking, stage and curtains on the south wall
+    s2z = az0 + T / 2 + 0.2
+    box("Screen2_Masking", (9.4, 4.6, 0.05), (acx, F + 3.3, s2z - 0.05), mat("Masking", (0.02, 0.02, 0.02), 0, 1), pivot=(0, 0, 0), parent=root)
+    box("Cinema_Screen2", (8.4, 3.8, 0.04), (acx, F + 3.3, s2z), mat("Movie_Screen", (0.9, 0.9, 0.9), 0, 0.6, emit=(0.6, 0.6, 0.6), emit_strength=0.4), pivot=(0, 0, 0), parent=root)
+    furn("Stage2", (9.8, 0.5, 1.4), (acx, F + 0.25, s2z + 0.8), mat("StageWood", (0.25, 0.13, 0.07), 0, 0.6), root)
+    folds2 = [((0.3, 5.4, 0.26), (acx + sx * (4.5 + k * 0.28), F + 3.0, s2z + 0.22 + (k % 2) * 0.15)) for sx in (1, -1) for k in range(3)]
+    boxes("Curtains2", folds2, velvet, (0, 0, 0), root)
+    box("Valance2", (aw - 0.4, 0.8, 0.35), (acx, F + 5.6, s2z + 0.25), velvet, pivot=(0, 0, 0), parent=root)
+    box("Valance2_Trim", (aw - 0.4, 0.1, 0.4), (acx, F + 5.2, s2z + 0.25), gold, pivot=(0, 0, 0), parent=root)
+    # 6 flat rows of 14 seats facing the screen (-z); backs on the +z side
+    for k in range(6):
+        zc = az0 + 4.2 + k * 1.15
+        y = F
+        seats2, backs2, arms2 = [], [], []
+        for c in range(14):
+            x = acx - 3.9 + c * seat_w
+            seats2.append(((0.5, 0.12, 0.48), (x, y + 0.45, zc - 0.12)))
+            backs2.append(((0.5, 0.62, 0.1), (x, y + 0.78, zc + 0.17), Matrix.Rotation(math.radians(10), 3, 'X')))
+            arms2.append(((0.06, 0.5, 0.5), (x - seat_w / 2, y + 0.4, zc - 0.05)))
+            empty("Seat2_%d_%d" % (k, c), (x, y + 0.42, zc - 0.1), root)
+        arms2.append(((0.06, 0.5, 0.5), (acx - 3.9 + 14 * seat_w - seat_w / 2, y + 0.4, zc - 0.05)))
+        boxes("Seats2_%d" % k, seats2, seatm, (0, 0, 0), root)
+        boxes("SeatBacks2_%d" % k, backs2, seatm, (0, 0, 0), root)
+        boxes("SeatArms2_%d" % k, arms2, mat("SeatFrame", (0.08, 0.06, 0.07), 0.5, 0.5), (0, 0, 0), root)
+        boxes("AisleLights2_%d" % k, [((0.12, 0.05, 0.05), (acx + sx * 4.6, y + 0.05, zc - 0.55)) for sx in (1, -1)], aisle, (0, 0, 0), root)
+    boxes("Sconces2", [((0.08, 0.45, 0.32), (ax0 + T / 2 + 0.08, F + 3.6, z)) for z in (-6.0, 0.0, 6.0)],
+          mat("Lamp_Sconce", (1, 0.6, 0.3), 0, 0.3, emit=(1, 0.5, 0.2), emit_strength=1.2), (0, 0, 0), root)
+    for i, z in enumerate((-4.0, 6.0)):
+        fixture("Annex_%d" % i, (acx, F + ah - 0.6, z), root, pendant=True, color="#ffd9a0")
+    # projector on a wall shelf at the back, its beam reaching the screen
+    pj2 = (acx, F + 4.6, az1 - T / 2 - 0.9)
+    furn("Projector2_Shelf", (1.6, 0.12, 1.4), (pj2[0], pj2[1] - 0.42, pj2[2]), mat("StairSteel", (0.4, 0.42, 0.45), 0.7, 0.4), root, collide=False)
+    box("Projector2_Body", (0.6, 0.55, 1.0), pj2, mat("ProjectorGrey", (0.35, 0.37, 0.4), 0.7, 0.4), pivot=(0, 0, 0), parent=root)
+    for dz in (-0.3, 0.3):
+        cyl("Projector2_Reel_%d" % int(dz * 10 + 5), 0.36, 0.06, (pj2[0], pj2[1] + 0.65, pj2[2] + dz), mat("ReelMetal", (0.55, 0.57, 0.6), 0.9, 0.3), axis='x', seg=20, pivot=(0, 0, 0), parent=root)
+    beam2 = beams("FX_ProjectorBeam2", [((pj2[0], pj2[1], pj2[2] - 0.6), (acx, F + 3.3, s2z + 0.4), 0.25, 6.5)], 0.25, mat("FX_LightShaft", (0.9, 0.95, 1.0), 0, 1, alpha=0.08), (0, 0, 0), root)
+    beam2["preview_hide"] = 1
+    # signage: SCREEN 1 / SCREEN 2 over the doorways, and a neon sign on the annex facing Main Street
+    sign = mat("Lamp_Sign", (1, 1, 1), 0, 0.3, emit=(1, 0.95, 0.85), emit_strength=2)
+    text_mesh("Screen2_Sign", "SCREEN 2", (-hw + T / 2 + 0.06, F + 2.95, 11.9), 0.24, sign, parent=root, depth=0.03, facing='x')
+    for sx in (1, -1):
+        text_mesh("Screen1_Sign_%d" % (sx + 1), "SCREEN 1", (sx * 8.6, F + 3.0, LZ + 0.2), 0.24, sign, parent=root, depth=0.03, facing='z')
+    text_mesh("Annex_Neon", "SCREEN 2", (acx, F + 4.4, az1 + T / 2 + 0.06), 0.62, mat("Lamp_NeonPalace", (1, 0.25, 0.1), 0, 0.3, emit=(1, 0.2, 0.05), emit_strength=6), parent=root, depth=0.05, facing='z')
+    spot("Screen2Door", (-hw - 0.9, F, 11.9), root)
+    spot("Aud2Front", (acx, F, az0 + 2.6), root)
     # ---------------------------------------------------------------- facade: marquee, blade sign, poster cases, chaser bulbs
     mz = hd + 1.6
     box("Marquee", (13.0, 1.6, 3.0), (0, 4.6, mz), mat("MarqueeBody", (0.12, 0.06, 0.1), 0.4, 0.4), pivot=(0, 0, 0), parent=root)
@@ -1489,8 +1553,9 @@ def build_cinema():
     for sx in (1, -1):
         box("Marquee_Board_S%d" % (sx + 1), (0.05, 1.1, 2.6), (sx * 6.52, 4.6, mz), board, pivot=(0, 0, 0), parent=root)
     ink = mat("MarqueeInk", (0.05, 0.02, 0.03), 0, 0.6)
-    text_mesh("Marquee_Line1", "NOW SHOWING", (0, 4.88, mz + 1.56), 0.32, ink, parent=root, depth=0.02)
-    text_mesh("Marquee_Line2", "NIGHT OF THE V8", (0, 4.38, mz + 1.56), 0.42, mat("MarqueeRed", (0.7, 0.03, 0.03), 0, 0.6), parent=root, depth=0.02)
+    # two features since Phase 4: Screen 1 and the Screen 2 annex
+    text_mesh("Marquee_Line1", "1 - NIGHT OF THE V8", (0, 4.86, mz + 1.56), 0.36, mat("MarqueeRed", (0.7, 0.03, 0.03), 0, 0.6), parent=root, depth=0.02)
+    text_mesh("Marquee_Line2", "2 - ATTACK OF THE 50 FT PUMPKIN", (0, 4.34, mz + 1.56), 0.3, ink, parent=root, depth=0.02)
     for sx in (1, -1):
         text_mesh("Marquee_Side%d" % (sx + 1), "PALACE", (sx * 6.56, 4.6, mz), 0.5, ink, parent=root, depth=0.02, facing='x' if sx > 0 else '-x')
     bulbs = []

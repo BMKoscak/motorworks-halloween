@@ -42,7 +42,7 @@ export class Factory {
       if (o.isMesh && o.material.name === 'Lamp_Ceiling') {
         this.ceilMat = o.material;
         const p = new THREE.Vector3(); o.getWorldPosition(p);
-        this.floods.push(game.lights.add(p.setY(9.5), '#fff1dc', 30, false, 34));
+        this.floods.push(game.lights.add(p.setY(9.5), '#fff1dc', 30, false, 34, true));
       }
       if (o.isMesh && o.material.name === 'FX_LightShaft') o.material = this._shaftMaterial();
     });
@@ -54,7 +54,7 @@ export class Factory {
     this.neonMat = assets.models.plant.getObjectByName('Sign_Neon').material;
     // emergency beacons for Night Shift mode (off by default)
     this.emergency = [[-40, -20], [0, -20], [40, -20], [-40, 20], [20, 20]].map(([x, z]) => {
-      const s = game.lights.add(new THREE.Vector3(...pl(x, z, 9)), '#ff1a1a', 0, false, 30);
+      const s = game.lights.add(new THREE.Vector3(...pl(x, z, 9)), '#ff1a1a', 0, false, 30, true);
       game.lights.setOn(s, false);
       return s;
     });
@@ -327,7 +327,7 @@ export class Factory {
     for (const dz of [-5.6, 5.6]) { const cu = new THREE.Mesh(new THREE.PlaneGeometry(10, 5.6), curtain); cu.position.set(0, 2.9, dz); booth.add(cu); }
     booth.position.set(SX[2], 0, lz);
     scene.add(booth);
-    this.boothLight = this.game.lights.add(new THREE.Vector3(SX[2], 5, lz), '#e8f0ff', 26, false, 16);
+    this.boothLight = this.game.lights.add(new THREE.Vector3(SX[2], 5, lz), '#e8f0ff', 26, false, 16, true);
     // S4: overhead crane with an engine staging bay, chains, under-lift and lateral wheel loaders
     this.crane = assets.clone('crane');
     this.crane.position.set(SX[3], 0, lz);

@@ -34,6 +34,7 @@ export class Character {
     if (opts.override) Object.assign(v, opts.override);
     this.isSkeleton = variant === 'skeleton';
     this.root = new THREE.Group();
+    this.root.userData.cullTree = true; // NPCs far away are hidden by their owners; skip their joint matrices then
     this.model = assets.clone(this.isSkeleton ? 'skeleton' : 'character');
     this.root.add(this.model);
     this.j = {};

@@ -1,0 +1,19 @@
+{
+ "quality": "high",
+ "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "views": [
+  {
+   "name": "main_street",
+   "fps": 53.6,
+   "drawCalls": 1352,
+   "triangles": 1541081
+  },
+  {
+   "name": "town_overview",
+   "fps": 44.5,
+   "drawCalls": 1561,
+   "triangles": 1768699
+  }
+ ],
+ "errors": []
+}

@@ -15,6 +15,17 @@ from mathutils import Vector, Matrix
 
 G2B = Matrix(((1, 0, 0), (0, 0, -1), (0, 1, 0)))
 
+# Mesh detail level (Phase 4 HD pass). 1 = the original low-poly look; 2 (default) = rounded box edges, round-edged
+# extrusions, doubled segment counts on curved primitives and smooth-by-angle normals. COL_ colliders never change.
+DETAIL = max(1, int(os.environ.get("MW_DETAIL", "2")))
+HD = DETAIL > 1
+SMOOTH_ANGLE = math.radians(44)
+
+
+def segs(n, cap=64):
+    """Scale a curved primitive's segment count by the detail level."""
+    return min(cap, max(n, int(round(n * DETAIL)))) if HD else n
+
 
 def g2b(v):
     return Vector((v[0], -v[2], v[1]))
@@ -109,8 +120,9 @@ def _box_uv(bm, scale=1.0):
                 l[uv].uv = (co[0] * scale, co[1] * scale)
 
 
-def mesh_from_bm(name, bm, pivot, material, parent=None, uv_scale=1.0, smooth=False, props=None):
-    """bm geometry is in game-space *world* coords; it is re-centred on pivot."""
+def mesh_from_bm(name, bm, pivot, material, parent=None, uv_scale=1.0, smooth=False, props=None, auto_smooth=None):
+    """bm geometry is in game-space *world* coords; it is re-centred on pivot.
+    auto_smooth: an angle (radians) -> smooth shading with edges sharper than it kept hard (HD bevels, cylinders)."""
     px, py, pz = pivot
     for v in bm.verts:
         v.co = Vector((v.co.x - px, v.co.y - py, v.co.z - pz))
@@ -120,9 +132,11 @@ def mesh_from_bm(name, bm, pivot, material, parent=None, uv_scale=1.0, smooth=Fa
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me)
     bm.free()
-    if smooth:
+    if smooth or auto_smooth:
         for p in me.polygons:
             p.use_smooth = True
+    if auto_smooth and not smooth and not name.startswith("COL_"):
+        me.set_sharp_from_angle(angle=auto_smooth)
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
     if material is not None:
@@ -136,26 +150,40 @@ def mesh_from_bm(name, bm, pivot, material, parent=None, uv_scale=1.0, smooth=Fa
     return ob
 
 
-def _bm_box(bm, size, center, rot=None):
+def _bm_box(bm, size, center, rot=None, bevel=False):
     m = Matrix.Diagonal((size[0], size[1], size[2], 1.0))
     if rot is not None:
         m = rot.to_4x4() @ m
     m = Matrix.Translation(center) @ m
-    bmesh.ops.create_cube(bm, size=1.0, matrix=m)
+    res = bmesh.ops.create_cube(bm, size=1.0, matrix=m)
+    if bevel and HD:
+        # rounded edges: ~12 % of the thinnest side, at most 3 cm; tiny parts (trim, paint lines) stay sharp boxes
+        thin = min(abs(size[0]), abs(size[1]), abs(size[2]))
+        off = min(0.03, thin * 0.12)
+        if off >= 0.004:
+            vs = set(res["verts"])
+            edges = list({e for v in vs for e in v.link_edges})
+            big = max(abs(size[0]), abs(size[1]), abs(size[2])) > 4
+            bmesh.ops.bevel(bm, geom=list(vs) + edges, offset=off, segments=1 if big else 2, profile=0.5,
+                            affect='EDGES', clamp_overlap=True)
 
 
 def box(name, size, center, material, pivot=None, parent=None, rot=None, props=None, uv_scale=1.0):
     bm = bmesh.new()
-    _bm_box(bm, size, Vector(center), rot)
-    return mesh_from_bm(name, bm, pivot if pivot is not None else center, material, parent, uv_scale, props=props)
+    bev = not name.startswith("COL_")
+    _bm_box(bm, size, Vector(center), rot, bevel=bev)
+    return mesh_from_bm(name, bm, pivot if pivot is not None else center, material, parent, uv_scale, props=props,
+                        auto_smooth=SMOOTH_ANGLE if HD and bev else None)
 
 
 def boxes(name, specs, material, pivot, parent=None, uv_scale=1.0, props=None):
     """Several boxes merged into one object. specs: [(size, center), ...]"""
     bm = bmesh.new()
+    bev = not name.startswith("COL_")
     for s in specs:
-        _bm_box(bm, s[0], Vector(s[1]), s[2] if len(s) > 2 else None)
-    return mesh_from_bm(name, bm, pivot, material, parent, uv_scale, props=props)
+        _bm_box(bm, s[0], Vector(s[1]), s[2] if len(s) > 2 else None, bevel=bev)
+    return mesh_from_bm(name, bm, pivot, material, parent, uv_scale, props=props,
+                        auto_smooth=SMOOTH_ANGLE if HD and bev else None)
 
 
 AXIS_ROT = {
@@ -179,13 +207,18 @@ def _bm_cyl(bm, r1, r2, depth, center, axis='y', seg=16, rot=None):
 
 def cyl(name, r, depth, center, material, axis='y', seg=16, r2=None, pivot=None, parent=None, rot=None, smooth=False, props=None):
     bm = bmesh.new()
-    _bm_cyl(bm, r, r if r2 is None else r2, depth, Vector(center), axis, seg, rot)
-    return mesh_from_bm(name, bm, pivot if pivot is not None else center, material, parent, smooth=smooth, props=props)
+    col = name.startswith("COL_")
+    _bm_cyl(bm, r, r if r2 is None else r2, depth, Vector(center), axis, seg if col else segs(seg), rot)
+    # HD: round sides, flat caps (a smooth-by-angle split instead of the old faceted barrels)
+    return mesh_from_bm(name, bm, pivot if pivot is not None else center, material, parent, smooth=smooth, props=props,
+                        auto_smooth=SMOOTH_ANGLE if HD and not col else None)
 
 
 def sphere(name, r, center, material, pivot=None, parent=None, scale=(1, 1, 1), seg=12, smooth=True, props=None):
     bm = bmesh.new()
     m = Matrix.Translation(Vector(center)) @ Matrix.Diagonal((*scale, 1.0))
+    # faceted spheres (smooth=False: stylised tree canopies, gems) keep their facet count
+    seg = segs(seg, 48) if smooth else seg
     bmesh.ops.create_uvsphere(bm, u_segments=seg, v_segments=max(6, seg // 2), radius=r, matrix=m)
     return mesh_from_bm(name, bm, pivot if pivot is not None else center, material, parent, smooth=smooth, props=props)
 
@@ -242,7 +275,17 @@ def _offset_poly(pts, d):
 def _bm_profile(bm, profile_zy, x0, x1, bevel=0.0):
     """Extrude a closed (z,y) polygon along x from x0 to x1 with chamfered sides."""
     rings = []
-    if bevel > 0:
+    if bevel > 0 and HD:
+        # rounded side edges: a quarter-circle of rings instead of one chamfer, so body panels catch a soft highlight
+        n = 4
+        xs = []
+        for k in range(n + 1):
+            th = (math.pi / 2) * k / n
+            xs.append((x0 + bevel * (1 - math.cos(th)), _offset_poly(profile_zy, bevel * (1 - math.sin(th))) if k < n else profile_zy))
+        for k in range(n, -1, -1):
+            th = (math.pi / 2) * k / n
+            xs.append((x1 - bevel * (1 - math.cos(th)), _offset_poly(profile_zy, bevel * (1 - math.sin(th))) if k < n else profile_zy))
+    elif bevel > 0:
         inner = _offset_poly(profile_zy, bevel)
         xs = [(x0, inner), (x0 + bevel, profile_zy), (x1 - bevel, profile_zy), (x1, inner)]
     else:
@@ -269,13 +312,15 @@ def _bm_profile(bm, profile_zy, x0, x1, bevel=0.0):
 def profile(name, profile_zy, x0, x1, material, pivot, parent=None, bevel=0.0, props=None):
     bm = bmesh.new()
     _bm_profile(bm, profile_zy, x0, x1, bevel)
-    return mesh_from_bm(name, bm, pivot, material, parent, props=props)
+    return mesh_from_bm(name, bm, pivot, material, parent, props=props,
+                        auto_smooth=SMOOTH_ANGLE if HD and bevel > 0 else None)
 
 
 def lathe(name, pts_ry, center, material, axis='x', seg=24, pivot=None, parent=None, smooth=True, props=None, waves=None, closed=False):
     """Revolve a (radius, along-axis) polyline around an axis. Optional waves=(count, amp)
     perturbs radius by angle (pumpkin ribs, ghost hems)."""
     bm = bmesh.new()
+    seg = segs(seg)
     rings = []
     c = Vector(center)
     for (r, h) in pts_ry:

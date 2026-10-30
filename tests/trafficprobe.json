@@ -1,0 +1,680 @@
+{
+ "setup": {
+  "road": "main_w",
+  "lane": "M_W->LOT_W",
+  "w": 2.6,
+  "s": 35.6
+ },
+ "stats": {
+  "overtakes": 1,
+  "done": 1,
+  "aborts": 0
+ },
+ "track": [
+  {
+   "x": -147.9,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 9.6,
+   "blocked": null
+  },
+  {
+   "x": -145.8,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -142.8,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -140.4,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -138.3,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -136.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -134,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -131.7,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -129.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -127.4,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 8.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -125.8,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 6.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -124.6,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 4.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -123.8,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 2.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -123.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.7,
+   "blocked": "parked"
+  },
+  {
+   "x": -123.4,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.3,
+   "blocked": null
+  },
+  {
+   "x": -123.3,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 1,
+   "blocked": null
+  },
+  {
+   "x": -123,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 1.7,
+   "blocked": null
+  },
+  {
+   "x": -122.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 2.3,
+   "blocked": null
+  },
+  {
+   "x": -121.9,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 2.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -121.4,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 2.3,
+   "blocked": null
+  },
+  {
+   "x": -121,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 1.6,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.7,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.9,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.7,
+   "blocked": null
+  },
+  {
+   "x": -120.4,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.5,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.3,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.3,
+   "blocked": null
+  },
+  {
+   "x": -120.2,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.2,
+   "blocked": null
+  },
+  {
+   "x": -120.2,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.1,
+   "blocked": null
+  },
+  {
+   "x": -120.2,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.1,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.1,
+   "blocked": null
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": null
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": null
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.1,
+   "blocked": null
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.1,
+   "blocked": null
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -120.1,
+   "z": 2.42,
+   "lat": 0.18,
+   "phase": "out",
+   "signal": "L",
+   "speed": 0.3,
+   "blocked": "parked"
+  },
+  {
+   "x": -119.9,
+   "z": 2.03,
+   "lat": 0.57,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1,
+   "blocked": "parked"
+  },
+  {
+   "x": -119.6,
+   "z": 1.66,
+   "lat": 0.94,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.2,
+   "blocked": "parked"
+  },
+  {
+   "x": -119.4,
+   "z": 1.25,
+   "lat": 1.35,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.2,
+   "blocked": "parked"
+  },
+  {
+   "x": -119.1,
+   "z": 0.88,
+   "lat": 1.72,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.2,
+   "blocked": "parked"
+  },
+  {
+   "x": -118.8,
+   "z": 0.5,
+   "lat": 2.1,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.8,
+   "blocked": null
+  },
+  {
+   "x": -118.3,
+   "z": 0.13,
+   "lat": 2.47,
+   "phase": "out",
+   "signal": "L",
+   "speed": 2.5,
+   "blocked": null
+  },
+  {
+   "x": -117.7,
+   "z": -0.25,
+   "lat": 2.85,
+   "phase": "out",
+   "signal": "L",
+   "speed": 3.1,
+   "blocked": null
+  },
+  {
+   "x": -116.9,
+   "z": -0.63,
+   "lat": 3.23,
+   "phase": "out",
+   "signal": "L",
+   "speed": 3.8,
+   "blocked": null
+  },
+  {
+   "x": -116,
+   "z": -0.99,
+   "lat": 3.59,
+   "phase": "out",
+   "signal": "L",
+   "speed": 4.4,
+   "blocked": null
+  },
+  {
+   "x": -114.9,
+   "z": -1.38,
+   "lat": 3.98,
+   "phase": "out",
+   "signal": "L",
+   "speed": 5.1,
+   "blocked": null
+  },
+  {
+   "x": -113.7,
+   "z": -1.75,
+   "lat": 4.35,
+   "phase": "out",
+   "signal": "L",
+   "speed": 5.8,
+   "blocked": null
+  },
+  {
+   "x": -112.4,
+   "z": -2.12,
+   "lat": 4.72,
+   "phase": "out",
+   "signal": "L",
+   "speed": 6.4,
+   "blocked": null
+  },
+  {
+   "x": -110.9,
+   "z": -2.49,
+   "lat": 5.09,
+   "phase": "out",
+   "signal": "L",
+   "speed": 7.1,
+   "blocked": null
+  },
+  {
+   "x": -109.2,
+   "z": -2.59,
+   "lat": 5.19,
+   "phase": "pass",
+   "signal": "L",
+   "speed": 7.7,
+   "blocked": null
+  },
+  {
+   "x": -101.2,
+   "z": -1.81,
+   "lat": 4.41,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -99,
+   "z": -1.47,
+   "lat": 4.07,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -96.7,
+   "z": -1.13,
+   "lat": 3.73,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -94.6,
+   "z": -0.81,
+   "lat": 3.41,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -92.3,
+   "z": -0.47,
+   "lat": 3.07,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -90,
+   "z": -0.14,
+   "lat": 2.74,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -87.8,
+   "z": 0.19,
+   "lat": 2.41,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -85.6,
+   "z": 0.53,
+   "lat": 2.07,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -83.4,
+   "z": 0.86,
+   "lat": 1.74,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -81.1,
+   "z": 1.21,
+   "lat": 1.39,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -78.8,
+   "z": 1.54,
+   "lat": 1.06,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -76.6,
+   "z": 1.88,
+   "lat": 0.72,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -74.3,
+   "z": 2.22,
+   "lat": 0.38,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -72.1,
+   "z": 2.56,
+   "lat": 0.04,
+   "phase": "back",
+   "signal": "R",
+   "speed": 10,
+   "blocked": null
+  },
+  {
+   "x": -70,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": "L",
+   "speed": 9.2,
+   "blocked": null
+  }
+ ],
+ "blink": {
+  "signal": "L",
+  "turn": "turn:L"
+ },
+ "sig": {
+  "signallingSeconds": 80.2,
+  "errors": []
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "padWalk": {
+  "moved": 6.39,
+  "connected": true
+ },
+ "padPrompt": "[E] Get in your car",
+ "padInCar": true,
+ "padSpeed": 14.37,
+ "padPause": "paused",
+ "padErrors": [],
+ "touchUI": true,
+ "touchWalk": 7.65,
+ "touchSpeed": 14.14,
+ "touchCarLayout": true,
+ "touchErrors": []
+}

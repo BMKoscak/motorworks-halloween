@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { RenderPipeline } from './core/render.js';
+import { DistanceCull } from './core/sceneCull.js';
+import { Headlights } from './world/headlights.js';
+import { TouchControls } from './ui/touch.js';
 import { Input } from './core/input.js';
 import { Assets } from './core/assets.js';
 import { Physics } from './core/physics.js';
@@ -66,7 +66,7 @@ class Game {
     this.dialogueLog = [];
     this.errors = [];
     this.frames = 0;
-    this.qualityName = localStorage.getItem('mw_quality') || 'medium';
+    this.qualityName = localStorage.getItem('mw_quality') || null; // null = pick from the GPU in init()
     this.listener = { pos: new THREE.Vector3(), right: new THREE.Vector3(1, 0, 0) };
     const saved = JSON.parse(localStorage.getItem('mw_save') || '{}');
     this.state = { money: saved.money ?? 250000, pumpkins: saved.pumpkins || [], monsterMash: !!saved.monsterMash, talked: new Set(), jerrycans: 0, launcher: !!saved.launcher };
@@ -82,28 +82,19 @@ class Game {
 
   async init() {
     const canvas = $('game');
+    this.pipeline = new RenderPipeline(this, canvas, QUALITY.medium);
+    if (!QUALITY[this.qualityName]) this.qualityName = RenderPipeline.defaultQuality(this.pipeline.gpu);
     const q = (this.quality = QUALITY[this.qualityName]);
-    const r = (this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }));
-    r.setPixelRatio(q.pixelRatio);
-    r.setSize(innerWidth, innerHeight);
-    r.shadowMap.enabled = true;
-    r.shadowMap.type = THREE.PCFSoftShadowMap;
-    r.toneMapping = THREE.ACESFilmicToneMapping;
-    r.toneMappingExposure = 1.05;
-    r.outputColorSpace = THREE.SRGBColorSpace;
-    r.info.autoReset = false;
+    this.renderer = this.pipeline.renderer;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1800);
     this.camera.position.set(-20, 18, 40);
-    this.composer = new EffectComposer(r);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.6, 0.5, 0.9);
-    this.composer.addPass(this.bloom);
-    this.composer.addPass(new OutputPass());
-    this.bloom.enabled = q.bloom;
+    this.pipeline.build(this.scene, this.camera, q);
+    this.cull = new DistanceCull(this, q.cull);
     addEventListener('resize', () => this.resize());
 
     this.input = new Input(canvas);
+    this.touch = TouchControls.wanted() ? new TouchControls(this) : null;
     this.physics = new Physics();
     this.physics.onOutOfBounds = (b) => this._outOfBounds(b);
     this.assets = new Assets();
@@ -119,7 +110,8 @@ class Game {
     this.batcher = new StaticBatcher(this.scene);
     this.buildings = new Buildings(this);
     this.terrain = buildTerrain(this.scene, this.physics);
-    this.atmo = new Atmosphere(this.scene, q);
+    this.atmo = new Atmosphere(this.scene, q, this.renderer);
+    this.headlights = new Headlights(this);
     this.cinema = new Cinema(this);
     this.town = buildTown(this);
     this.signals = new Signals(this, this.town.streets.lamps);
@@ -179,17 +171,18 @@ class Game {
   resize() {
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(innerWidth, innerHeight);
-    this.composer.setSize(innerWidth, innerHeight);
+    this.pipeline.resize();
   }
 
   setQuality(name) {
+    if (!QUALITY[name]) return;
     this.qualityName = name;
     const q = (this.quality = QUALITY[name]);
-    this.renderer.setPixelRatio(q.pixelRatio);
+    this.pipeline.apply(q);
     this.resize();
-    this.bloom.enabled = q.bloom;
     this.atmo.setQuality(q);
+    this.cull.range = q.cull;
+    if (this.headlights) this.headlights.setQuality(q);
     try { localStorage.setItem('mw_quality', name); } catch (e) { /* ignore */ }
   }
 
@@ -215,6 +208,13 @@ class Game {
       this.effects.sparks(e.point, Math.min(40, e.speed * 3), '#ffcf8a', e.speed * 0.5);
       if (e.vehicle === this.player.vehicle) this.effects.shake = Math.min(1.2, this.effects.shake + e.speed * 0.06);
       if (e.speed > 12) e.vehicle.damageEngine((e.speed - 12) * 2);
+      // visible body damage (dents, sprung hood, scuffs, bent alignment); driving over the ground, floor slabs, kerbs
+      // and ramps (jump landings) doesn't dent the car
+      const ud = e.other && e.other.userData;
+      if (e.vehicle.damage && !(ud && (ud.kind === 'ground' || ['floor', 'curb', 'ramp'].includes(ud.tag)))) {
+        const d = e.vehicle.damage.hit(e.point, e.speed);
+        if (d) this.events.emit('carDamage', d);
+      }
       if (e.other && e.other.userData && e.other.userData.civilian) this.traffic.bump(e.other, undefined, e.speed);
       this.police.onImpact(e);
     });
@@ -227,6 +227,8 @@ class Game {
     });
     ev.on('stationDone', (e) => e.stage < 5 && this.hud.toast(`✔ ${STATION_NAMES[e.stage - 1]} complete`, '', 2000));
     this.input.onUnlock = () => { if (this.mode === 'play') this.pause(true); };
+    // gamepad Start / the touch pause button behave like Escape
+    this.input.onPause = () => { if (this.mode === 'play') this.pause(true); else if (this.mode === 'paused') this.pause(false); else if (this.mode === 'kiosk') this.kiosk.close(); };
   }
 
   _ui() {
@@ -248,6 +250,15 @@ class Game {
     $('quality').value = this.qualityName;
     $('quality').onchange = (e) => { this.manualQuality = true; this.setQuality(e.target.value); };
     $('units').onchange = (e) => (this.hud.units = e.target.value);
+    // day/night: scrub the clock, pick the cycle speed (remembered per browser)
+    const tod = $('tod'), speed = $('tod-speed');
+    tod.oninput = () => { this.atmo.setHour(parseFloat(tod.value)); $('tod-label').textContent = this.atmo.clockText(); };
+    let spd = 1;
+    try { spd = parseFloat(localStorage.getItem('mw_tod_speed') ?? '1'); } catch (e) { /* private mode */ }
+    speed.value = String(spd);
+    const applySpeed = (v) => { this.atmo.rate = v / 60; this.atmo.frozen = v === 0; };
+    applySpeed(spd);
+    speed.onchange = () => { const v = parseFloat(speed.value); applySpeed(v); try { localStorage.setItem('mw_tod_speed', String(v)); } catch (e) { /* ignore */ } };
     $('game').addEventListener('click', () => { if (this.mode === 'play' && !this.input.locked) this.input.lock(); });
     addEventListener('keydown', (e) => {
       if (e.code !== 'Escape') return;
@@ -276,6 +287,8 @@ class Game {
     if (on) {
       this.mode = 'paused';
       $('pause').classList.remove('hidden');
+      $('tod').value = this.atmo.hour.toFixed(2);
+      $('tod-label').textContent = this.atmo.clockText();
       this.input.unlock();
     } else if (this.mode === 'paused') {
       this.mode = 'play';
@@ -320,6 +333,8 @@ class Game {
     this.hud.toast('Respraying…', '', 2500);
     setTimeout(() => {
       v.visual.applyConfig(cfg);
+      if (v.damage) v.damage.repair(); // bodywork: dents knocked out, hood/trunk re-hung, alignment set
+      v.engineHealth = 100; v.onFire = 0; v.stalled = v.fuel <= 0;
       v.retune();
       v.stolen = false;
       v.owned = true;
@@ -511,9 +526,12 @@ class Game {
     const dt = Math.min(0.2, this.clock.getDelta());
     this.frames++;
     this._autoQuality(dt);
+    this.input.context = this.player && this.player.vehicle ? 'car' : 'foot';
+    this.input.poll(dt);
+    if (this.touch) this.touch.update();
     try { this.update(dt); } catch (e) { this.errors.push(String(e && e.stack || e)); console.error(e); }
     this.renderer.info.reset();
-    this.composer.render();
+    this.pipeline.render(dt);
     this.input.endFrame();
   }
 
@@ -525,8 +543,8 @@ class Game {
     if (f.t > 6) {
       const fps = f.n / f.t;
       this._fq = null;
-      if (fps < 26) {
-        const next = this.qualityName === 'high' ? 'medium' : 'low';
+      if (fps < (this.qualityName === 'ultra' ? 40 : 26)) { // ultra is a luxury: fall back to high early
+        const next = { ultra: 'high', high: 'medium' }[this.qualityName] || 'low';
         this.setQuality(next);
         $('quality').value = next;
         this.hud.toast(`Graphics auto-adjusted to ${next.toUpperCase()} (${Math.round(fps)} fps)`);
@@ -626,7 +644,10 @@ class Game {
     this.listener.right.set(1, 0, 0).applyQuaternion(this.camera.quaternion);
     // ------------------------------------------------ world fx / audio / HUD
     this.atmo.update(dt, this.focusPos, terrainHeight);
+    this.lights.scale = 0.15 + 0.85 * this.atmo.lampFactor;
     this.lights.update(dt, this.focusPos);
+    this.cull.update(dt);
+    this.headlights.update();
     this.zone = this.focusPos.z > 205 ? 'cemetery' : (this.focusPos.z < -60 && this.focusPos.z > -110 && Math.abs(this.focusPos.x) < 60 ? 'factory' : 'town');
     this.audio.updateAmbience(this.zone, dt);
     if (this.engineSnd && veh) {
@@ -635,13 +656,14 @@ class Game {
     }
     this.hud.money(this.state.money);
     this.hud.pumpkins(this.state.pumpkins.length);
+    this.hud.clock(this.atmo.clockText(), this.atmo.isNight);
     this.hud.objective(this.missions.objectiveText());
     this.hud.waypoint(this.activities.target() || (this.missions.guide ? this.missions.target() : null), this.camera, pos);
     if (veh) {
       const eng = veh.tune.eng;
       this.hud.speedo(true, veh.speed, veh.gear, (veh.rpm - eng.idle) / (eng.redline - eng.idle));
       const flats = veh.flats.filter(Boolean).length;
-      this.hud.fuel(veh.fuel, veh.stalled, [flats ? `🛞 ${flats} flat tire${flats > 1 ? 's' : ''}` : '', veh.engineHealth < 60 ? `🔧 engine ${Math.round(veh.engineHealth)}%` : ''].filter(Boolean).join(' · '));
+      this.hud.fuel(veh.fuel, veh.stalled, [flats ? `🛞 ${flats} flat tire${flats > 1 ? 's' : ''}` : '', veh.engineHealth < 60 ? `🔧 engine ${Math.round(veh.engineHealth)}%` : '', veh.damage && veh.damage.percent >= 5 ? `🚗 body ${veh.damage.percent}% damaged` : ''].filter(Boolean).join(' · '));
     } else this.hud.speedo(false);
     const ws = this.combat.hudState();
     ws.bag = this.burglary.bag.length || p.carrying ? `💰 Loot: ${p.carrying ? p.carrying.name + ' (carried)' : ''}${this.burglary.bag.length ? ` ${this.burglary.bag.length} in bag` : ''} · $${this.burglary.carriedValue()}` : (this.state.jerrycans ? `⛽ Jerrycans: ${this.state.jerrycans}` : '');
@@ -784,6 +806,24 @@ window.__MW = {
   secrets: () => ({ found: [...game.secrets.found], count: game.secrets.count(), total: game.secrets.total(), bigHeads: game.secrets.bigHeads, heads: game.secrets.headCount || 0, phone: game.secrets.phone.pos.toArray(), ringing: game.secrets.phone.ringing, ufo: game.secrets.ufo.t, bigfoot: game.secrets.bigfoot.state, towerHits: game.secrets.towerHits }),
   resetSecrets: () => { game.secrets.found.clear(); try { localStorage.removeItem('mw_secrets'); } catch (e) { /* noop */ } },
   townsfolk: () => ({ net: game.npcs.net.stats, stats: game.npcs.folk.stats, states: game.npcs.pedestrians.reduce((a, p) => ((a[p.brain.state] = (a[p.brain.state] || 0) + 1), a), {}) }),
+  // ---- phase 4 QA hooks
+  setHour: (h, freeze = true) => { game.atmo.setHour(h); game.atmo.frozen = freeze; return game.atmo.clockText(); },
+  timeState: () => ({ hour: +game.atmo.hour.toFixed(2), clock: game.atmo.clockText(), frozen: game.atmo.frozen, night: game.atmo.isNight, sunY: +game.atmo.sunDir.y.toFixed(3), moonY: +game.atmo.moonDir.y.toFixed(3),
+    exposure: +game.renderer.toneMappingExposure.toFixed(2), lamps: +game.atmo.lampFactor.toFixed(2), env: !!game.scene.environment, key: +game.atmo.sun.intensity.toFixed(2) }),
+  damage: () => { const v = game.player.vehicle || game.ownedCar; const d = v && v.damage; return d && { zones: Object.fromEntries(Object.entries(d.zones).map(([k, x]) => [k, +x.toFixed(2)])), percent: d.percent, dented: d.dented.size, hits: d.hits,
+    pull: +v.pull.toFixed(3), hood: v.visual.hinges.Hood ? +v.visual.hinges.Hood.target.toFixed(2) : null, rust: +v.visual.paint.u.uRust.value.toFixed(2), repairCost: d.repairCost }; },
+  /** Synthetic hit on the owned/driven car: side = front|rear|left|right, local point on that face. */
+  hitCar: (side, speed = 16) => { const v = game.player.vehicle || game.ownedCar; const i = v.visual.info, cz = (i.minZ + i.maxZ) / 2;
+    const p = { front: [0.3, 0.7, i.maxZ], rear: [-0.2, 0.7, i.minZ], left: [i.halfW, 0.7, cz + 0.4], right: [-i.halfW, 0.7, cz - 0.3] }[side];
+    v.visual.root.updateMatrixWorld(true); const w = v.visual.root.localToWorld(new THREE.Vector3(...p)); return v.damage.hit(w, speed); },
+  repairCar: () => { const v = game.player.vehicle || game.ownedCar; v.damage.repair(); return true; },
+  garage: () => game.kiosk.garage().map((b) => ({ name: b.name, body: b.cfg.body, color: b.cfg.color })),
+  saveBuild: (name) => game.kiosk.saveBuild(name),
+  loadBuild: (i) => game.kiosk.loadBuild(i),
+  trafficAI: () => ({ overtakes: game.traffic.stats.overtakes || 0, done: game.traffic.stats.overtakesDone || 0, aborts: game.traffic.stats.overtakeAborts || 0,
+    signalling: game.traffic.driving.filter((c) => c.signal).map((c) => ({ signal: c.signal, kind: c.seg.kind, toEnd: +(c.seg.length - c.s).toFixed(1), overtaking: !!c.ot })) }),
+  render: () => ({ quality: game.qualityName, gpu: game.pipeline.gpu, msaa: game.pipeline.composer.renderTarget1.samples, ao: game.pipeline.gtao.enabled, grade: game.pipeline.grade.enabled,
+    env: !!game.scene.environment, shadowSize: game.atmo.sun.shadow.mapSize.x, headlights: game.headlights.beams.map((b) => +b.intensity.toFixed(1)), hiddenCars: game.cull.stats.hiddenCars, activeBodies: game.physics.stats.activeBodies }),
   nav: (x, z) => { const a = game.nav.nearest(game.player.position), b = game.nav.nearest(new THREE.Vector3(x, terrainHeight(x, z), z)); const path = game.nav.path(a, b); return path ? path.map((n) => [n.p.x, n.p.z].map((k) => +k.toFixed(1))) : null; },
 };
 game.init().catch((e) => { console.error(e); $('loadtext').textContent = 'Error: ' + e.message; game.errors.push(String(e.stack || e)); });

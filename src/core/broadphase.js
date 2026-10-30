@@ -59,13 +59,15 @@ export class StaticGridBroadphase extends CANNON.Broadphase {
 
   /** Classify bodies: statics live in the grid, everything else (and hand-moved statics) is a mover. */
   _sync(world) {
-    if (this._syncedStep === world.stepnumber && this._syncedLen === world.bodies.length && this._movers) return this._movers;
+    // Physics.step hands cannon a movers-only world.bodies; the full list (statics included) is world.allBodies
+    const bodies = world.allBodies || world.bodies;
+    if (this._syncedStep === world.stepnumber && this._syncedLen === bodies.length && this._movers) return this._movers;
     this._syncedStep = world.stepnumber;
-    this._syncedLen = world.bodies.length;
+    this._syncedLen = bodies.length;
     const movers = (this._movers ||= []);
     movers.length = 0;
     let statics = 0;
-    for (const b of world.bodies) {
+    for (const b of bodies) {
       const isStatic = b.type === CANNON.Body.STATIC && !(b.userData && b.userData.moves);
       if (isStatic) {
         statics++;
@@ -76,10 +78,10 @@ export class StaticGridBroadphase extends CANNON.Broadphase {
       }
     }
     // static bodies removed from the world drop out of the hash
-    if (this._lastCount !== undefined && world.bodies.length < this._lastCount) {
+    if (this._lastCount !== undefined && bodies.length < this._lastCount) {
       for (const arr of [...this.grid.values(), this.big || []]) for (let i = arr.length - 1; i >= 0; i--) if (arr[i].world !== world) { arr[i]._inGrid = false; arr.splice(i, 1); }
     }
-    this._lastCount = world.bodies.length;
+    this._lastCount = bodies.length;
     this.stats.statics = statics;
     this.stats.movers = movers.length;
     return movers;

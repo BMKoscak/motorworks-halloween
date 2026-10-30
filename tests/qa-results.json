@@ -1,23 +1,23 @@
 {
- "ranAt": "2026-10-25T06:38:48.512Z",
- "durationSec": 556,
- "passed": 42,
- "total": 42,
+ "ranAt": "2026-10-30T21:07:27.267Z",
+ "durationSec": 587,
+ "passed": 48,
+ "total": 50,
  "results": [
   {
    "id": "boot",
    "title": "Page loads, Blender assets stream in, zero console errors / uncaught exceptions",
    "pass": true,
    "details": {
-    "loadMs": 3891,
-    "gpu": "ANGLE (AMD, AMD Radeon (TM) R5 M330 (0x00006660) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "loadMs": 3182,
+    "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "consoleErrors": []
    },
    "screenshots": [
     "public/docs/screenshots/01_title_screen.png",
     "public/docs/screenshots/01b_title_telemetry_badge.png"
    ],
-   "ms": 14251
+   "ms": 19396
   },
   {
    "id": "assets",
@@ -28,48 +28,48 @@
     "invalidBoxes": [],
     "missingHinges": [],
     "hingeCounts": {
-     "car_muscle": 13,
      "car_pickup": 13,
+     "car_muscle": 13,
      "car_coupe": 13,
      "car_hearse": 13,
      "car_sedan": 15,
      "parts": 1,
      "wheels": 0,
-     "crane": 3,
      "robot_arm": 4,
      "press": 1,
+     "crane": 3,
      "garage_door": 8,
      "sliding_door": 2,
      "barrier": 1,
      "cemetery_gate": 2,
      "forklift": 5,
-     "lift": 1,
      "scanner": 1,
+     "lift": 1,
      "jumbotron": 0,
-     "diner": 3,
-     "cinema": 3,
-     "gas_station": 10,
      "roads": 0,
-     "plant": 6,
+     "diner": 3,
+     "gas_station": 10,
      "hardware": 3,
      "police_station": 5,
      "house_a": 4,
      "house_b": 4,
      "props": 2,
      "character": 16,
-     "skeleton": 16
+     "skeleton": 16,
+     "plant": 6,
+     "cinema": 3
     },
-    "meshes": 2586
+    "meshes": 2654
    },
    "screenshots": [],
-   "ms": 127
+   "ms": 66
   },
   {
    "id": "walk",
    "title": "Player walks with WASD and collides with walls and cars (no clipping)",
    "pass": true,
    "details": {
-    "walkedMeters": 5.25,
+    "walkedMeters": 5,
     "stoppedAtWallZ": -59.38,
     "distanceFromCarCenter": 3.01,
     "parkedCars": 22
@@ -77,7 +77,7 @@
    "screenshots": [
     "public/docs/screenshots/03_player_at_plant_wall.png"
    ],
-   "ms": 8703
+   "ms": 8382
   },
   {
    "id": "escape",
@@ -95,7 +95,7 @@
    "screenshots": [
     "public/docs/screenshots/04_pause_menu.png"
    ],
-   "ms": 2581
+   "ms": 2268
   },
   {
    "id": "dialogue",
@@ -110,7 +110,7 @@
      "speaker": "adult_male",
      "duration": 8.8,
      "source": "file",
-     "at": 26864
+     "at": 30859
     },
     "dispatchLine": {
      "id": "dispatch_2",
@@ -119,13 +119,13 @@
      "speaker": null,
      "duration": 6,
      "source": "file",
-     "at": 28916
+     "at": 32821
     }
    },
    "screenshots": [
     "public/docs/screenshots/05_dialogue_foreman.png"
    ],
-   "ms": 4092
+   "ms": 3542
   },
   {
    "id": "kiosk",
@@ -157,8 +157,8 @@
     "orderRunning": {
      "running": true,
      "stage": 0,
-     "stageT": 0.052,
-     "number": "MW-1031-5354"
+     "stageT": 0.051,
+     "number": "MW-1031-3296"
     },
     "charged": 103650
    },
@@ -172,7 +172,7 @@
     "public/docs/screenshots/06_kiosk_lighting.png",
     "public/docs/screenshots/06_kiosk_performance.png"
    ],
-   "ms": 20742
+   "ms": 19271
   },
   {
    "id": "factory_jumbotron_and_conveyor",
@@ -183,13 +183,13 @@
      {
       "name": "Door_L",
       "phase": "attached",
-      "maxGap": 0.13,
+      "maxGap": 0.11,
       "visible": false
      },
      {
       "name": "Door_R",
       "phase": "attached",
-      "maxGap": 0.23,
+      "maxGap": 0.22,
       "visible": false
      },
      {
@@ -201,38 +201,43 @@
      {
       "name": "Hood",
       "phase": "attached",
-      "maxGap": 0.16,
+      "maxGap": 0.13,
       "visible": false
      }
     ],
     "factory": {
-     "ikSolves": 578,
-     "pressCycles": 2,
+     "ikSolves": 1663,
+     "pressCycles": 1,
      "partsCarried": 3,
      "nightShift": false
     },
     "partsCarriedToChassis": 3,
     "gripperStaysOnPart_m": [
-     0.13,
-     0.23,
-     0.16
+     0.11,
+     0.22,
+     0.13
     ],
-    "ikSolves": 578,
+    "ikSolves": 1663,
+    "rollerSpin": 429.18,
     "jumbotron": {
      "before": {
-      "frames": 352,
-      "overlay": 67,
+      "frames": 115,
+      "overlay": 21,
+      "faces": 4
+     },
+     "viewStart": {
+      "frames": 115,
+      "overlay": 21,
       "faces": 4
      },
      "after": {
-      "frames": 506,
-      "overlay": 145,
+      "frames": 149,
+      "overlay": 34,
       "faces": 4
      }
     },
-    "renderTargetFramesUpdated": 154,
-    "overlayCanvasRedrawn": 78,
-    "rollerSpin": 430.25
+    "renderTargetFramesUpdated": 34,
+    "overlayCanvasRedrawn": 13
    },
    "screenshots": [
     "public/docs/screenshots/16_bodyshop_robot_carrying_door.png",
@@ -240,7 +245,7 @@
     "public/docs/screenshots/16_jumbotron_closeup.png",
     "public/docs/screenshots/16_conveyor_skillet_press_feeder.png"
    ],
-   "ms": 17407
+   "ms": 16974
   },
   {
    "id": "assembly",
@@ -250,21 +255,61 @@
     "stations": [
      {
       "stage": 1,
-      "stageT": 0.91,
+      "stageT": 0.89,
       "hinges": {
        "Door_L": 0,
        "Door_R": 0,
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.05,
+      "ram": 5.8,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.74,
-       -0.533,
-       -0.437,
-       0.565
+       -0.733,
+       -0.698,
+       -0.469,
+       0.797
+      ],
+      "reveal": 0,
+      "log": [
+       "order",
+       "s0_floor",
+       "s0_bay",
+       "s0_cage",
+       "s1_body",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
+       "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
+       "close_Hood",
+       "close_Trunk"
+      ]
+     },
+     {
+      "stage": 1,
+      "stageT": 1,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
+      },
+      "ram": 4.72,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [
+       -0.36,
+       -0.37,
+       -0.324,
+       -0.3
       ],
       "reveal": 0,
       "log": [
@@ -290,64 +335,23 @@
      },
      {
       "stage": 2,
-      "stageT": 0.03,
+      "stageT": 0.56,
       "hinges": {
        "Door_L": 0,
        "Door_R": 0,
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.8,
+      "ram": 5.59,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.313,
-       -0.313,
-       -0.326,
-       -0.309
+       1.209,
+       1.505,
+       1.412,
+       1.235
       ],
-      "reveal": 0,
-      "log": [
-       "order",
-       "s0_floor",
-       "s0_bay",
-       "s0_cage",
-       "s1_body",
-       "s1_plan",
-       "pick_Door_L",
-       "pick_Door_R",
-       "pick_Hood",
-       "attach_Door_R",
-       "close_Door_R",
-       "pick_Trunk",
-       "attach_Door_L",
-       "attach_Hood",
-       "attach_Trunk",
-       "close_Door_L",
-       "close_Hood",
-       "close_Trunk",
-       "s2_paint"
-      ]
-     },
-     {
-      "stage": 2,
-      "stageT": 0.58,
-      "hinges": {
-       "Door_L": 0,
-       "Door_R": 0,
-       "Hood": 0,
-       "Trunk": 0
-      },
-      "ram": 4.44,
-      "hoist": -0.3,
-      "laser": 2,
-      "robots": [
-       1.372,
-       1.637,
-       1.263,
-       1.163
-      ],
-      "reveal": 0.67,
+      "reveal": 0.62,
       "log": [
        "order",
        "s0_floor",
@@ -379,11 +383,11 @@
        "Hood": 1,
        "Trunk": 0
       },
-      "ram": 5.25,
+      "ram": 4.83,
       "hoist": -2.35,
       "laser": 2,
       "robots": [
-       -0.718
+       -0.497
       ],
       "reveal": 1,
       "log": [
@@ -421,12 +425,12 @@
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.8,
+      "ram": 4.44,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.362,
-       -0.297
+       -0.367,
+       -0.252
       ],
       "reveal": 1,
       "log": [
@@ -518,7 +522,7 @@
     "event_exit_open": true,
     "event_complete": true,
     "bodyShopRobots": 4,
-    "paintReveal": 0.67
+    "paintReveal": 0.62
    },
    "screenshots": [
     "public/docs/screenshots/07_station_1_stamping.png",
@@ -528,7 +532,7 @@
     "public/docs/screenshots/07_station_5_final_qc.png",
     "public/docs/screenshots/07_rollout_finished_car.png"
    ],
-   "ms": 22096
+   "ms": 21247
   },
   {
    "id": "hinges",
@@ -575,7 +579,7 @@
       "rotated": 1.3,
       "parent": "Body",
       "pivotWorld": [
-       67.06,
+       67.07,
        1.4,
        -91
       ]
@@ -620,7 +624,7 @@
      "rotated": 1.3,
      "parent": "Body",
      "pivotWorld": [
-      67.06,
+      67.07,
       1.4,
       -91
      ]
@@ -629,7 +633,7 @@
    "screenshots": [
     "public/docs/screenshots/08_hinges_open.png"
    ],
-   "ms": 3247
+   "ms": 2517
   },
   {
    "id": "physics",
@@ -637,30 +641,30 @@
    "pass": true,
    "details": {
     "inCar": true,
-    "fpsDuringDrive": 17.8,
-    "speedAfterW": 16.47,
-    "leftHeadingDelta": 0.619,
-    "rightHeadingDelta": -0.704,
+    "fpsDuringDrive": 33.9,
+    "speedAfterW": 16.66,
+    "leftHeadingDelta": 0.79,
+    "rightHeadingDelta": -0.664,
     "braking": {
-     "before": 25.89,
-     "after": 10.41
+     "before": 26.71,
+     "after": 12.19
     },
     "highSpeed": {
-     "speed": 22.53,
-     "dHeading": -0.551
+     "speed": 24.23,
+     "dHeading": -0.525
     },
     "highSpeedTurn": {
-     "speed": 22.53,
-     "dHeading": -0.551
+     "speed": 24.23,
+     "dHeading": -0.525
     },
-    "skidMarks": 1463
+    "skidMarks": 399
    },
    "screenshots": [
     "public/docs/screenshots/09_driving_turn.png",
     "public/docs/screenshots/09b_handbrake_drift.png"
    ],
-   "_t0": 1792909870370,
-   "ms": 18703
+   "_t0": 1793393957858,
+   "ms": 17217
   },
   {
    "id": "cockpit",
@@ -676,7 +680,7 @@
    "screenshots": [
     "public/docs/screenshots/10_cockpit_view.png"
    ],
-   "ms": 3360
+   "ms": 3426
   },
   {
    "id": "town",
@@ -697,7 +701,7 @@
     "public/docs/screenshots/11_leaf_piles_trees.png",
     "public/docs/screenshots/11_hill_road.png"
    ],
-   "ms": 16011
+   "ms": 13650
   },
   {
    "id": "cemetery",
@@ -705,18 +709,18 @@
    "pass": true,
    "details": {
     "gateOpen": {
-     "closed": 0.2,
+     "closed": 0.19,
      "open": 1
     },
     "leafRotation": 1.45,
-    "tombstones": 281
+    "tombstones": 277
    },
    "screenshots": [
     "public/docs/screenshots/12_cemetery_gates.png",
     "public/docs/screenshots/12_cemetery_crypts.png",
     "public/docs/screenshots/12_vlad_crypt.png"
    ],
-   "ms": 7540
+   "ms": 6887
   },
   {
    "id": "theft",
@@ -731,17 +735,17 @@
      {
       "mode": "pursuit",
       "pos": [
-       2.6,
-       21.5
+       75.4,
+       2.5
       ],
       "siren": true,
-      "parked": false
+      "parked": true
      },
      {
       "mode": "pursuit",
       "pos": [
-       73.6,
-       -24.1
+       73.5,
+       -15.6
       ],
       "siren": true,
       "parked": false
@@ -753,17 +757,17 @@
       {
        "mode": "pursuit",
        "pos": [
-        2.6,
-        21.5
+        75.4,
+        2.5
        ],
        "siren": true,
-       "parked": false
+       "parked": true
       },
       {
        "mode": "pursuit",
        "pos": [
-        73.6,
-        -24.1
+        73.5,
+        -15.6
        ],
        "siren": true,
        "parked": false
@@ -771,11 +775,11 @@
      ],
      "officers": [
       {
-       "state": "seated",
+       "state": "foot",
        "pos": [
-        0.4,
+        76.4,
         0,
-        0.1
+        4.5
        ],
        "armed": false
       },
@@ -791,16 +795,16 @@
       {
        "state": "foot",
        "pos": [
-        132.9,
-        0,
-        6.3
+        136.6,
+        0.2,
+        7.2
        ],
        "armed": false
       },
       {
        "state": "beat",
        "pos": [
-        -86.7,
+        -86.8,
         0.2,
         -8
        ],
@@ -809,9 +813,9 @@
       {
        "state": "beat",
        "pos": [
-        69.5,
-        0,
-        3.1
+        35,
+        0.2,
+        8.7
        ],
        "armed": false
       }
@@ -819,16 +823,21 @@
      "stats": {
       "crimes": [
        {
+        "kind": "speeding",
+        "at": 107598,
+        "level": 1
+       },
+       {
         "kind": "theft",
-        "at": 141414,
+        "at": 138009,
         "level": 2
        }
       ],
       "maxLevel": 2,
       "busts": 0,
-      "escapes": 0,
-      "dismounts": 0,
-      "footChases": 1,
+      "escapes": 1,
+      "dismounts": 1,
+      "footChases": 3,
       "shotsAtPlayer": 0,
       "resets": 0
      }
@@ -839,7 +848,7 @@
     "public/docs/screenshots/13_police_pursuit.png",
     "public/docs/screenshots/13_police_chase_overview.png"
    ],
-   "ms": 13302
+   "ms": 12520
   },
   {
    "id": "busted",
@@ -853,14 +862,14 @@
     "fined": 2000,
     "respawnAtPoliceStation": [
      124,
-     0.21,
+     0.05,
      9
     ]
    },
    "screenshots": [
     "public/docs/screenshots/14_busted.png"
    ],
-   "ms": 8840
+   "ms": 8688
   },
   {
    "id": "npc_demographics",
@@ -869,24 +878,15 @@
    "details": {
     "auditViolations": [],
     "census": {
-     "adult_male": 14,
+     "adult_male": 18,
      "skeleton": 1,
-     "adult_female": 15,
-     "child_girl": 3,
-     "child_boy": 5
+     "adult_female": 11,
+     "child_boy": 5,
+     "child_girl": 3
     },
     "kidsScaledAndCostumed": [
      {
       "scale": 0.68,
-      "costume": "witch",
-      "acc": [
-       "Hat_Witch",
-       "Hold_CandyBag",
-       "Hair_Ponytail"
-      ]
-     },
-     {
-      "scale": 0.68,
       "costume": "superhero",
       "acc": [
        "Costume_Cape",
@@ -896,47 +896,53 @@
      },
      {
       "scale": 0.68,
-      "costume": "superhero",
+      "costume": "pumpkin",
       "acc": [
-       "Costume_Cape",
-       "Mask_Super",
+       "Mask_Pumpkin",
        "Hold_CandyBag"
       ]
      },
      {
       "scale": 0.68,
-      "costume": "superhero",
+      "costume": "pumpkin",
       "acc": [
-       "Costume_Cape",
-       "Mask_Super",
+       "Mask_Pumpkin",
+       "Hold_CandyBag"
+      ]
+     },
+     {
+      "scale": 0.68,
+      "costume": "ghost",
+      "acc": [
+       "Costume_Ghost",
        "Hold_CandyBag"
       ]
      }
     ],
     "driversAllAdults": [
-     "adult_female",
-     "adult_female",
      "adult_male",
      "adult_male",
      "adult_female",
-     "adult_male",
-     "adult_male",
+     "adult_female",
      "adult_male",
      "adult_female",
+     "adult_male",
+     "adult_male",
+     "adult_male",
      "adult_female",
      "adult_female"
     ],
     "bothGenders": {
-     "adult_male": 14,
+     "adult_male": 18,
      "skeleton": 1,
-     "adult_female": 15,
-     "child_girl": 3,
-     "child_boy": 5
+     "adult_female": 11,
+     "child_boy": 5,
+     "child_girl": 3
     },
     "spoken": [
      {
       "kind": "child_boy",
-      "line": "kidb_1",
+      "line": "kidb_2",
       "voiceDemo": "child_boy",
       "speaker": "child_boy"
      },
@@ -954,7 +960,7 @@
      },
      {
       "kind": "adult_female",
-      "line": "civilian_1",
+      "line": "civilian_3",
       "voiceDemo": "adult_female",
       "speaker": "adult_female"
      }
@@ -962,7 +968,7 @@
     "voiceMatchesSpeaker": [
      {
       "kind": "child_boy",
-      "line": "kidb_1",
+      "line": "kidb_2",
       "voiceDemo": "child_boy",
       "speaker": "child_boy"
      },
@@ -980,13 +986,13 @@
      },
      {
       "kind": "adult_female",
-      "line": "civilian_1",
+      "line": "civilian_3",
       "voiceDemo": "adult_female",
       "speaker": "adult_female"
      }
     ],
     "noAdultLinesFromKids": [
-     "Trick or treat! Look at my candy bag, it's almost full!",
+     "Whoa, cool hot-rod, mister! Can it go a hundred?",
      "My ghost costume has real glow-in-the-dark eyes. Boo!"
     ]
    },
@@ -994,7 +1000,7 @@
     "public/docs/screenshots/17_trick_or_treater_kid_dialogue.png",
     "public/docs/screenshots/17_kids_and_townsfolk_sidewalk.png"
    ],
-   "ms": 7781
+   "ms": 7023
   },
   {
    "id": "enterable_buildings",
@@ -1011,7 +1017,7 @@
       "pos": [
        -61.2,
        0.3,
-       18.69
+       18.99
       ]
      },
      {
@@ -1023,7 +1029,7 @@
       "pos": [
        -130,
        0.15,
-       17.36
+       17.4
       ]
      },
      {
@@ -1035,7 +1041,7 @@
       "pos": [
        130,
        0.15,
-       16.26
+       16.68
       ]
      },
      {
@@ -1047,7 +1053,7 @@
       "pos": [
        -88.99,
        0.45,
-       -26.77
+       -26.83
       ]
      }
     ],
@@ -1073,7 +1079,7 @@
      "pos": [
       -61.2,
       0.3,
-      18.69
+      18.99
      ]
     },
     "hardware_doorSwungOpen": {
@@ -1098,7 +1104,7 @@
      "pos": [
       -130,
       0.15,
-      17.36
+      17.4
      ]
     },
     "police_doorSwungOpen": {
@@ -1123,7 +1129,7 @@
      "pos": [
       130,
       0.15,
-      16.26
+      16.68
      ]
     },
     "house_doorSwungOpen": {
@@ -1148,11 +1154,11 @@
      "pos": [
       -88.99,
       0.45,
-      -26.77
+      -26.83
      ]
     },
     "stairs": [
-     5.53,
+     5.52,
      4.2,
      -72.7
     ],
@@ -1165,7 +1171,7 @@
     "public/docs/screenshots/18_interior_house.png",
     "public/docs/screenshots/18_foreman_office_observation.png"
    ],
-   "ms": 33367
+   "ms": 33154
   },
   {
    "id": "seated_drivers",
@@ -1261,16 +1267,16 @@
      "metalness": 0.2
     },
     "turning": {
-     "steer": -0.7137841308105087,
-     "wheel": 1.962906359728899,
-     "armL": -1.4498595566269425,
-     "armR": -1.0501404433730575
+     "steer": 1,
+     "wheel": -2.75,
+     "armL": -0.97,
+     "armR": -1.53
     },
     "armsAndWheelTurnTogether": {
-     "steer": -0.7137841308105087,
-     "wheel": 1.962906359728899,
-     "armL": -1.4498595566269425,
-     "armR": -1.0501404433730575
+     "steer": 1,
+     "wheel": -2.75,
+     "armL": -0.97,
+     "armR": -1.53
     }
    },
    "screenshots": [
@@ -1278,7 +1284,7 @@
     "public/docs/screenshots/19_seated_police_officer.png",
     "public/docs/screenshots/19_forklift_operator.png"
    ],
-   "ms": 3183
+   "ms": 7861
   },
   {
    "id": "navigation_and_bounds",
@@ -1294,47 +1300,49 @@
      "velocityClamps": 0,
      "spinClamps": 0,
      "outOfBounds": 0,
+     "activeBodies": 119,
      "traffic": {
       "whiskerBrakes": 0,
-      "junctionWaits": 700,
+      "junctionWaits": 2361,
       "resets": 0,
-      "redStops": 22,
+      "redStops": 17,
       "redRuns": 0,
-      "stopSigns": 23,
+      "stopSigns": 22,
       "honks": 0,
-      "rage": 9,
-      "relocated": 0
+      "rage": 4,
+      "relocated": 0,
+      "signalling": 1073.8441999988631
      },
      "nav": {
-      "nodes": 1449,
-      "edges": 4517,
-      "rays": 8572,
-      "buildMs": 269
+      "nodes": 1448,
+      "edges": 4505,
+      "rays": 10258,
+      "buildMs": 149
      },
      "policeResets": 0
     },
     "samples": [
      [
       {
-       "x": 170.7,
+       "x": -7.6,
        "y": 0,
-       "z": -2.6,
-       "ground": 0,
-       "seg": "lane",
-       "speed": 10.1
-      },
-      {
-       "x": 80.2,
-       "y": 0,
-       "z": -1.9,
+       "z": 2.6,
        "ground": 0,
        "seg": "turn",
        "speed": 6.5
       },
       {
+       "x": 198.6,
+       "y": 0,
+       "z": 70.2,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 11.6
+      },
+      {
        "x": 73.6,
        "y": 0,
-       "z": -14.2,
+       "z": -16.6,
        "ground": 0,
        "seg": "lane",
        "speed": 0
@@ -1342,54 +1350,54 @@
      ],
      [
       {
-       "x": 92.4,
+       "x": 61.9,
        "y": 0,
-       "z": -2.6,
+       "z": 2.6,
        "ground": 0,
        "seg": "lane",
-       "speed": 0.9
+       "speed": 0
       },
       {
        "x": 175.1,
        "y": 0,
-       "z": 2.6,
+       "z": -2.6,
        "ground": 0,
        "seg": "lane",
-       "speed": 7
+       "speed": 10.2
       },
       {
-       "x": 143.3,
+       "x": 57.8,
        "y": 0,
-       "z": 2.6,
+       "z": -6.1,
        "ground": 0,
-       "seg": "lane",
-       "speed": 10.9
+       "seg": "turn",
+       "speed": 5.8
       }
      ],
      [
       {
-       "x": 56.9,
+       "x": 74.2,
        "y": 0,
-       "z": -44.8,
+       "z": -4.4,
        "ground": 0,
        "seg": "turn",
-       "speed": 4
+       "speed": 6.5
       },
       {
-       "x": 193.4,
+       "x": 91.2,
        "y": 0,
-       "z": 63.5,
+       "z": -2.6,
        "ground": 0,
        "seg": "lane",
-       "speed": 9.2
+       "speed": 0
       },
       {
-       "x": 193.4,
+       "x": 8.4,
        "y": 0,
-       "z": 24.5,
+       "z": -50.4,
        "ground": 0,
        "seg": "lane",
-       "speed": 10.9
+       "speed": 11.3
       }
      ]
     ],
@@ -1399,100 +1407,100 @@
      "float": 0,
      "maxDy": 0
     },
-    "trafficOnRoadGraph_maxDev": 0.71,
-    "trafficMoving": 9
+    "trafficOnRoadGraph_maxDev": 0.7,
+    "trafficMoving": 10
    },
    "screenshots": [
     "public/docs/screenshots/20_pursuit_traffic_navigation.png"
    ],
-   "ms": 37520
+   "ms": 35886
   },
   {
    "id": "police_foot_chase",
    "title": "Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars",
-   "pass": true,
+   "pass": false,
    "details": {
-    "dismounts": 2,
-    "footChases": 5,
+    "dismounts": 3,
+    "footChases": 8,
     "officers": [
      {
       "state": "foot",
       "pos": [
-       -33.9,
-       0.2,
-       8.8
+       116.9,
+       0,
+       6.7
       ],
       "armed": false
      },
      {
       "state": "foot",
       "pos": [
-       -6.8,
-       0.2,
-       11.7
+       32.7,
+       0,
+       -2.6
       ],
       "armed": false
      },
      {
       "state": "beat",
       "pos": [
-       129.1,
+       129.2,
        0,
-       13.2
+       13
       ],
       "armed": false
      },
      {
       "state": "foot",
       "pos": [
-       -64.5,
+       -75.5,
        0,
-       3
+       -6.5
       ],
       "armed": false
      },
      {
-      "state": "beat",
+      "state": "foot",
       "pos": [
-       53.7,
-       0,
-       4.1
+       -15.5,
+       0.2,
+       8
       ],
-      "armed": true
+      "armed": false
      }
     ],
-    "d0": 8.720272868000233,
+    "d0": 48.89609623176162,
     "d1": {
-     "d": 0.7537115278503372,
-     "anim": "idle"
+     "d": 22.70406559291901,
+     "anim": "run"
     },
-    "dismounted": 2,
-    "caughtDuringChase": true,
+    "dismounted": 3,
+    "caughtDuringChase": false,
     "officerPursuesOnFoot (closes in or tackles)": {
      "d1": {
-      "d": 0.7537115278503372,
-      "anim": "idle"
+      "d": 22.70406559291901,
+      "anim": "run"
      },
-     "caught": true
+     "caught": false
     },
     "armed": {
      "armed": true,
-     "shots": 0,
-     "health": 100
+     "shots": 2,
+     "health": 91
     },
     "officersDrawSidearms": {
      "armed": true,
-     "shots": 0,
-     "health": 100
+     "shots": 2,
+     "health": 91
     },
-    "tackles": 3
+    "tackles": 1
    },
    "screenshots": [
     "public/docs/screenshots/21_officer_dismounts_cruiser.png",
     "public/docs/screenshots/21_police_foot_chase.png",
     "public/docs/screenshots/21_armed_response.png"
    ],
-   "ms": 35409
+   "ms": 17916
   },
   {
    "id": "weapons_and_shooting",
@@ -1533,7 +1541,7 @@
      {
       "kind": "car",
       "weapon": "pistol",
-      "t": 280856
+      "t": 260468
      }
     ],
     "streetlightShotOut": {
@@ -1547,13 +1555,13 @@
      "lightsShot": 1
     },
     "reloaded": 12,
-    "wanted": 2
+    "wanted": 3
    },
    "screenshots": [
     "public/docs/screenshots/22_aim_and_fire_pistol.png",
     "public/docs/screenshots/22_jack_o_lantern_launcher.png"
    ],
-   "ms": 8919
+   "ms": 8242
   },
   {
    "id": "light_switches",
@@ -1632,15 +1640,15 @@
     "nightShift": {
      "prompt": "[E] Night Shift lighting: switch to blacklight / emergency",
      "ns": {
-      "ikSolves": 1080,
-      "pressCycles": 2,
+      "ikSolves": 3010,
+      "pressCycles": 1,
       "partsCarried": 4,
       "nightShift": true
      }
     },
     "nightShiftOn": {
-     "ikSolves": 1080,
-     "pressCycles": 2,
+     "ikSolves": 3010,
+     "pressCycles": 1,
      "partsCarried": 4,
      "nightShift": true
     }
@@ -1651,12 +1659,12 @@
     "public/docs/screenshots/23_breaker_box_power_cut.png",
     "public/docs/screenshots/23_motorworks_night_shift_blacklight.png"
    ],
-   "ms": 8450
+   "ms": 8176
   },
   {
    "id": "doorbell_and_burglary",
    "title": "Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it",
-   "pass": true,
+   "pass": false,
    "details": {
     "doorbell": {
      "prompt": "[E] Ring doorbell",
@@ -1673,15 +1681,15 @@
      "homeowners": [
       {
        "state": "greet",
-       "ageGroup": "adult_female",
+       "ageGroup": "adult_male",
        "pos": [
         -147,
         0.45,
-        -26.15
+        -26.2
        ]
       }
      ],
-     "tip": 31,
+     "tip": 37,
      "rings": 1
     },
     "doorbellPrompt": "[E] Ring doorbell",
@@ -1699,24 +1707,24 @@
      "ho": [
       {
        "state": "greet",
-       "ageGroup": "adult_female",
+       "ageGroup": "adult_male",
        "pos": [
         -147,
         0.45,
-        -26.15
+        -26.2
        ]
       }
      ],
-     "tip": 31
+     "tip": 37
     },
     "homeownerVoiceMatchesGender": {
-     "id": "homef_greet",
-     "voice": "homeowner_f",
-     "demo": "adult_female",
-     "speaker": "adult_female",
-     "duration": 5.92,
+     "id": "homem_greet",
+     "voice": "homeowner_m",
+     "demo": "adult_male",
+     "speaker": "adult_male",
+     "duration": 4.56,
      "source": "file",
-     "at": 299187
+     "at": 277559
     },
     "steal": {
      "prompt": "[E] Steal Vintage CRT TV ($180) — two hands",
@@ -1742,7 +1750,7 @@
      "stash": "[E] Stash Vintage CRT TV in the trunk",
      "trunks": [
       {
-       "id": 7,
+       "id": 9,
        "items": [
         "TV"
        ],
@@ -1754,7 +1762,7 @@
     },
     "tvInOpenTrunkVisible": [
      {
-      "id": 7,
+      "id": 9,
       "items": [
        "TV"
       ],
@@ -1765,11 +1773,11 @@
     ],
     "fence": {
      "prompt": "[E] Sell trunk loot to Vinnie ($180)",
-     "earned": 180
+     "earned": 0
     },
     "fencedLoot": {
      "prompt": "[E] Sell trunk loot to Vinnie ($180)",
-     "earned": 180
+     "earned": 0
     }
    },
    "screenshots": [
@@ -1777,7 +1785,7 @@
     "public/docs/screenshots/24_carrying_stolen_tv.png",
     "public/docs/screenshots/24_tv_stashed_in_trunk.png"
    ],
-   "ms": 26710
+   "ms": 25168
   },
   {
    "id": "fuel_and_gas_station",
@@ -1786,14 +1794,14 @@
    "details": {
     "burn": {
      "before": 60,
-     "after": 58.85
+     "after": 58.86
     },
     "drivingConsumesFuel": {
      "before": 60,
-     "after": 58.85
+     "after": 58.86
     },
     "stall": {
-     "speed": 7.47,
+     "speed": -0.77,
      "fs": {
       "fuel": 0,
       "stalled": true,
@@ -1834,20 +1842,20 @@
     },
     "refuel": {
      "prompt": "[E] Refuel — $2/gal (35% now)",
-     "fuel": 100,
-     "cost": 20.82,
+     "fuel": 99.96,
+     "cost": 20.81,
      "stats": {
       "refuels": 1,
-      "gallons": 10.40979504128,
-      "spent": 20.81959008256,
+      "gallons": 10.403159999942776,
+      "spent": 20.806319999885552,
       "jerrycans": 1
      }
     },
     "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
-    "tankFull": 100,
+    "tankFull": 99.96,
     "chargedTwoDollarsPerGallon": {
-     "paid": 20.819590082595823,
-     "gal": 10.40979504128
+     "paid": 20.806319999828702,
+     "gal": 10.403159999942776
     }
    },
    "screenshots": [
@@ -1855,7 +1863,7 @@
     "public/docs/screenshots/25_refuelling_pump_counter.png",
     "public/docs/screenshots/25_gas_station_pump_hose.png"
    ],
-   "ms": 23944
+   "ms": 22975
   },
   {
    "id": "pumpkins",
@@ -1868,7 +1876,7 @@
    "screenshots": [
     "public/docs/screenshots/15_monster_mash_kiosk.png"
    ],
-   "ms": 13205
+   "ms": 12735
   },
   {
    "id": "phantom",
@@ -1880,7 +1888,7 @@
    "screenshots": [
     "public/docs/screenshots/15_phantom_hearse.png"
    ],
-   "ms": 6870
+   "ms": 6386
   },
   {
    "id": "trial",
@@ -1889,20 +1897,20 @@
    "details": {
     "trialRunning": {
      "running": true,
-     "t": 1.1620000000000004,
+     "t": 1.1898999998569488,
      "next": 0,
      "inCar": true,
      "pos": [
-      0.1,
+      0,
       10.4,
-      243.8
+      248.4
      ]
     }
    },
    "screenshots": [
     "public/docs/screenshots/15_graveyard_shift_trial.png"
    ],
-   "ms": 3456
+   "ms": 3185
   },
   {
    "id": "streets_signals",
@@ -2023,7 +2031,7 @@
     "public/docs/screenshots/30_main_elm_intersection_signals.png",
     "public/docs/screenshots/30_elm_avenue_crosswalk_markings.png"
    ],
-   "ms": 3244
+   "ms": 2683
   },
   {
    "id": "traffic_obeys_signals",
@@ -2031,27 +2039,122 @@
    "pass": true,
    "details": {
     "stats": {
-     "redStops": 2,
+     "redStops": 6,
      "redRuns": 0,
-     "stopSigns": 2,
-     "junctionWaits": 1335,
+     "stopSigns": 5,
+     "junctionWaits": 4016,
      "honks": 0
     },
-    "heldSamples": 29,
+    "heldSamples": 19,
+    "redCars": [
+     {
+      "road": "main_lw",
+      "kind": "lane",
+      "speed": 0.2,
+      "red": true,
+      "blocked": "police",
+      "bt": 62.2,
+      "toEnd": 17.5,
+      "x": -32,
+      "z": 3,
+      "sig": null
+     },
+     {
+      "road": "main_lw",
+      "kind": "lane",
+      "speed": 0.2,
+      "red": true,
+      "blocked": "police",
+      "bt": 25,
+      "toEnd": 18.6,
+      "x": -33,
+      "z": 3,
+      "sig": null
+     },
+     {
+      "road": "exit",
+      "kind": "lane",
+      "speed": 1.4,
+      "red": true,
+      "blocked": null,
+      "bt": 0,
+      "toEnd": 3.1,
+      "x": 74,
+      "z": -17,
+      "sig": "R"
+     },
+     {
+      "road": "main_lw",
+      "kind": "lane",
+      "speed": 0.2,
+      "red": true,
+      "blocked": "police",
+      "bt": 22.1,
+      "toEnd": 18.5,
+      "x": -33,
+      "z": 3,
+      "sig": "R"
+     },
+     {
+      "road": "main_le",
+      "kind": "lane",
+      "speed": 0,
+      "red": true,
+      "blocked": null,
+      "bt": 0,
+      "toEnd": 2.4,
+      "x": 17,
+      "z": -3,
+      "sig": "L"
+     },
+     {
+      "road": "main_lw",
+      "kind": "lane",
+      "speed": 0.2,
+      "red": true,
+      "blocked": "police",
+      "bt": 10.7,
+      "toEnd": 18.4,
+      "x": -33,
+      "z": 3,
+      "sig": null
+     }
+    ],
+    "playerCars": [
+     [
+      61,
+      -8
+     ],
+     [
+      63,
+      26
+     ],
+     [
+      43,
+      21
+     ],
+     [
+      0,
+      249
+     ]
+    ],
     "carsHoldAtRed": {
-     "redStops": 2,
+     "redStops": 6,
      "redRuns": 0,
-     "stopSigns": 2,
-     "junctionWaits": 1335,
+     "stopSigns": 5,
+     "junctionWaits": 4016,
      "honks": 0
     },
     "noRedLightRunners": 0,
-    "heldCar": null
+    "heldCar": [
+     16.567826534357952,
+     -2.6
+    ]
    },
    "screenshots": [
     "public/docs/screenshots/30_traffic_waiting_at_red.png"
    ],
-   "ms": 28917
+   "ms": 27407
   },
   {
    "id": "townsfolk_ai",
@@ -2065,20 +2168,18 @@
      "pois": 41
     },
     "stats": {
-     "trips": 80,
-     "crossings": 44,
-     "signalWaits": 5259,
-     "gapWaits": 1040,
-     "chats": 38,
+     "trips": 62,
+     "crossings": 32,
+     "signalWaits": 7483,
+     "gapWaits": 1387,
+     "chats": 30,
      "honkReactions": 0,
-     "trickOrTreats": 14,
-     "visits": 40
+     "trickOrTreats": 13,
+     "visits": 35
     },
     "states": {
-     "walk": 12,
-     "chat": 2,
-     "do": 3,
-     "approach": 1
+     "walk": 17,
+     "plan": 1
     },
     "jaywalkSamples": [],
     "network": {
@@ -2088,57 +2189,57 @@
      "pois": 41
     },
     "errands": {
-     "trips": 80,
-     "crossings": 44,
-     "signalWaits": 5259,
-     "gapWaits": 1040,
-     "chats": 38,
+     "trips": 62,
+     "crossings": 32,
+     "signalWaits": 7483,
+     "gapWaits": 1387,
+     "chats": 30,
      "honkReactions": 0,
-     "trickOrTreats": 14,
-     "visits": 40
+     "trickOrTreats": 13,
+     "visits": 35
     },
     "crossAtCrosswalks": {
-     "trips": 80,
-     "crossings": 44,
-     "signalWaits": 5259,
-     "gapWaits": 1040,
-     "chats": 38,
+     "trips": 62,
+     "crossings": 32,
+     "signalWaits": 7483,
+     "gapWaits": 1387,
+     "chats": 30,
      "honkReactions": 0,
-     "trickOrTreats": 14,
-     "visits": 40
+     "trickOrTreats": 13,
+     "visits": 35
     },
     "noJaywalking": 0,
     "honk": {
      "before": 0,
      "after": 1,
      "line": {
-      "id": "kidg_honk",
-      "voice": "kid_g",
-      "demo": "child_girl",
-      "speaker": "child_girl",
-      "duration": 2.48,
+      "id": "kidb_honk",
+      "voice": "kid_b",
+      "demo": "child_boy",
+      "speaker": "child_boy",
+      "duration": 2,
       "source": "file",
-      "at": 425850
+      "at": 397696
      }
     },
     "honkReaction": {
      "before": 0,
      "after": 1,
      "line": {
-      "id": "kidg_honk",
-      "voice": "kid_g",
-      "demo": "child_girl",
-      "speaker": "child_girl",
-      "duration": 2.48,
+      "id": "kidb_honk",
+      "voice": "kid_b",
+      "demo": "child_boy",
+      "speaker": "child_boy",
+      "duration": 2,
       "source": "file",
-      "at": 425850
+      "at": 397696
      }
     }
    },
    "screenshots": [
     "public/docs/screenshots/31_townsfolk_town_square.png"
    ],
-   "ms": 26216
+   "ms": 25011
   },
   {
    "id": "cinema_movie",
@@ -2150,18 +2251,18 @@
      "stops": 1
     },
     "ticketBought": {
-     "prompt": "[E] Buy a ticket for NIGHT OF THE V8 — $8",
+     "prompt": "[E] Buy a ticket ($8): Screen 1 NIGHT OF THE V8 · Screen 2 ATTACK OF THE 50 FT PUMPKIN",
      "paid": 8
     },
     "popcorn": "[E] Buy popcorn — $5",
     "seated": {
-     "prompt": "[E] Sit down (row C) and watch the movie",
+     "prompt": "[E] Sit down (Screen 1, row C) and watch NIGHT OF THE V8",
      "seated": true
     },
     "film": {
      "frames": [
-      1261,
-      1347
+      1053,
+      1174
      ],
      "scene": "stinger",
      "cues": 2,
@@ -2174,13 +2275,13 @@
      ]
     },
     "filmProjecting": [
-     1261,
-     1347
+     1053,
+     1174
     ],
     "voicedCues": {
      "frames": [
-      1261,
-      1347
+      1053,
+      1174
      ],
      "scene": "stinger",
      "cues": 2,
@@ -2202,7 +2303,7 @@
     "public/docs/screenshots/32_projection_booth_ghost.png",
     "public/docs/screenshots/32_palace_cinema_marquee.png"
    ],
-   "ms": 21598
+   "ms": 21476
   },
   {
    "id": "drivein_intermission",
@@ -2211,7 +2312,7 @@
    "details": {
     "watchingFromCar": "drivein",
     "intermission": {
-     "inter": 12.710700000002985,
+     "inter": 12.701200000047686,
      "n": 1
     }
    },
@@ -2219,7 +2320,7 @@
     "public/docs/screenshots/33_drive_in_from_car.png",
     "public/docs/screenshots/33_drive_in_intermission_reel.png"
    ],
-   "ms": 9013
+   "ms": 8271
   },
   {
    "id": "dyno_pull",
@@ -2229,8 +2330,8 @@
     "prompt": "[E] Strap down & start a dyno pull  ·  [Shift+E] exit car",
     "mid": {
      "act": "Dyno",
-     "roller": -67.11,
-     "curve": 58
+     "roller": -66.53,
+     "curve": 147
     },
     "dyno": {
      "pulls": 1,
@@ -2243,12 +2344,12 @@
      "speaker": "adult_female",
      "duration": 3.76,
      "source": "file",
-     "at": 472140
+     "at": 442493
     },
     "pullRunning": {
      "act": "Dyno",
-     "roller": -67.11,
-     "curve": 58
+     "roller": -66.53,
+     "curve": 147
     },
     "result": {
      "pulls": 1,
@@ -2259,7 +2360,7 @@
     "public/docs/screenshots/34_dyno_pull_in_progress.png",
     "public/docs/screenshots/34_dyno_power_curve_display.png"
    ],
-   "ms": 15928
+   "ms": 15352
   },
   {
    "id": "drag_race",
@@ -2272,30 +2373,38 @@
      "south_e"
     ],
     "res": {
-     "result": "lose",
-     "et": 11.2208999999985,
-     "rival": 8.057999999999991,
+     "result": "win",
+     "et": 7.662600000143045,
+     "rival": 7.872600000143044,
      "stats": {
       "races": 1,
-      "wins": 0,
+      "wins": 1,
       "fouls": 0
      },
-     "best": null
+     "best": {
+      "et": 7.662600000143045,
+      "trap": 100.66229999999999
+     }
     },
+    "stageMaxY": 0.72,
+    "stagedOnTheStrip": 0.72,
     "stripClosed": [
      "south_w",
      "south_e"
     ],
     "raced": {
-     "result": "lose",
-     "et": 11.2208999999985,
-     "rival": 8.057999999999991,
+     "result": "win",
+     "et": 7.662600000143045,
+     "rival": 7.872600000143044,
      "stats": {
       "races": 1,
-      "wins": 0,
+      "wins": 1,
       "fouls": 0
      },
-     "best": null
+     "best": {
+      "et": 7.662600000143045,
+      "trap": 100.66229999999999
+     }
     },
     "stripReopened": true,
     "foul": "foul",
@@ -2305,7 +2414,7 @@
     "public/docs/screenshots/35_drag_strip_staging_tree.png",
     "public/docs/screenshots/35_drag_race_finish.png"
    ],
-   "ms": 32914
+   "ms": 29058
   },
   {
    "id": "parts_runner_shift",
@@ -2317,7 +2426,7 @@
      "j": {
       "n": 0,
       "drop": [
-       13.5,
+       45.5,
        0.1,
        -81.8
       ]
@@ -2325,8 +2434,8 @@
     },
     "grabCrate": "crate",
     "delivery": {
-     "prompt": "[E] Deliver the crate to station 3",
-     "pay": 188,
+     "prompt": "[E] Deliver the crate to station 5",
+     "pay": 189,
      "job": {
       "n": 1,
       "drop": [
@@ -2337,8 +2446,8 @@
      }
     },
     "delivered": {
-     "prompt": "[E] Deliver the crate to station 3",
-     "pay": 188,
+     "prompt": "[E] Deliver the crate to station 5",
+     "pay": 189,
      "job": {
       "n": 1,
       "drop": [
@@ -2353,7 +2462,7 @@
     "public/docs/screenshots/36_break_room_time_clock.png",
     "public/docs/screenshots/36_parts_runner_delivery_ring.png"
    ],
-   "ms": 6377
+   "ms": 5488
   },
   {
    "id": "arcade_vending",
@@ -2374,13 +2483,13 @@
     },
     "vending": {
      "vp": "[E] Buy a Ghoul-Cola — $2 (+25 health)",
-     "hp": 81
+     "hp": 80
     }
    },
    "screenshots": [
     "public/docs/screenshots/37_pumpkin_panic_arcade.png"
    ],
-   "ms": 6083
+   "ms": 5529
   },
   {
    "id": "stunt_jump",
@@ -2389,17 +2498,17 @@
    "details": {
     "stunts": {
      "jumps": 1,
-     "best": 1.55160000000149
+     "best": 1.5800999999046323
     },
     "jumped": {
      "jumps": 1,
-     "best": 1.55160000000149
+     "best": 1.5800999999046323
     }
    },
    "screenshots": [
     "public/docs/screenshots/38_stunt_ramp_landing.png"
    ],
-   "ms": 9510
+   "ms": 8880
   },
   {
    "id": "secrets",
@@ -2417,7 +2526,7 @@
      "time88"
     ],
     "devBonus": 10000,
-    "ufo": 13.722699999995521,
+    "ufo": 12.471000000000009,
     "bigfoot": "run",
     "payphone": "[E] Answer the ringing payphone",
     "found_konami": true,
@@ -2433,7 +2542,7 @@
     "public/docs/screenshots/39_ufo_tractor_beam.png",
     "public/docs/screenshots/39_developers_room.png"
    ],
-   "ms": 20087
+   "ms": 18019
   },
   {
    "id": "phase3_voice_lines",
@@ -2446,7 +2555,7 @@
     "auditViolations": 0,
     "played": [
      "rage_m",
-     "kidg_honk",
+     "kidb_honk",
      "usher_stop",
      "boxoffice_1",
      "concession_1",
@@ -2459,10 +2568,10 @@
      "marshal_1",
      "rival_1",
      "time88",
-     "marshal_lose",
+     "marshal_win",
+     "rival_lose",
      "marshal_foul",
      "shift_start",
-     "movie_narr_2",
      "konami",
      "payphone_1",
      "clock13",
@@ -2477,7 +2586,7 @@
     "newLinesPlayed": 22
    },
    "screenshots": [],
-   "ms": 669
+   "ms": 225
   },
   {
    "id": "radio_audio",
@@ -2495,20 +2604,415 @@
     }
    },
    "screenshots": [],
-   "ms": 149
+   "ms": 66
+  },
+  {
+   "id": "phase4_render_pipeline",
+   "title": "Ultra preset: MSAA composer targets, GTAO ambient occlusion, sky reflections (PMREM), colour grade, 4K sun shadows; quality presets switch cleanly",
+   "pass": true,
+   "details": {
+    "ultra": {
+     "quality": "ultra",
+     "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "msaa": 4,
+     "ao": true,
+     "grade": true,
+     "env": true,
+     "shadowSize": 4096,
+     "headlights": [
+      0,
+      0
+     ],
+     "hiddenCars": 12,
+     "activeBodies": 123
+    },
+    "low": {
+     "quality": "low",
+     "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "msaa": 0,
+     "ao": false,
+     "grade": false,
+     "env": false,
+     "shadowSize": 512,
+     "headlights": [
+      0,
+      0
+     ],
+     "hiddenCars": 18,
+     "activeBodies": 123
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/46_ultra_main_street.png"
+   ],
+   "ms": 17429
+  },
+  {
+   "id": "phase4_perf_culling",
+   "title": "Perf pass: static colliders stay out of cannon's per-body loops, far parked/traffic cars are culled, the Jumbotron only renders when its screen is in view",
+   "pass": true,
+   "details": {
+    "quality": "medium",
+    "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "msaa": 2,
+    "ao": false,
+    "grade": true,
+    "env": true,
+    "shadowSize": 1024,
+    "headlights": [
+     0,
+     0
+    ],
+    "hiddenCars": 12,
+    "activeBodies": {
+     "active": 123,
+     "all": 3364
+    },
+    "bodies": 3364,
+    "jumbo": 677,
+    "jumboFramesWhileAway": 0,
+    "farCarsCulled": 12,
+    "jumbotronIdleAway": 0
+   },
+   "screenshots": [],
+   "ms": 2890
+  },
+  {
+   "id": "phase4_day_night",
+   "title": "Day/night cycle: the clock drives sun/moon, sky, fog, exposure, star field and street lamps; the HUD clock follows",
+   "pass": true,
+   "details": {
+    "night": {
+     "hour": 23,
+     "clock": "11:00 PM",
+     "frozen": true,
+     "night": true,
+     "sunY": -0.794,
+     "moonY": 0.518,
+     "exposure": 1.42,
+     "lamps": 1,
+     "env": true,
+     "key": 0,
+     "hud": "11:00 PM"
+    },
+    "noon": {
+     "hour": 12,
+     "clock": "12:00 PM",
+     "frozen": true,
+     "night": false,
+     "sunY": 0.845,
+     "moonY": -0.658,
+     "exposure": 0.95,
+     "lamps": 0,
+     "env": true,
+     "key": 2.7,
+     "hud": "12:00 PM"
+    },
+    "dusk": {
+     "hour": 18,
+     "clock": "6:00 PM",
+     "frozen": true,
+     "night": true,
+     "sunY": 0.089,
+     "moonY": -0.455,
+     "exposure": 1.14,
+     "lamps": 1,
+     "env": true,
+     "key": 1.49,
+     "hud": "6:00 PM"
+    },
+    "runningHour": 18.03,
+    "clockRuns": 18.03
+   },
+   "screenshots": [
+    "public/docs/screenshots/47_night_11pm.png",
+    "public/docs/screenshots/47_day_noon.png",
+    "public/docs/screenshots/47_dusk_6pm.png"
+   ],
+   "ms": 6039
+  },
+  {
+   "id": "phase4_traffic_ai",
+   "title": "AI traffic: turn signals before junction turns; a car abandoned in the lane is seen, signalled around and overtaken (oncoming lane checked)",
+   "pass": true,
+   "details": {
+    "maxLat": 5.2,
+    "phases": [
+     "out",
+     "pass",
+     "back"
+    ],
+    "ai": {
+     "overtakes": 1,
+     "done": 1,
+     "aborts": 0
+    },
+    "signal": {
+     "signal": "L",
+     "kind": "lane",
+     "toEnd": 7.4,
+     "overtaking": false
+    },
+    "overtook": {
+     "phases": [
+      "out",
+      "pass",
+      "back"
+     ],
+     "maxLat": 5.2
+    },
+    "merged": 1,
+    "turnSignal": {
+     "signal": "L",
+     "kind": "lane",
+     "toEnd": 7.4,
+     "overtaking": false
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/48_traffic_overtake.png"
+   ],
+   "ms": 21545
+  },
+  {
+   "id": "phase4_damage_model",
+   "title": "Damage model: a wall crash dents the front panels, side hits scuff and bend the alignment, the Custom Bay bodywork repairs it all",
+   "pass": true,
+   "details": {
+    "crash": {
+     "zones": {
+      "front": 0.47,
+      "rear": 0,
+      "left": 0,
+      "right": 0
+     },
+     "percent": 21,
+     "dented": 18,
+     "hits": 1,
+     "pull": 0,
+     "hood": 0,
+     "rust": 0.12,
+     "repairCost": 400
+    },
+    "side": {
+     "zones": {
+      "front": 0.47,
+      "rear": 0,
+      "left": 0.4,
+      "right": 0
+     },
+     "percent": 39,
+     "dented": 27,
+     "hits": 2,
+     "pull": 0.036,
+     "hood": 0,
+     "rust": 0.22,
+     "repairCost": 700
+    },
+    "hud": "body 39% damaged",
+    "fixed": {
+     "zones": {
+      "front": 0,
+      "rear": 0,
+      "left": 0,
+      "right": 0
+     },
+     "percent": 0,
+     "dented": 0,
+     "hits": 0,
+     "pull": 0,
+     "hood": 0,
+     "rust": 0,
+     "repairCost": 0
+    },
+    "frontCrash": {
+     "zones": {
+      "front": 0.47,
+      "rear": 0,
+      "left": 0,
+      "right": 0
+     },
+     "percent": 21,
+     "dented": 18,
+     "hits": 1,
+     "pull": 0,
+     "hood": 0,
+     "rust": 0.12,
+     "repairCost": 400
+    },
+    "sideHit": {
+     "zones": {
+      "front": 0.47,
+      "rear": 0,
+      "left": 0.4,
+      "right": 0
+     },
+     "percent": 39,
+     "dented": 27,
+     "hits": 2,
+     "pull": 0.036,
+     "hood": 0,
+     "rust": 0.22,
+     "repairCost": 700
+    },
+    "hudShowsDamage": [
+     "body 39% damaged"
+    ],
+    "repaired": {
+     "zones": {
+      "front": 0,
+      "rear": 0,
+      "left": 0,
+      "right": 0
+     },
+     "percent": 0,
+     "dented": 0,
+     "hits": 0,
+     "pull": 0,
+     "hood": 0,
+     "rust": 0,
+     "repairCost": 0
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/49_damage_dents.png"
+   ],
+   "ms": 6003
+  },
+  {
+   "id": "phase4_garage",
+   "title": "Kiosk garage: save named builds (browser storage), list them in the Garage tab, load one back into the configurator",
+   "pass": true,
+   "details": {
+    "list": [
+     {
+      "name": "Pumpkin Spice Coupe",
+      "body": "coupe",
+      "color": "#ffb000"
+     },
+     {
+      "name": "Midnight Hearse",
+      "body": "hearse",
+      "color": "#5b1a8c"
+     }
+    ],
+    "loaded": {
+     "body": "hearse",
+     "color": "#5b1a8c",
+     "livery": "ribcage"
+    },
+    "saved": [
+     {
+      "name": "Pumpkin Spice Coupe",
+      "body": "coupe",
+      "color": "#ffb000"
+     },
+     {
+      "name": "Midnight Hearse",
+      "body": "hearse",
+      "color": "#5b1a8c"
+     }
+    ]
+   },
+   "screenshots": [
+    "public/docs/screenshots/50_kiosk_garage.png"
+   ],
+   "ms": 2799
+  },
+  {
+   "id": "phase4_screen2",
+   "title": "Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie",
+   "pass": true,
+   "details": {
+    "prompt": "🎟️ You have a ticket: Screen 1 is through the lobby, Screen 2 through the west door",
+    "seatPrompt": "[E] Sit down (Screen 2, row C) and watch ATTACK OF THE 50 FT PUMPKIN",
+    "seated": 2,
+    "film": "pumpkin",
+    "watching": "palace2",
+    "framesBy": {
+     "v8": 1747,
+     "pumpkin": 334
+    },
+    "dialog": [
+     "clock13",
+     "secret_room",
+     "time88",
+     "kiosk_welcome",
+     "p_farmer_1"
+    ],
+    "drive": {
+     "film": "pumpkin",
+     "map": true
+    },
+    "prompts": {
+     "pr": "🎟️ You have a ticket: Screen 1 is through the lobby, Screen 2 through the west door",
+     "seatPr": "[E] Sit down (Screen 2, row C) and watch ATTACK OF THE 50 FT PUMPKIN"
+    },
+    "seatedScreen2": {
+     "seated": 2,
+     "film": "pumpkin",
+     "watching": "palace2",
+     "framesBy": {
+      "v8": 1747,
+      "pumpkin": 334
+     },
+     "dialog": [
+      "clock13",
+      "secret_room",
+      "time88",
+      "kiosk_welcome",
+      "p_farmer_1"
+     ]
+    },
+    "filmDrawn": {
+     "v8": 1747,
+     "pumpkin": 334
+    },
+    "cuePlayed": [
+     "secret_room",
+     "time88",
+     "kiosk_welcome",
+     "p_farmer_1"
+    ],
+    "driveInMidnight": {
+     "film": "pumpkin",
+     "map": true
+    }
+   },
+   "screenshots": [
+    "public/docs/screenshots/51_screen2_seated.png"
+   ],
+   "ms": 4531
+  },
+  {
+   "id": "phase4_gamepad",
+   "title": "Gamepad (standard mapping): left stick walks, A interacts, RT/LT drive, Start pauses; menus and keyboard keep working",
+   "pass": true,
+   "details": {
+    "walked": 4.53,
+    "inCar": true,
+    "speed": 12.88,
+    "mode": "paused",
+    "stickWalk": 4.53,
+    "aInteracts": true,
+    "rtThrottle": 12.88,
+    "startPauses": "paused"
+   },
+   "screenshots": [],
+   "ms": 8841
   },
   {
    "id": "perf",
    "title": "Performance snapshot (draw calls, triangles, FPS on this GPU)",
    "pass": true,
    "details": {
-    "fps": 17.5,
-    "drawCalls": 2036,
-    "triangles": 610296,
-    "vehicles": 7
+    "fps": 47.5,
+    "drawCalls": 1211,
+    "triangles": 1648871,
+    "vehicles": 9
    },
    "screenshots": [],
-   "ms": 3495
+   "ms": 3310
   },
   {
    "id": "final_errors",
@@ -2521,7 +3025,7 @@
     }
    },
    "screenshots": [],
-   "ms": 243
+   "ms": 70
   }
  ]
 }

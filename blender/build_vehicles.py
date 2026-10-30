@@ -31,6 +31,7 @@ GLOVE = lambda: mat("Glove", (0.12, 0.1, 0.09), 0.0, 0.8)
 
 
 def arch(zc, yc, R, yb, n=9):
+    n = segs(n, 24)
     phi0 = math.asin(max(-1.0, min(1.0, (yb - yc) / R)))
     return [(zc + R * math.cos(phi0 + (math.pi - 2 * phi0) * i / n),
              yc + R * math.sin(phi0 + (math.pi - 2 * phi0) * i / n)) for i in range(n + 1)]
@@ -38,6 +39,7 @@ def arch(zc, yc, R, yb, n=9):
 
 def torus_bm(bm, R, r, center, seg=28, rseg=8):
     """Torus in game XY plane (normal +z)."""
+    seg, rseg = segs(seg), segs(rseg, 16)
     rings = []
     for i in range(seg):
         a = 2 * math.pi * i / seg

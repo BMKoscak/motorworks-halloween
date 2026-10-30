@@ -3,7 +3,7 @@
   "file": "character.glb",
   "objects": 94,
   "meshes": 66,
-  "tris": 2674,
+  "tris": 9206,
   "hinges": [
    "Foot_L",
    "Foot_R",
@@ -22,13 +22,13 @@
    "UpperLeg_L",
    "UpperLeg_R"
   ],
-  "bytes": 186168
+  "bytes": 357688
  },
  {
   "file": "skeleton.glb",
   "objects": 91,
   "meshes": 66,
-  "tris": 2780,
+  "tris": 7608,
   "hinges": [
    "Foot_L",
    "Foot_R",
@@ -47,6 +47,6 @@
    "UpperLeg_L",
    "UpperLeg_R"
   ],
-  "bytes": 204040
+  "bytes": 335008
  }
 ]

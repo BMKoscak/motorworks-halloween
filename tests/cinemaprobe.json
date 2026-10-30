@@ -1,0 +1,69 @@
+{
+ "setup": {
+  "seats1": 192,
+  "seats2": 84,
+  "screen2": true,
+  "screen2Center": [
+   103.5,
+   3.4,
+   39.1
+  ],
+  "door2": [
+   98.9,
+   0.2,
+   15.6
+  ],
+  "films": [
+   "v8",
+   "pumpkin"
+  ]
+ },
+ "prompt": "[E] Buy a ticket ($8): Screen 1 NIGHT OF THE V8 · Screen 2 ATTACK OF THE 50 FT PUMPKIN",
+ "ticket": true,
+ "inAnnex": true,
+ "seatPrompt": "[E] Sit down (Screen 2, row C) and watch ATTACK OF THE 50 FT PUMPKIN",
+ "seated": {
+  "seated": true,
+  "screen": 2,
+  "film": "pumpkin",
+  "watching": "palace2"
+ },
+ "frames": {
+  "ptitle": {
+   "scene": "ptitle",
+   "frames": 55
+  },
+  "patch": {
+   "scene": "patch",
+   "frames": 70
+  },
+  "growth": {
+   "scene": "growth",
+   "frames": 84
+  },
+  "rampage": {
+   "scene": "rampage",
+   "frames": 99
+  },
+  "showdown": {
+   "scene": "showdown",
+   "frames": 113
+  },
+  "splat": {
+   "scene": "splat",
+   "frames": 128
+  }
+ },
+ "cue": {
+  "played": 3,
+  "dialog": [
+   "p_narr_2",
+   "p_farmer_1"
+  ]
+ },
+ "drive": {
+  "film": "pumpkin",
+  "mapOk": true
+ },
+ "errors": []
+}

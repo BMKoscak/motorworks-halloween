@@ -81,7 +81,7 @@ export class Buildings {
         o.material = b.fixtureMat;
       } else if (/^LightIn_/.test(n)) {
         const p = o.getWorldPosition(new THREE.Vector3());
-        const s = g.lights.add(p, o.userData.color || '#ffc98a', opts.lightI || 9, false, opts.lightRange || 9);
+        const s = g.lights.add(p, o.userData.color || '#ffc98a', opts.lightI || 9, false, opts.lightRange || 9, true);
         b.sources.push(s);
       } else if (/^Loot_/.test(n)) b.loot.push({ kind: n.split('_')[1], pos: o.getWorldPosition(new THREE.Vector3()), yaw: obj.rotation.y + (o.userData.yaw || 0) });
       else if (/^Shop_/.test(n)) b.shop.push({ item: n.slice(5), pos: o.getWorldPosition(new THREE.Vector3()), yaw: obj.rotation.y + (o.userData.yaw || 0), price: o.userData.price || 0 });

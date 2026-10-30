@@ -1,0 +1,73 @@
+{
+ "quality": "ultra",
+ "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "views": [
+  {
+   "name": "car_closeup",
+   "fps": 34.8,
+   "drawCalls": 1976,
+   "triangles": 2988261
+  },
+  {
+   "name": "car_rear_three_quarter",
+   "fps": 33.2,
+   "drawCalls": 2218,
+   "triangles": 3541261
+  },
+  {
+   "name": "main_elm_intersection",
+   "fps": 35.2,
+   "drawCalls": 1951,
+   "triangles": 3390707
+  },
+  {
+   "name": "main_street_wide",
+   "fps": 33,
+   "drawCalls": 2277,
+   "triangles": 3039155
+  },
+  {
+   "name": "palace_cinema",
+   "fps": 44.5,
+   "drawCalls": 1121,
+   "triangles": 3002997
+  },
+  {
+   "name": "factory_line",
+   "fps": 37.9,
+   "drawCalls": 1622,
+   "triangles": 2288225
+  },
+  {
+   "name": "factory_floor_low",
+   "fps": 35.2,
+   "drawCalls": 1640,
+   "triangles": 2347335
+  },
+  {
+   "name": "cemetery_gate",
+   "fps": 61.3,
+   "drawCalls": 805,
+   "triangles": 2399387
+  },
+  {
+   "name": "cemetery_crypt",
+   "fps": 68.2,
+   "drawCalls": 747,
+   "triangles": 2218089
+  },
+  {
+   "name": "drag_strip",
+   "fps": 40.2,
+   "drawCalls": 1696,
+   "triangles": 2668035
+  },
+  {
+   "name": "town_overview",
+   "fps": 35.3,
+   "drawCalls": 2111,
+   "triangles": 3181309
+  }
+ ],
+ "errors": []
+}

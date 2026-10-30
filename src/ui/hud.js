@@ -20,6 +20,12 @@ export class HUD {
 
   money(v) { $('hud-money').textContent = '$' + Math.round(v).toLocaleString(); }
   pumpkins(n) { $('hud-pumpkins').textContent = `${n}/5`; }
+  clock(text, night) {
+    if (text === this._clock) return;
+    this._clock = text;
+    $('hud-clock').textContent = text;
+    $('hud-clock-ic').textContent = night ? '🌙' : '☀️';
+  }
   radio(name) { $('hud-radio').textContent = name ? '📻 ' + name : ''; $('hud-radio').classList.toggle('hidden', !name); }
 
   prompt(text) {

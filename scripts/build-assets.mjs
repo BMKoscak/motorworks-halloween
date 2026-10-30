@@ -1,12 +1,19 @@
 // Runs the whole Blender asset pipeline headless and records timings in TELEMETRY.json.
-// Usage: npm run assets   (BLENDER env var overrides the executable path)
+// Usage: npm run assets   (BLENDER env var overrides the executable path; MW_DETAIL=1 rebuilds the original low-poly set)
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const blender = process.env.BLENDER || 'C:/Program Files/Blender Foundation/Blender 5.2/blender.exe';
+// first Blender found: $BLENDER, the Blender Foundation installer, the Steam build, then whatever is on PATH
+const blender = [
+  process.env.BLENDER,
+  'C:/Program Files/Blender Foundation/Blender 5.2/blender.exe',
+  'C:/Program Files (x86)/Steam/steamapps/common/Blender/blender.exe',
+  '/Applications/Blender.app/Contents/MacOS/Blender',
+].find((p) => p && existsSync(p)) || 'blender';
+console.log(`Blender: ${blender} · detail level ${process.env.MW_DETAIL || 2}`);
 const scripts = ['build_vehicles.py', 'build_world.py', 'build_chars.py', 'build_roads.py'];
 const runs = [];
 for (const s of scripts) {

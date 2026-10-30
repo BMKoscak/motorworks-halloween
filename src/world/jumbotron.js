@@ -124,12 +124,19 @@ export class Jumbotron {
     this.overlay.needsUpdate = true;
   }
 
+  _onScreen() {
+    const cam = this.game.camera;
+    const fr = (this._fr ||= new THREE.Frustum()), m = (this._pm ||= new THREE.Matrix4());
+    fr.setFromProjectionMatrix(m.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
+    const box = (this._box ||= new THREE.Box3());
+    return this.faces.some((f) => { box.setFromObject(f); return fr.intersectsBox(box); });
+  }
+
   update(dt) {
     const g = this.game;
     this.mat.uniforms.uTime.value += dt;
-    // only spend a render-target pass when someone can see the screen (inside / near the plant)
-    const near = g.focusPos.distanceTo(this.root.position) < 75;
-    if (!near || !g.assembly) return;
+    // only spend a render-target pass when the camera can actually see a screen face (in range and in the frustum)
+    if (!g.assembly || g.camera.position.distanceTo(this.root.position) > 75 || !this._onScreen()) return;
     this.acc += dt;
     if (this.acc >= 1 / 16) {
       this.acc = 0;
@@ -137,9 +144,13 @@ export class Jumbotron {
       const r = g.renderer;
       const prevTarget = r.getRenderTarget();
       this.faces.forEach((f) => (f.visible = false));
+      // reuse the main pass's shadow maps: otherwise every feed frame re-renders the sun + spot shadows as well
+      const shadowAuto = r.shadowMap.autoUpdate;
+      r.shadowMap.autoUpdate = false;
       r.setRenderTarget(this.rt);
       r.render(g.scene, this.cam);
       r.setRenderTarget(prevTarget);
+      r.shadowMap.autoUpdate = shadowAuto;
       this.faces.forEach((f) => (f.visible = true));
       this.frames++;
       this._drawOverlay();

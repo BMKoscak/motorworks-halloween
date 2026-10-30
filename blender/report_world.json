@@ -3,42 +3,42 @@
   "file": "robot_arm.glb",
   "objects": 19,
   "meshes": 12,
-  "tris": 536,
+  "tris": 1616,
   "hinges": [
    "Base",
    "Elbow",
    "Shoulder",
    "Wrist"
   ],
-  "bytes": 43508
+  "bytes": 73572
  },
  {
   "file": "press.glb",
   "objects": 9,
   "meshes": 8,
-  "tris": 300,
+  "tris": 2124,
   "hinges": [
    "Ram"
   ],
-  "bytes": 28220
+  "bytes": 86648
  },
  {
   "file": "crane.glb",
   "objects": 9,
   "meshes": 6,
-  "tris": 128,
+  "tris": 632,
   "hinges": [
    "Bridge",
    "Hoist",
    "Trolley"
   ],
-  "bytes": 14436
+  "bytes": 31388
  },
  {
   "file": "garage_door.glb",
   "objects": 20,
   "meshes": 19,
-  "tris": 288,
+  "tris": 928,
   "hinges": [
    "Slat_0",
    "Slat_1",
@@ -49,45 +49,45 @@
    "Slat_6",
    "Slat_7"
   ],
-  "bytes": 32496
+  "bytes": 60124
  },
  {
   "file": "sliding_door.glb",
   "objects": 8,
   "meshes": 7,
-  "tris": 180,
+  "tris": 1556,
   "hinges": [
    "Panel_L",
    "Panel_R"
   ],
-  "bytes": 18116
+  "bytes": 59428
  },
  {
   "file": "barrier.glb",
   "objects": 4,
   "meshes": 3,
-  "tris": 84,
+  "tris": 692,
   "hinges": [
    "Arm"
   ],
-  "bytes": 8900
+  "bytes": 27872
  },
  {
   "file": "cemetery_gate.glb",
   "objects": 26,
   "meshes": 23,
-  "tris": 4476,
+  "tris": 9068,
   "hinges": [
    "Gate_L",
    "Gate_R"
   ],
-  "bytes": 284660
+  "bytes": 438220
  },
  {
   "file": "forklift.glb",
   "objects": 17,
   "meshes": 13,
-  "tris": 472,
+  "tris": 1656,
   "hinges": [
    "Forks",
    "ForkWheel_FL",
@@ -95,33 +95,33 @@
    "ForkWheel_RL",
    "ForkWheel_RR"
   ],
-  "bytes": 41080
+  "bytes": 74168
  },
  {
   "file": "lift.glb",
   "objects": 4,
   "meshes": 3,
-  "tris": 108,
+  "tris": 780,
   "hinges": [
    "Platform"
   ],
-  "bytes": 10312
+  "bytes": 32452
  },
  {
   "file": "scanner.glb",
   "objects": 4,
   "meshes": 3,
-  "tris": 72,
+  "tris": 392,
   "hinges": [
    "Laser_Bar"
   ],
-  "bytes": 8240
+  "bytes": 19912
  },
  {
   "file": "plant.glb",
   "objects": 403,
   "meshes": 380,
-  "tris": 31316,
+  "tris": 81260,
   "hinges": [
    "Door_Secret",
    "Dyno_Fan",
@@ -130,25 +130,25 @@
    "GiantSpider",
    "SwitchLever_NightShift"
   ],
-  "bytes": 2156288
+  "bytes": 3841924
  },
  {
   "file": "diner.glb",
   "objects": 178,
   "meshes": 161,
-  "tris": 6784,
+  "tris": 19124,
   "hinges": [
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 512808
+  "bytes": 886312
  },
  {
   "file": "gas_station.glb",
   "objects": 123,
   "meshes": 100,
-  "tris": 5408,
+  "tris": 22128,
   "hinges": [
    "Door_Front",
    "Hose_0_0",
@@ -161,25 +161,25 @@
    "Nozzle_1_1",
    "SwitchLever_Main"
   ],
-  "bytes": 404428
+  "bytes": 919988
  },
  {
   "file": "hardware.glb",
   "objects": 125,
   "meshes": 100,
-  "tris": 5536,
+  "tris": 24032,
   "hinges": [
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 405584
+  "bytes": 975612
  },
  {
   "file": "police_station.glb",
   "objects": 168,
   "meshes": 144,
-  "tris": 4688,
+  "tris": 16992,
   "hinges": [
    "Cell_Door",
    "Door_Back",
@@ -187,63 +187,63 @@
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 400568
+  "bytes": 775640
  },
  {
   "file": "jumbotron.glb",
   "objects": 12,
   "meshes": 7,
-  "tris": 368,
+  "tris": 1472,
   "hinges": [],
-  "bytes": 32156
+  "bytes": 74012
  },
  {
   "file": "house_a.glb",
   "objects": 190,
   "meshes": 169,
-  "tris": 5016,
+  "tris": 24744,
   "hinges": [
    "BreakerLever",
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 456152
+  "bytes": 1058796
  },
  {
   "file": "house_b.glb",
   "objects": 149,
   "meshes": 128,
-  "tris": 3264,
+  "tris": 16496,
   "hinges": [
    "BreakerLever",
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 307272
+  "bytes": 707444
  },
  {
   "file": "props.glb",
   "objects": 314,
   "meshes": 247,
-  "tris": 22706,
+  "tris": 43986,
   "hinges": [
    "CryptDoor",
    "Turntable_Top"
   ],
-  "bytes": 1449820
+  "bytes": 2075852
  },
  {
   "file": "cinema.glb",
-  "objects": 423,
-  "meshes": 211,
-  "tris": 17096,
+  "objects": 579,
+  "meshes": 279,
+  "tris": 129580,
   "hinges": [
    "Door_Back",
    "Door_Front",
    "SwitchLever_Main"
   ],
-  "bytes": 1193728
+  "bytes": 4916736
  }
 ]
