@@ -1420,7 +1420,7 @@ await check('phase4_traffic_ai', 'AI traffic: turn signals before junction turns
     const g = window.__MW.game, T = g.traffic;
     const n = T.graph.nearest({ x: -150, y: 0, z: 2.6 }), c = T.driving[0];
     for (const n2 of Object.values(T.graph.nodes)) if (n2.busy === c) n2.busy = null;
-    c.seg = n.seg; c.s = n.s; c.speed = 9; c.nextSeg = null; c.ot = null; c.lat = 0; c.cooldown = 0;
+    c.seg = n.seg; c.s = n.s; c.speed = 9; c.nextSeg = null; c.ot = null; c.lat = 0; c.cooldown = 0; c.disabled = false;
     T._place(c, 0); c.body.velocity.set(0, 0, 0); // snap the kinematic body (a dt-based place would fling it through the obstacle)
     for (const o of T.driving) if (o !== c && Math.abs(o.body.position.z) < 8 && o.body.position.x > -200 && o.body.position.x < -40) T._relocate(o);
     // spawn the obstacle only now: a traffic car sitting on that spot would shove it down the street
@@ -1442,7 +1442,7 @@ await check('phase4_traffic_ai', 'AI traffic: turn signals before junction turns
   let sig = null;
   for (let i = 0; i < 40 && !sig; i++) { sig = await MW(() => window.__MW.trafficAI().signalling.find((x) => !x.overtaking && x.kind === 'lane' && x.toEnd < 30)); if (!sig) await sleep(250); }
   const ai = await MW(() => window.__MW.trafficAI());
-  r.details = { maxLat: +maxLat.toFixed(2), phases: [...phases], ai: { overtakes: ai.overtakes, done: ai.done, aborts: ai.aborts }, signal: sig };
+  Object.assign(r.details, { maxLat: +maxLat.toFixed(2), phases: [...phases], ai: { overtakes: ai.overtakes, done: ai.done, aborts: ai.aborts }, signal: sig }); // keep the trace
   assert(r, phases.has('out') && phases.has('pass') && phases.has('back') && maxLat > 4.5, 'overtook', { phases: [...phases], maxLat });
   assert(r, ai.done >= 1, 'merged', ai.done);
   assert(r, !!sig, 'turnSignal', sig);
@@ -1492,7 +1492,7 @@ await check('phase4_garage', 'Kiosk garage: save named builds (browser storage),
   assert(r, cfg.body === 'hearse' && cfg.color === '#5b1a8c' && cfg.livery === 'ribcage', 'loaded', cfg);
 });
 
-await check('phase4_screen2', 'Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie', async (r) => {
+await check('phase4_screen2', 'Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with ElevenLabs-voiced cues; the drive-in runs it as the midnight movie', async (r) => {
   await MW(() => { const c = window.__MW.game.cinema; window.__MW.game.player.teleport(c.b.spots.BoxOffice.clone(), c.rot + Math.PI); });
   await sleep(400);
   const pr = await MW(() => window.__MW.prompt());
@@ -1518,6 +1518,12 @@ await check('phase4_screen2', 'Palace Screen 2: annex auditorium entered from th
   assert(r, c1.framesBy && c1.framesBy.pumpkin > 5, 'filmDrawn', c1.framesBy);
   assert(r, c1.dialog.includes('p_farmer_1'), 'cuePlayed', c1.dialog.slice(-4));
   assert(r, drive.film === 'pumpkin' && drive.map, 'driveInMidnight', drive);
+  // the Screen 2 cast are ElevenLabs takes (Phase 4.1), cached MP3s like the rest of the cast
+  const cast = await MW(async () => { const man = await (await fetch('audio/dialogue/manifest.json')).json(); const ids = ['p_narr_1', 'p_farmer_1', 'p_pumpkin_1', 'p_sheriff_1', 'p_sheriff_2', 'p_narr_2', 'p_pumpkin_2'];
+    const heads = await Promise.all(ids.map((i) => man[i] ? fetch('audio/dialogue/' + man[i].file, { method: 'HEAD' }).then((x) => x.ok) : false));
+    return { eleven: ids.filter((i) => man[i] && man[i].engine === 'elevenlabs').length, files: heads.filter(Boolean).length, total: Object.values(man).filter((m) => m.engine === 'elevenlabs').length }; });
+  r.details.cast = cast;
+  assert(r, cast.eleven === 7 && cast.files === 7, 'screen2CastElevenLabs', cast);
 });
 
 await check('phase4_gamepad', 'Gamepad (standard mapping): left stick walks, A interacts, RT/LT drive, Start pauses; menus and keyboard keep working', async (r) => {

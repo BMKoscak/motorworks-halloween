@@ -1,7 +1,7 @@
 {
- "ranAt": "2026-10-30T21:07:27.267Z",
- "durationSec": 587,
- "passed": 48,
+ "ranAt": "2026-10-31T07:24:07.060Z",
+ "durationSec": 582,
+ "passed": 49,
  "total": 50,
  "results": [
   {
@@ -9,7 +9,7 @@
    "title": "Page loads, Blender assets stream in, zero console errors / uncaught exceptions",
    "pass": true,
    "details": {
-    "loadMs": 3182,
+    "loadMs": 3302,
     "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "consoleErrors": []
    },
@@ -17,7 +17,7 @@
     "public/docs/screenshots/01_title_screen.png",
     "public/docs/screenshots/01b_title_telemetry_badge.png"
    ],
-   "ms": 19396
+   "ms": 19896
   },
   {
    "id": "assets",
@@ -28,8 +28,8 @@
     "invalidBoxes": [],
     "missingHinges": [],
     "hingeCounts": {
-     "car_pickup": 13,
      "car_muscle": 13,
+     "car_pickup": 13,
      "car_coupe": 13,
      "car_hearse": 13,
      "car_sedan": 15,
@@ -42,13 +42,14 @@
      "sliding_door": 2,
      "barrier": 1,
      "cemetery_gate": 2,
+     "lift": 1,
      "forklift": 5,
      "scanner": 1,
-     "lift": 1,
      "jumbotron": 0,
      "roads": 0,
      "diner": 3,
      "gas_station": 10,
+     "plant": 6,
      "hardware": 3,
      "police_station": 5,
      "house_a": 4,
@@ -56,28 +57,27 @@
      "props": 2,
      "character": 16,
      "skeleton": 16,
-     "plant": 6,
      "cinema": 3
     },
     "meshes": 2654
    },
    "screenshots": [],
-   "ms": 66
+   "ms": 67
   },
   {
    "id": "walk",
    "title": "Player walks with WASD and collides with walls and cars (no clipping)",
    "pass": true,
    "details": {
-    "walkedMeters": 5,
+    "walkedMeters": 5.11,
     "stoppedAtWallZ": -59.38,
-    "distanceFromCarCenter": 3.01,
+    "distanceFromCarCenter": 2.75,
     "parkedCars": 22
    },
    "screenshots": [
     "public/docs/screenshots/03_player_at_plant_wall.png"
    ],
-   "ms": 8382
+   "ms": 8454
   },
   {
    "id": "escape",
@@ -89,13 +89,13 @@
     ],
     "mode": "paused",
     "keysAfterEscape": [],
-    "driftAfterResume": 0,
+    "driftAfterResume": 0.01,
     "clearReason": "unlock"
    },
    "screenshots": [
     "public/docs/screenshots/04_pause_menu.png"
    ],
-   "ms": 2268
+   "ms": 2288
   },
   {
    "id": "dialogue",
@@ -110,7 +110,7 @@
      "speaker": "adult_male",
      "duration": 8.8,
      "source": "file",
-     "at": 30859
+     "at": 31459
     },
     "dispatchLine": {
      "id": "dispatch_2",
@@ -119,13 +119,13 @@
      "speaker": null,
      "duration": 6,
      "source": "file",
-     "at": 32821
+     "at": 33406
     }
    },
    "screenshots": [
     "public/docs/screenshots/05_dialogue_foreman.png"
    ],
-   "ms": 3542
+   "ms": 3529
   },
   {
    "id": "kiosk",
@@ -158,7 +158,7 @@
      "running": true,
      "stage": 0,
      "stageT": 0.051,
-     "number": "MW-1031-3296"
+     "number": "MW-1031-2359"
     },
     "charged": 103650
    },
@@ -172,7 +172,7 @@
     "public/docs/screenshots/06_kiosk_lighting.png",
     "public/docs/screenshots/06_kiosk_performance.png"
    ],
-   "ms": 19271
+   "ms": 19500
   },
   {
    "id": "factory_jumbotron_and_conveyor",
@@ -206,7 +206,7 @@
      }
     ],
     "factory": {
-     "ikSolves": 1663,
+     "ikSolves": 1579,
      "pressCycles": 1,
      "partsCarried": 3,
      "nightShift": false
@@ -217,12 +217,12 @@
      0.22,
      0.13
     ],
-    "ikSolves": 1663,
-    "rollerSpin": 429.18,
+    "ikSolves": 1579,
+    "rollerSpin": 429.23,
     "jumbotron": {
      "before": {
-      "frames": 115,
-      "overlay": 21,
+      "frames": 114,
+      "overlay": 20,
       "faces": 4
      },
      "viewStart": {
@@ -231,12 +231,12 @@
       "faces": 4
      },
      "after": {
-      "frames": 149,
+      "frames": 152,
       "overlay": 34,
       "faces": 4
      }
     },
-    "renderTargetFramesUpdated": 34,
+    "renderTargetFramesUpdated": 37,
     "overlayCanvasRedrawn": 13
    },
    "screenshots": [
@@ -245,7 +245,7 @@
     "public/docs/screenshots/16_jumbotron_closeup.png",
     "public/docs/screenshots/16_conveyor_skillet_press_feeder.png"
    ],
-   "ms": 16974
+   "ms": 17315
   },
   {
    "id": "assembly",
@@ -255,7 +255,7 @@
     "stations": [
      {
       "stage": 1,
-      "stageT": 0.89,
+      "stageT": 0.91,
       "hinges": {
        "Door_L": 0,
        "Door_R": 0,
@@ -266,50 +266,10 @@
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.733,
-       -0.698,
-       -0.469,
-       0.797
-      ],
-      "reveal": 0,
-      "log": [
-       "order",
-       "s0_floor",
-       "s0_bay",
-       "s0_cage",
-       "s1_body",
-       "s1_plan",
-       "pick_Door_L",
-       "pick_Door_R",
-       "pick_Hood",
-       "attach_Door_R",
-       "close_Door_R",
-       "pick_Trunk",
-       "attach_Door_L",
-       "attach_Hood",
-       "attach_Trunk",
-       "close_Door_L",
-       "close_Hood",
-       "close_Trunk"
-      ]
-     },
-     {
-      "stage": 1,
-      "stageT": 1,
-      "hinges": {
-       "Door_L": 0,
-       "Door_R": 0,
-       "Hood": 0,
-       "Trunk": 0
-      },
-      "ram": 4.72,
-      "hoist": -0.3,
-      "laser": 2,
-      "robots": [
-       -0.36,
-       -0.37,
-       -0.324,
-       -0.3
+       -0.679,
+       -0.724,
+       -0.699,
+       0.401
       ],
       "reveal": 0,
       "log": [
@@ -335,6 +295,47 @@
      },
      {
       "stage": 2,
+      "stageT": 0.03,
+      "hinges": {
+       "Door_L": 0,
+       "Door_R": 0,
+       "Hood": 0,
+       "Trunk": 0
+      },
+      "ram": 4.44,
+      "hoist": -0.3,
+      "laser": 2,
+      "robots": [
+       -0.39,
+       -0.308,
+       -0.347,
+       -0.366
+      ],
+      "reveal": 0,
+      "log": [
+       "order",
+       "s0_floor",
+       "s0_bay",
+       "s0_cage",
+       "s1_body",
+       "s1_plan",
+       "pick_Door_L",
+       "pick_Door_R",
+       "pick_Hood",
+       "attach_Door_R",
+       "close_Door_R",
+       "pick_Trunk",
+       "attach_Door_L",
+       "attach_Hood",
+       "attach_Trunk",
+       "close_Door_L",
+       "close_Hood",
+       "close_Trunk",
+       "s2_paint"
+      ]
+     },
+     {
+      "stage": 2,
       "stageT": 0.56,
       "hinges": {
        "Door_L": 0,
@@ -342,14 +343,14 @@
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 5.59,
+      "ram": 5.8,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       1.209,
-       1.505,
-       1.412,
-       1.235
+       1.205,
+       1.497,
+       1.417,
+       1.239
       ],
       "reveal": 0.62,
       "log": [
@@ -383,11 +384,11 @@
        "Hood": 1,
        "Trunk": 0
       },
-      "ram": 4.83,
+      "ram": 5.2,
       "hoist": -2.35,
       "laser": 2,
       "robots": [
-       -0.497
+       -0.554
       ],
       "reveal": 1,
       "log": [
@@ -425,12 +426,12 @@
        "Hood": 0,
        "Trunk": 0
       },
-      "ram": 4.44,
+      "ram": 4.47,
       "hoist": -0.3,
       "laser": 2,
       "robots": [
-       -0.367,
-       -0.252
+       -0.43,
+       -0.242
       ],
       "reveal": 1,
       "log": [
@@ -532,7 +533,7 @@
     "public/docs/screenshots/07_station_5_final_qc.png",
     "public/docs/screenshots/07_rollout_finished_car.png"
    ],
-   "ms": 21247
+   "ms": 21487
   },
   {
    "id": "hinges",
@@ -546,9 +547,9 @@
       "rotated": -1.1,
       "parent": "Body",
       "pivotWorld": [
-       70.95,
+       70.8,
        0.62,
-       -92
+       -91.84
       ]
      },
      "Door_R": {
@@ -557,9 +558,9 @@
       "rotated": 1.1,
       "parent": "Body",
       "pivotWorld": [
-       70.95,
+       70.67,
        0.62,
-       -90
+       -89.84
       ]
      },
      "Hood": {
@@ -568,9 +569,9 @@
       "rotated": -0.95,
       "parent": "Body",
       "pivotWorld": [
-       71.03,
+       70.81,
        0.93,
-       -91
+       -90.83
       ]
      },
      "Trunk": {
@@ -579,9 +580,9 @@
       "rotated": 1.3,
       "parent": "Body",
       "pivotWorld": [
-       67.07,
+       66.86,
        1.4,
-       -91
+       -91.09
       ]
      }
     },
@@ -591,9 +592,9 @@
      "rotated": -1.1,
      "parent": "Body",
      "pivotWorld": [
-      70.95,
+      70.8,
       0.62,
-      -92
+      -91.84
      ]
     },
     "Door_R": {
@@ -602,9 +603,9 @@
      "rotated": 1.1,
      "parent": "Body",
      "pivotWorld": [
-      70.95,
+      70.67,
       0.62,
-      -90
+      -89.84
      ]
     },
     "Hood": {
@@ -613,9 +614,9 @@
      "rotated": -0.95,
      "parent": "Body",
      "pivotWorld": [
-      71.03,
+      70.81,
       0.93,
-      -91
+      -90.83
      ]
     },
     "Trunk": {
@@ -624,16 +625,16 @@
      "rotated": 1.3,
      "parent": "Body",
      "pivotWorld": [
-      67.07,
+      66.86,
       1.4,
-      -91
+      -91.09
      ]
     }
    },
    "screenshots": [
     "public/docs/screenshots/08_hinges_open.png"
    ],
-   "ms": 2517
+   "ms": 2553
   },
   {
    "id": "physics",
@@ -641,30 +642,30 @@
    "pass": true,
    "details": {
     "inCar": true,
-    "fpsDuringDrive": 33.9,
-    "speedAfterW": 16.66,
-    "leftHeadingDelta": 0.79,
-    "rightHeadingDelta": -0.664,
+    "fpsDuringDrive": 31,
+    "speedAfterW": 16.5,
+    "leftHeadingDelta": 0.809,
+    "rightHeadingDelta": -0.306,
     "braking": {
-     "before": 26.71,
-     "after": 12.19
+     "before": 26.38,
+     "after": 11.63
     },
     "highSpeed": {
-     "speed": 24.23,
-     "dHeading": -0.525
+     "speed": 23.86,
+     "dHeading": -0.513
     },
     "highSpeedTurn": {
-     "speed": 24.23,
-     "dHeading": -0.525
+     "speed": 23.86,
+     "dHeading": -0.513
     },
-    "skidMarks": 399
+    "skidMarks": 879
    },
    "screenshots": [
     "public/docs/screenshots/09_driving_turn.png",
     "public/docs/screenshots/09b_handbrake_drift.png"
    ],
-   "_t0": 1793393957858,
-   "ms": 17217
+   "_t0": 1793430963819,
+   "ms": 17227
   },
   {
    "id": "cockpit",
@@ -680,7 +681,7 @@
    "screenshots": [
     "public/docs/screenshots/10_cockpit_view.png"
    ],
-   "ms": 3426
+   "ms": 3419
   },
   {
    "id": "town",
@@ -701,7 +702,7 @@
     "public/docs/screenshots/11_leaf_piles_trees.png",
     "public/docs/screenshots/11_hill_road.png"
    ],
-   "ms": 13650
+   "ms": 13637
   },
   {
    "id": "cemetery",
@@ -713,14 +714,14 @@
      "open": 1
     },
     "leafRotation": 1.45,
-    "tombstones": 277
+    "tombstones": 282
    },
    "screenshots": [
     "public/docs/screenshots/12_cemetery_gates.png",
     "public/docs/screenshots/12_cemetery_crypts.png",
     "public/docs/screenshots/12_vlad_crypt.png"
    ],
-   "ms": 6887
+   "ms": 6957
   },
   {
    "id": "theft",
@@ -730,13 +731,13 @@
     "inStolenCar": true,
     "doorSwungOpen": 1,
     "markedStolen": true,
-    "wantedLevel": 2,
+    "wantedLevel": 3,
     "pursuit": [
      {
       "mode": "pursuit",
       "pos": [
-       75.4,
-       2.5
+       0.2,
+       7.8
       ],
       "siren": true,
       "parked": true
@@ -744,21 +745,39 @@
      {
       "mode": "pursuit",
       "pos": [
-       73.5,
-       -15.6
+       63,
+       -9.6
+      ],
+      "siren": true,
+      "parked": true
+     },
+     {
+      "mode": "pursuit",
+      "pos": [
+       -21.1,
+       4.6
+      ],
+      "siren": true,
+      "parked": false
+     },
+     {
+      "mode": "pursuit",
+      "pos": [
+       48.7,
+       2.6
       ],
       "siren": true,
       "parked": false
      }
     ],
     "police": {
-     "level": 2,
+     "level": 3,
      "cars": [
       {
        "mode": "pursuit",
        "pos": [
-        75.4,
-        2.5
+        0.2,
+        7.8
        ],
        "siren": true,
        "parked": true
@@ -766,8 +785,26 @@
       {
        "mode": "pursuit",
        "pos": [
-        73.5,
-        -15.6
+        63,
+        -9.6
+       ],
+       "siren": true,
+       "parked": true
+      },
+      {
+       "mode": "pursuit",
+       "pos": [
+        -21.1,
+        4.6
+       ],
+       "siren": true,
+       "parked": false
+      },
+      {
+       "mode": "pursuit",
+       "pos": [
+        48.7,
+        2.6
        ],
        "siren": true,
        "parked": false
@@ -777,11 +814,47 @@
       {
        "state": "foot",
        "pos": [
-        76.4,
+        23.1,
         0,
-        4.5
+        19.3
+       ],
+       "armed": true
+      },
+      {
+       "state": "foot",
+       "pos": [
+        68.3,
+        0,
+        4.8
+       ],
+       "armed": true
+      },
+      {
+       "state": "foot",
+       "pos": [
+        148.5,
+        0.2,
+        10.2
+       ],
+       "armed": true
+      },
+      {
+       "state": "beat",
+       "pos": [
+        -86.5,
+        0.2,
+        -8
        ],
        "armed": false
+      },
+      {
+       "state": "foot",
+       "pos": [
+        57.8,
+        0.2,
+        11
+       ],
+       "armed": true
       },
       {
        "state": "seated",
@@ -793,29 +866,11 @@
        "armed": false
       },
       {
-       "state": "foot",
+       "state": "seated",
        "pos": [
-        136.6,
-        0.2,
-        7.2
-       ],
-       "armed": false
-      },
-      {
-       "state": "beat",
-       "pos": [
-        -86.8,
-        0.2,
-        -8
-       ],
-       "armed": false
-      },
-      {
-       "state": "beat",
-       "pos": [
-        35,
-        0.2,
-        8.7
+        0.4,
+        0,
+        0.1
        ],
        "armed": false
       }
@@ -823,22 +878,27 @@
      "stats": {
       "crimes": [
        {
-        "kind": "speeding",
-        "at": 107598,
+        "kind": "rammed",
+        "at": 101699,
         "level": 1
        },
        {
-        "kind": "theft",
-        "at": 138009,
+        "kind": "rammed",
+        "at": 111236,
         "level": 2
+       },
+       {
+        "kind": "theft",
+        "at": 139440,
+        "level": 3
        }
       ],
-      "maxLevel": 2,
+      "maxLevel": 3,
       "busts": 0,
-      "escapes": 1,
-      "dismounts": 1,
-      "footChases": 3,
-      "shotsAtPlayer": 0,
+      "escapes": 0,
+      "dismounts": 2,
+      "footChases": 4,
+      "shotsAtPlayer": 2,
       "resets": 0
      }
     }
@@ -848,7 +908,7 @@
     "public/docs/screenshots/13_police_pursuit.png",
     "public/docs/screenshots/13_police_chase_overview.png"
    ],
-   "ms": 12520
+   "ms": 12640
   },
   {
    "id": "busted",
@@ -859,7 +919,7 @@
      "wanted": 0,
      "inCar": false
     },
-    "fined": 2000,
+    "fined": 3500,
     "respawnAtPoliceStation": [
      124,
      0.05,
@@ -869,7 +929,7 @@
    "screenshots": [
     "public/docs/screenshots/14_busted.png"
    ],
-   "ms": 8688
+   "ms": 11147
   },
   {
    "id": "npc_demographics",
@@ -878,27 +938,26 @@
    "details": {
     "auditViolations": [],
     "census": {
-     "adult_male": 18,
+     "adult_male": 14,
      "skeleton": 1,
-     "adult_female": 11,
-     "child_boy": 5,
-     "child_girl": 3
+     "adult_female": 15,
+     "child_boy": 6,
+     "child_girl": 2
     },
     "kidsScaledAndCostumed": [
      {
       "scale": 0.68,
-      "costume": "superhero",
+      "costume": "witch",
       "acc": [
-       "Costume_Cape",
-       "Mask_Super",
+       "Hat_Witch",
        "Hold_CandyBag"
       ]
      },
      {
       "scale": 0.68,
-      "costume": "pumpkin",
+      "costume": "ghost",
       "acc": [
-       "Mask_Pumpkin",
+       "Costume_Ghost",
        "Hold_CandyBag"
       ]
      },
@@ -921,36 +980,30 @@
     ],
     "driversAllAdults": [
      "adult_male",
+     "adult_female",
      "adult_male",
+     "adult_female",
      "adult_female",
      "adult_female",
      "adult_male",
      "adult_female",
      "adult_male",
      "adult_male",
-     "adult_male",
-     "adult_female",
-     "adult_female"
+     "adult_male"
     ],
     "bothGenders": {
-     "adult_male": 18,
+     "adult_male": 14,
      "skeleton": 1,
-     "adult_female": 11,
-     "child_boy": 5,
-     "child_girl": 3
+     "adult_female": 15,
+     "child_boy": 6,
+     "child_girl": 2
     },
     "spoken": [
      {
       "kind": "child_boy",
-      "line": "kidb_2",
+      "line": "kidb_1",
       "voiceDemo": "child_boy",
       "speaker": "child_boy"
-     },
-     {
-      "kind": "child_girl",
-      "line": "kidg_3",
-      "voiceDemo": "child_girl",
-      "speaker": "child_girl"
      },
      {
       "kind": "adult_male",
@@ -960,7 +1013,7 @@
      },
      {
       "kind": "adult_female",
-      "line": "civilian_3",
+      "line": "civilian_1",
       "voiceDemo": "adult_female",
       "speaker": "adult_female"
      }
@@ -968,15 +1021,9 @@
     "voiceMatchesSpeaker": [
      {
       "kind": "child_boy",
-      "line": "kidb_2",
+      "line": "kidb_1",
       "voiceDemo": "child_boy",
       "speaker": "child_boy"
-     },
-     {
-      "kind": "child_girl",
-      "line": "kidg_3",
-      "voiceDemo": "child_girl",
-      "speaker": "child_girl"
      },
      {
       "kind": "adult_male",
@@ -986,21 +1033,19 @@
      },
      {
       "kind": "adult_female",
-      "line": "civilian_3",
+      "line": "civilian_1",
       "voiceDemo": "adult_female",
       "speaker": "adult_female"
      }
     ],
     "noAdultLinesFromKids": [
-     "Whoa, cool hot-rod, mister! Can it go a hundred?",
-     "My ghost costume has real glow-in-the-dark eyes. Boo!"
+     "Trick or treat! Look at my candy bag, it's almost full!"
     ]
    },
    "screenshots": [
-    "public/docs/screenshots/17_trick_or_treater_kid_dialogue.png",
     "public/docs/screenshots/17_kids_and_townsfolk_sidewalk.png"
    ],
-   "ms": 7023
+   "ms": 5013
   },
   {
    "id": "enterable_buildings",
@@ -1017,7 +1062,7 @@
       "pos": [
        -61.2,
        0.3,
-       18.99
+       19.16
       ]
      },
      {
@@ -1029,7 +1074,7 @@
       "pos": [
        -130,
        0.15,
-       17.4
+       17.36
       ]
      },
      {
@@ -1041,7 +1086,7 @@
       "pos": [
        130,
        0.15,
-       16.68
+       16.45
       ]
      },
      {
@@ -1051,9 +1096,9 @@
       "inside": "house",
       "deeper": "house",
       "pos": [
-       -88.99,
+       -89.01,
        0.45,
-       -26.83
+       -26.61
       ]
      }
     ],
@@ -1079,7 +1124,7 @@
      "pos": [
       -61.2,
       0.3,
-      18.99
+      19.16
      ]
     },
     "hardware_doorSwungOpen": {
@@ -1104,7 +1149,7 @@
      "pos": [
       -130,
       0.15,
-      17.4
+      17.36
      ]
     },
     "police_doorSwungOpen": {
@@ -1129,7 +1174,7 @@
      "pos": [
       130,
       0.15,
-      16.68
+      16.45
      ]
     },
     "house_doorSwungOpen": {
@@ -1152,13 +1197,13 @@
       "kind": "house"
      },
      "pos": [
-      -88.99,
+      -89.01,
       0.45,
-      -26.83
+      -26.61
      ]
     },
     "stairs": [
-     5.52,
+     5.56,
      4.2,
      -72.7
     ],
@@ -1171,7 +1216,7 @@
     "public/docs/screenshots/18_interior_house.png",
     "public/docs/screenshots/18_foreman_office_observation.png"
    ],
-   "ms": 33154
+   "ms": 33259
   },
   {
    "id": "seated_drivers",
@@ -1267,16 +1312,16 @@
      "metalness": 0.2
     },
     "turning": {
-     "steer": 1,
-     "wheel": -2.75,
-     "armL": -0.97,
-     "armR": -1.53
+     "steer": 0.5137416650280858,
+     "wheel": -1.412789578827236,
+     "armL": -1.106152333792136,
+     "armR": -1.393847666207864
     },
     "armsAndWheelTurnTogether": {
-     "steer": 1,
-     "wheel": -2.75,
-     "armL": -0.97,
-     "armR": -1.53
+     "steer": 0.5137416650280858,
+     "wheel": -1.412789578827236,
+     "armL": -1.106152333792136,
+     "armR": -1.393847666207864
     }
    },
    "screenshots": [
@@ -1284,7 +1329,7 @@
     "public/docs/screenshots/19_seated_police_officer.png",
     "public/docs/screenshots/19_forklift_operator.png"
    ],
-   "ms": 7861
+   "ms": 2898
   },
   {
    "id": "navigation_and_bounds",
@@ -1300,104 +1345,106 @@
      "velocityClamps": 0,
      "spinClamps": 0,
      "outOfBounds": 0,
-     "activeBodies": 119,
+     "activeBodies": 120,
      "traffic": {
       "whiskerBrakes": 0,
-      "junctionWaits": 2361,
+      "junctionWaits": 1700,
       "resets": 0,
-      "redStops": 17,
+      "redStops": 23,
       "redRuns": 0,
-      "stopSigns": 22,
+      "stopSigns": 24,
       "honks": 0,
-      "rage": 4,
+      "rage": 5,
       "relocated": 0,
-      "signalling": 1073.8441999988631
+      "signalling": 1189.7688999989055,
+      "overtakes": 1,
+      "overtakeAborts": 1
      },
      "nav": {
       "nodes": 1448,
-      "edges": 4505,
-      "rays": 10258,
-      "buildMs": 149
+      "edges": 4523,
+      "rays": 15561,
+      "buildMs": 141
      },
      "policeResets": 0
     },
     "samples": [
      [
       {
-       "x": -7.6,
+       "x": 10.1,
        "y": 0,
-       "z": 2.6,
+       "z": -2.6,
+       "ground": 0,
+       "seg": "turn",
+       "speed": 6.2
+      },
+      {
+       "x": 78.4,
+       "y": 0,
+       "z": -85.5,
        "ground": 0,
        "seg": "turn",
        "speed": 6.5
       },
       {
-       "x": 198.6,
+       "x": -198.6,
        "y": 0,
-       "z": 70.2,
+       "z": 60.8,
        "ground": 0,
        "seg": "lane",
-       "speed": 11.6
-      },
-      {
-       "x": 73.6,
-       "y": 0,
-       "z": -16.6,
-       "ground": 0,
-       "seg": "lane",
-       "speed": 0
+       "speed": 10.5
       }
      ],
      [
       {
-       "x": 61.9,
+       "x": -44.7,
        "y": 0,
-       "z": 2.6,
-       "ground": 0,
-       "seg": "lane",
-       "speed": 0
-      },
-      {
-       "x": 175.1,
-       "y": 0,
-       "z": -2.6,
-       "ground": 0,
-       "seg": "lane",
-       "speed": 10.2
-      },
-      {
-       "x": 57.8,
-       "y": 0,
-       "z": -6.1,
+       "z": -2.9,
        "ground": 0,
        "seg": "turn",
-       "speed": 5.8
+       "speed": 4
+      },
+      {
+       "x": 106.9,
+       "y": 0,
+       "z": -123.4,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 10.7
+      },
+      {
+       "x": -148.2,
+       "y": 0,
+       "z": 97.2,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 7
       }
      ],
      [
       {
-       "x": 74.2,
+       "x": 6.3,
        "y": 0,
-       "z": -4.4,
-       "ground": 0,
-       "seg": "turn",
-       "speed": 6.5
-      },
-      {
-       "x": 91.2,
-       "y": 0,
-       "z": -2.6,
+       "z": -45.6,
        "ground": 0,
        "seg": "lane",
-       "speed": 0
+       "speed": 11.4
       },
       {
-       "x": 8.4,
+       "x": 193.4,
        "y": 0,
-       "z": -50.4,
+       "z": -104.6,
        "ground": 0,
        "seg": "lane",
-       "speed": 11.3
+       "speed": 10.7
+      },
+      {
+       "x": -193.4,
+       "y": 0,
+       "z": 67.9,
+       "ground": 0,
+       "seg": "lane",
+       "speed": 10.5
       }
      ]
     ],
@@ -1407,90 +1454,90 @@
      "float": 0,
      "maxDy": 0
     },
-    "trafficOnRoadGraph_maxDev": 0.7,
+    "trafficOnRoadGraph_maxDev": 0.71,
     "trafficMoving": 10
    },
    "screenshots": [
     "public/docs/screenshots/20_pursuit_traffic_navigation.png"
    ],
-   "ms": 35886
+   "ms": 36066
   },
   {
    "id": "police_foot_chase",
    "title": "Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars",
    "pass": false,
    "details": {
-    "dismounts": 3,
-    "footChases": 8,
+    "dismounts": 4,
+    "footChases": 9,
     "officers": [
      {
       "state": "foot",
       "pos": [
-       116.9,
-       0,
-       6.7
+       122,
+       0.2,
+       7.6
       ],
       "armed": false
      },
      {
       "state": "foot",
       "pos": [
-       32.7,
+       27.5,
        0,
-       -2.6
+       -3.1
       ],
       "armed": false
      },
      {
       "state": "beat",
       "pos": [
-       129.2,
+       127.6,
        0,
-       13
+       13.2
+      ],
+      "armed": true
+     },
+     {
+      "state": "foot",
+      "pos": [
+       -75.6,
+       0,
+       -6.6
       ],
       "armed": false
      },
      {
       "state": "foot",
       "pos": [
-       -75.5,
+       -13.5,
        0,
-       -6.5
-      ],
-      "armed": false
-     },
-     {
-      "state": "foot",
-      "pos": [
-       -15.5,
-       0.2,
-       8
+       4.1
       ],
       "armed": false
      }
     ],
-    "d0": 48.89609623176162,
+    "d0": 51.673077057391744,
     "d1": {
-     "d": 22.70406559291901,
+     "d": 25.64588644445069,
      "anim": "run"
     },
-    "dismounted": 3,
+    "dismounted": 4,
     "caughtDuringChase": false,
     "officerPursuesOnFoot (closes in or tackles)": {
      "d1": {
-      "d": 22.70406559291901,
+      "d": 25.64588644445069,
       "anim": "run"
      },
      "caught": false
     },
     "armed": {
      "armed": true,
-     "shots": 2,
+     "shots": 20,
      "health": 91
     },
     "officersDrawSidearms": {
      "armed": true,
-     "shots": 2,
+     "shots": 20,
      "health": 91
     },
     "tackles": 1
@@ -1500,7 +1547,7 @@
     "public/docs/screenshots/21_police_foot_chase.png",
     "public/docs/screenshots/21_armed_response.png"
    ],
-   "ms": 17916
+   "ms": 18351
   },
   {
    "id": "weapons_and_shooting",
@@ -1541,7 +1588,7 @@
      {
       "kind": "car",
       "weapon": "pistol",
-      "t": 260468
+      "t": 258329
      }
     ],
     "streetlightShotOut": {
@@ -1555,13 +1602,13 @@
      "lightsShot": 1
     },
     "reloaded": 12,
-    "wanted": 3
+    "wanted": 2
    },
    "screenshots": [
     "public/docs/screenshots/22_aim_and_fire_pistol.png",
     "public/docs/screenshots/22_jack_o_lantern_launcher.png"
    ],
-   "ms": 8242
+   "ms": 8289
   },
   {
    "id": "light_switches",
@@ -1640,14 +1687,14 @@
     "nightShift": {
      "prompt": "[E] Night Shift lighting: switch to blacklight / emergency",
      "ns": {
-      "ikSolves": 3010,
+      "ikSolves": 2881,
       "pressCycles": 1,
       "partsCarried": 4,
       "nightShift": true
      }
     },
     "nightShiftOn": {
-     "ikSolves": 3010,
+     "ikSolves": 2881,
      "pressCycles": 1,
      "partsCarried": 4,
      "nightShift": true
@@ -1659,12 +1706,12 @@
     "public/docs/screenshots/23_breaker_box_power_cut.png",
     "public/docs/screenshots/23_motorworks_night_shift_blacklight.png"
    ],
-   "ms": 8176
+   "ms": 8058
   },
   {
    "id": "doorbell_and_burglary",
    "title": "Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it",
-   "pass": false,
+   "pass": true,
    "details": {
     "doorbell": {
      "prompt": "[E] Ring doorbell",
@@ -1681,15 +1728,15 @@
      "homeowners": [
       {
        "state": "greet",
-       "ageGroup": "adult_male",
+       "ageGroup": "adult_female",
        "pos": [
         -147,
         0.45,
-        -26.2
+        -26.19
        ]
       }
      ],
-     "tip": 37,
+     "tip": 17,
      "rings": 1
     },
     "doorbellPrompt": "[E] Ring doorbell",
@@ -1707,24 +1754,24 @@
      "ho": [
       {
        "state": "greet",
-       "ageGroup": "adult_male",
+       "ageGroup": "adult_female",
        "pos": [
         -147,
         0.45,
-        -26.2
+        -26.19
        ]
       }
      ],
-     "tip": 37
+     "tip": 17
     },
     "homeownerVoiceMatchesGender": {
-     "id": "homem_greet",
-     "voice": "homeowner_m",
-     "demo": "adult_male",
-     "speaker": "adult_male",
-     "duration": 4.56,
+     "id": "homef_greet",
+     "voice": "homeowner_f",
+     "demo": "adult_female",
+     "speaker": "adult_female",
+     "duration": 5.92,
      "source": "file",
-     "at": 277559
+     "at": 275344
     },
     "steal": {
      "prompt": "[E] Steal Vintage CRT TV ($180) — two hands",
@@ -1750,7 +1797,7 @@
      "stash": "[E] Stash Vintage CRT TV in the trunk",
      "trunks": [
       {
-       "id": 9,
+       "id": 10,
        "items": [
         "TV"
        ],
@@ -1762,7 +1809,7 @@
     },
     "tvInOpenTrunkVisible": [
      {
-      "id": 9,
+      "id": 10,
       "items": [
        "TV"
       ],
@@ -1773,11 +1820,11 @@
     ],
     "fence": {
      "prompt": "[E] Sell trunk loot to Vinnie ($180)",
-     "earned": 0
+     "earned": 180
     },
     "fencedLoot": {
      "prompt": "[E] Sell trunk loot to Vinnie ($180)",
-     "earned": 0
+     "earned": 180
     }
    },
    "screenshots": [
@@ -1785,7 +1832,7 @@
     "public/docs/screenshots/24_carrying_stolen_tv.png",
     "public/docs/screenshots/24_tv_stashed_in_trunk.png"
    ],
-   "ms": 25168
+   "ms": 25297
   },
   {
    "id": "fuel_and_gas_station",
@@ -1801,7 +1848,7 @@
      "after": 58.86
     },
     "stall": {
-     "speed": -0.77,
+     "speed": -0.39,
      "fs": {
       "fuel": 0,
       "stalled": true,
@@ -1842,20 +1889,20 @@
     },
     "refuel": {
      "prompt": "[E] Refuel — $2/gal (35% now)",
-     "fuel": 99.96,
-     "cost": 20.81,
+     "fuel": 99.99,
+     "cost": 20.82,
      "stats": {
       "refuels": 1,
-      "gallons": 10.403159999942776,
-      "spent": 20.806319999885552,
+      "gallons": 10.407599999999988,
+      "spent": 20.815199999999976,
       "jerrycans": 1
      }
     },
     "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
-    "tankFull": 99.96,
+    "tankFull": 99.99,
     "chargedTwoDollarsPerGallon": {
-     "paid": 20.806319999828702,
-     "gal": 10.403159999942776
+     "paid": 20.815199999837205,
+     "gal": 10.407599999999988
     }
    },
    "screenshots": [
@@ -1863,7 +1910,7 @@
     "public/docs/screenshots/25_refuelling_pump_counter.png",
     "public/docs/screenshots/25_gas_station_pump_hose.png"
    ],
-   "ms": 22975
+   "ms": 23129
   },
   {
    "id": "pumpkins",
@@ -1876,7 +1923,7 @@
    "screenshots": [
     "public/docs/screenshots/15_monster_mash_kiosk.png"
    ],
-   "ms": 12735
+   "ms": 13139
   },
   {
    "id": "phantom",
@@ -1888,7 +1935,7 @@
    "screenshots": [
     "public/docs/screenshots/15_phantom_hearse.png"
    ],
-   "ms": 6386
+   "ms": 6227
   },
   {
    "id": "trial",
@@ -1897,20 +1944,20 @@
    "details": {
     "trialRunning": {
      "running": true,
-     "t": 1.1898999998569488,
+     "t": 1.1837999999523159,
      "next": 0,
      "inCar": true,
      "pos": [
-      0,
+      0.2,
       10.4,
-      248.4
+      243.4
      ]
     }
    },
    "screenshots": [
     "public/docs/screenshots/15_graveyard_shift_trial.png"
    ],
-   "ms": 3185
+   "ms": 3189
   },
   {
    "id": "streets_signals",
@@ -2031,7 +2078,7 @@
     "public/docs/screenshots/30_main_elm_intersection_signals.png",
     "public/docs/screenshots/30_elm_avenue_crosswalk_markings.png"
    ],
-   "ms": 2683
+   "ms": 2710
   },
   {
    "id": "traffic_obeys_signals",
@@ -2039,62 +2086,14 @@
    "pass": true,
    "details": {
     "stats": {
-     "redStops": 6,
+     "redStops": 3,
      "redRuns": 0,
-     "stopSigns": 5,
-     "junctionWaits": 4016,
+     "stopSigns": 2,
+     "junctionWaits": 2892,
      "honks": 0
     },
-    "heldSamples": 19,
+    "heldSamples": 50,
     "redCars": [
-     {
-      "road": "main_lw",
-      "kind": "lane",
-      "speed": 0.2,
-      "red": true,
-      "blocked": "police",
-      "bt": 62.2,
-      "toEnd": 17.5,
-      "x": -32,
-      "z": 3,
-      "sig": null
-     },
-     {
-      "road": "main_lw",
-      "kind": "lane",
-      "speed": 0.2,
-      "red": true,
-      "blocked": "police",
-      "bt": 25,
-      "toEnd": 18.6,
-      "x": -33,
-      "z": 3,
-      "sig": null
-     },
-     {
-      "road": "exit",
-      "kind": "lane",
-      "speed": 1.4,
-      "red": true,
-      "blocked": null,
-      "bt": 0,
-      "toEnd": 3.1,
-      "x": 74,
-      "z": -17,
-      "sig": "R"
-     },
-     {
-      "road": "main_lw",
-      "kind": "lane",
-      "speed": 0.2,
-      "red": true,
-      "blocked": "police",
-      "bt": 22.1,
-      "toEnd": 18.5,
-      "x": -33,
-      "z": 3,
-      "sig": "R"
-     },
      {
       "road": "main_le",
       "kind": "lane",
@@ -2106,28 +2105,16 @@
       "x": 17,
       "z": -3,
       "sig": "L"
-     },
-     {
-      "road": "main_lw",
-      "kind": "lane",
-      "speed": 0.2,
-      "red": true,
-      "blocked": "police",
-      "bt": 10.7,
-      "toEnd": 18.4,
-      "x": -33,
-      "z": 3,
-      "sig": null
      }
     ],
     "playerCars": [
      [
       61,
-      -8
+      -7
      ],
      [
-      63,
-      26
+      -39,
+      7
      ],
      [
       43,
@@ -2135,26 +2122,26 @@
      ],
      [
       0,
-      249
+      242
      ]
     ],
     "carsHoldAtRed": {
-     "redStops": 6,
+     "redStops": 3,
      "redRuns": 0,
-     "stopSigns": 5,
-     "junctionWaits": 4016,
+     "stopSigns": 2,
+     "junctionWaits": 2892,
      "honks": 0
     },
     "noRedLightRunners": 0,
     "heldCar": [
-     16.567826534357952,
+     16.558803542042337,
      -2.6
     ]
    },
    "screenshots": [
     "public/docs/screenshots/30_traffic_waiting_at_red.png"
    ],
-   "ms": 27407
+   "ms": 27426
   },
   {
    "id": "townsfolk_ai",
@@ -2168,18 +2155,20 @@
      "pois": 41
     },
     "stats": {
-     "trips": 62,
-     "crossings": 32,
-     "signalWaits": 7483,
-     "gapWaits": 1387,
-     "chats": 30,
+     "trips": 87,
+     "crossings": 37,
+     "signalWaits": 12684,
+     "gapWaits": 1019,
+     "chats": 32,
      "honkReactions": 0,
-     "trickOrTreats": 13,
-     "visits": 35
+     "trickOrTreats": 15,
+     "visits": 43
     },
     "states": {
-     "walk": 17,
-     "plan": 1
+     "walk": 13,
+     "chat": 2,
+     "do": 2,
+     "inside": 1
     },
     "jaywalkSamples": [],
     "network": {
@@ -2189,24 +2178,24 @@
      "pois": 41
     },
     "errands": {
-     "trips": 62,
-     "crossings": 32,
-     "signalWaits": 7483,
-     "gapWaits": 1387,
-     "chats": 30,
+     "trips": 87,
+     "crossings": 37,
+     "signalWaits": 12684,
+     "gapWaits": 1019,
+     "chats": 32,
      "honkReactions": 0,
-     "trickOrTreats": 13,
-     "visits": 35
+     "trickOrTreats": 15,
+     "visits": 43
     },
     "crossAtCrosswalks": {
-     "trips": 62,
-     "crossings": 32,
-     "signalWaits": 7483,
-     "gapWaits": 1387,
-     "chats": 30,
+     "trips": 87,
+     "crossings": 37,
+     "signalWaits": 12684,
+     "gapWaits": 1019,
+     "chats": 32,
      "honkReactions": 0,
-     "trickOrTreats": 13,
-     "visits": 35
+     "trickOrTreats": 15,
+     "visits": 43
     },
     "noJaywalking": 0,
     "honk": {
@@ -2219,7 +2208,7 @@
       "speaker": "child_boy",
       "duration": 2,
       "source": "file",
-      "at": 397696
+      "at": 396071
      }
     },
     "honkReaction": {
@@ -2232,14 +2221,14 @@
       "speaker": "child_boy",
       "duration": 2,
       "source": "file",
-      "at": 397696
+      "at": 396071
      }
     }
    },
    "screenshots": [
     "public/docs/screenshots/31_townsfolk_town_square.png"
    ],
-   "ms": 25011
+   "ms": 25062
   },
   {
    "id": "cinema_movie",
@@ -2261,8 +2250,8 @@
     },
     "film": {
      "frames": [
-      1053,
-      1174
+      1156,
+      1264
      ],
      "scene": "stinger",
      "cues": 2,
@@ -2275,13 +2264,13 @@
      ]
     },
     "filmProjecting": [
-     1053,
-     1174
+     1156,
+     1264
     ],
     "voicedCues": {
      "frames": [
-      1053,
-      1174
+      1156,
+      1264
      ],
      "scene": "stinger",
      "cues": 2,
@@ -2303,7 +2292,7 @@
     "public/docs/screenshots/32_projection_booth_ghost.png",
     "public/docs/screenshots/32_palace_cinema_marquee.png"
    ],
-   "ms": 21476
+   "ms": 21512
   },
   {
    "id": "drivein_intermission",
@@ -2312,7 +2301,7 @@
    "details": {
     "watchingFromCar": "drivein",
     "intermission": {
-     "inter": 12.701200000047686,
+     "inter": 12.705200000047686,
      "n": 1
     }
    },
@@ -2320,7 +2309,7 @@
     "public/docs/screenshots/33_drive_in_from_car.png",
     "public/docs/screenshots/33_drive_in_intermission_reel.png"
    ],
-   "ms": 8271
+   "ms": 8301
   },
   {
    "id": "dyno_pull",
@@ -2330,8 +2319,8 @@
     "prompt": "[E] Strap down & start a dyno pull  ·  [Shift+E] exit car",
     "mid": {
      "act": "Dyno",
-     "roller": -66.53,
-     "curve": 147
+     "roller": -67.37,
+     "curve": 136
     },
     "dyno": {
      "pulls": 1,
@@ -2344,12 +2333,12 @@
      "speaker": "adult_female",
      "duration": 3.76,
      "source": "file",
-     "at": 442493
+     "at": 440955
     },
     "pullRunning": {
      "act": "Dyno",
-     "roller": -66.53,
-     "curve": 147
+     "roller": -67.37,
+     "curve": 136
     },
     "result": {
      "pulls": 1,
@@ -2360,7 +2349,7 @@
     "public/docs/screenshots/34_dyno_pull_in_progress.png",
     "public/docs/screenshots/34_dyno_power_curve_display.png"
    ],
-   "ms": 15352
+   "ms": 15388
   },
   {
    "id": "drag_race",
@@ -2374,36 +2363,36 @@
     ],
     "res": {
      "result": "win",
-     "et": 7.662600000143045,
-     "rival": 7.872600000143044,
+     "et": 7.798500000000004,
+     "rival": 8.027400000095371,
      "stats": {
       "races": 1,
       "wins": 1,
       "fouls": 0
      },
      "best": {
-      "et": 7.662600000143045,
-      "trap": 100.66229999999999
+      "et": 7.798500000000004,
+      "trap": 100.6623
      }
     },
-    "stageMaxY": 0.72,
-    "stagedOnTheStrip": 0.72,
+    "stageMaxY": 0.68,
+    "stagedOnTheStrip": 0.68,
     "stripClosed": [
      "south_w",
      "south_e"
     ],
     "raced": {
      "result": "win",
-     "et": 7.662600000143045,
-     "rival": 7.872600000143044,
+     "et": 7.798500000000004,
+     "rival": 8.027400000095371,
      "stats": {
       "races": 1,
       "wins": 1,
       "fouls": 0
      },
      "best": {
-      "et": 7.662600000143045,
-      "trap": 100.66229999999999
+      "et": 7.798500000000004,
+      "trap": 100.6623
      }
     },
     "stripReopened": true,
@@ -2414,7 +2403,7 @@
     "public/docs/screenshots/35_drag_strip_staging_tree.png",
     "public/docs/screenshots/35_drag_race_finish.png"
    ],
-   "ms": 29058
+   "ms": 29222
   },
   {
    "id": "parts_runner_shift",
@@ -2426,7 +2415,7 @@
      "j": {
       "n": 0,
       "drop": [
-       45.5,
+       29.5,
        0.1,
        -81.8
       ]
@@ -2434,7 +2423,7 @@
     },
     "grabCrate": "crate",
     "delivery": {
-     "prompt": "[E] Deliver the crate to station 5",
+     "prompt": "[E] Deliver the crate to station 4",
      "pay": 189,
      "job": {
       "n": 1,
@@ -2446,7 +2435,7 @@
      }
     },
     "delivered": {
-     "prompt": "[E] Deliver the crate to station 5",
+     "prompt": "[E] Deliver the crate to station 4",
      "pay": 189,
      "job": {
       "n": 1,
@@ -2462,7 +2451,7 @@
     "public/docs/screenshots/36_break_room_time_clock.png",
     "public/docs/screenshots/36_parts_runner_delivery_ring.png"
    ],
-   "ms": 5488
+   "ms": 5579
   },
   {
    "id": "arcade_vending",
@@ -2489,7 +2478,7 @@
    "screenshots": [
     "public/docs/screenshots/37_pumpkin_panic_arcade.png"
    ],
-   "ms": 5529
+   "ms": 5506
   },
   {
    "id": "stunt_jump",
@@ -2498,17 +2487,17 @@
    "details": {
     "stunts": {
      "jumps": 1,
-     "best": 1.5800999999046323
+     "best": 1.585400000095367
     },
     "jumped": {
      "jumps": 1,
-     "best": 1.5800999999046323
+     "best": 1.585400000095367
     }
    },
    "screenshots": [
     "public/docs/screenshots/38_stunt_ramp_landing.png"
    ],
-   "ms": 8880
+   "ms": 8888
   },
   {
    "id": "secrets",
@@ -2526,7 +2515,7 @@
      "time88"
     ],
     "devBonus": 10000,
-    "ufo": 12.471000000000009,
+    "ufo": 12.52940000009538,
     "bigfoot": "run",
     "payphone": "[E] Answer the ringing payphone",
     "found_konami": true,
@@ -2542,7 +2531,7 @@
     "public/docs/screenshots/39_ufo_tractor_beam.png",
     "public/docs/screenshots/39_developers_room.png"
    ],
-   "ms": 18019
+   "ms": 18205
   },
   {
    "id": "phase3_voice_lines",
@@ -2551,9 +2540,10 @@
    "details": {
     "missing": [],
     "headsOk": true,
-    "elevenlabs": 131,
+    "elevenlabs": 138,
     "auditViolations": 0,
     "played": [
+     "rage_f",
      "rage_m",
      "kidb_honk",
      "usher_stop",
@@ -2580,23 +2570,23 @@
     "cached": {
      "missing": [],
      "headsOk": true,
-     "elevenlabs": 131
+     "elevenlabs": 138
     },
     "demographicAudit": [],
-    "newLinesPlayed": 22
+    "newLinesPlayed": 23
    },
    "screenshots": [],
-   "ms": 225
+   "ms": 239
   },
   {
    "id": "radio_audio",
    "title": "Spoken dialogue audio + radio DJ use the cached local audio files (no TTS fallback needed)",
    "pass": true,
    "details": {
-    "linesPlayed": 68,
+    "linesPlayed": 79,
     "ttsFallbacks": 0,
     "audio": {
-     "linesPlayed": 68,
+     "linesPlayed": 79,
      "linesFailed": 0,
      "fallbackTTS": 0,
      "lastLine": "time88",
@@ -2604,7 +2594,7 @@
     }
    },
    "screenshots": [],
-   "ms": 66
+   "ms": 69
   },
   {
    "id": "phase4_render_pipeline",
@@ -2623,7 +2613,7 @@
       0,
       0
      ],
-     "hiddenCars": 12,
+     "hiddenCars": 17,
      "activeBodies": 123
     },
     "low": {
@@ -2638,14 +2628,14 @@
       0,
       0
      ],
-     "hiddenCars": 18,
+     "hiddenCars": 21,
      "activeBodies": 123
     }
    },
    "screenshots": [
     "public/docs/screenshots/46_ultra_main_street.png"
    ],
-   "ms": 17429
+   "ms": 17555
   },
   {
    "id": "phase4_perf_culling",
@@ -2663,19 +2653,19 @@
      0,
      0
     ],
-    "hiddenCars": 12,
+    "hiddenCars": 17,
     "activeBodies": {
      "active": 123,
-     "all": 3364
+     "all": 3373
     },
-    "bodies": 3364,
-    "jumbo": 677,
+    "bodies": 3373,
+    "jumbo": 597,
     "jumboFramesWhileAway": 0,
-    "farCarsCulled": 12,
+    "farCarsCulled": 17,
     "jumbotronIdleAway": 0
    },
    "screenshots": [],
-   "ms": 2890
+   "ms": 2891
   },
   {
    "id": "phase4_day_night",
@@ -2729,13 +2719,741 @@
     "public/docs/screenshots/47_day_noon.png",
     "public/docs/screenshots/47_dusk_6pm.png"
    ],
-   "ms": 6039
+   "ms": 6040
   },
   {
    "id": "phase4_traffic_ai",
    "title": "AI traffic: turn signals before junction turns; a car abandoned in the lane is seen, signalled around and overtaken (oncoming lane checked)",
    "pass": true,
    "details": {
+    "trace": [
+     [
+      -146.7,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -144.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -141.7,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -139.2,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -137,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -135.2,
+      "parked",
+      0.1,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -133.7,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -132.1,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -130.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -129.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -129.1,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -128.5,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -128,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -127.6,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -127.3,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -127.1,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.8,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.7,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.6,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.6,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.6,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.6,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.6,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0.1,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0.3,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0.5,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      0.8,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      1,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      1.2,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      1.4,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.5,
+      "parked",
+      1.7,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.4,
+      "parked",
+      1.9,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -126.1,
+      "parked",
+      2.1,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -125.8,
+      "parked",
+      2.4,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -125.6,
+      "parked",
+      2.6,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -125.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -124.8,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -124.1,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -123.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -122.4,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -121.4,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -120.2,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -118.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -117.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -115.6,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -107.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -105,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -102.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -99.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -97.2,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -94.8,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -92.4,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -89.7,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -87.2,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -84.6,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -82.2,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -79.6,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -77.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -74.9,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ],
+     [
+      -72.3,
+      null,
+      0,
+      true,
+      0,
+      [
+       -120,
+       2.6
+      ]
+     ]
+    ],
     "maxLat": 5.2,
     "phases": [
      "out",
@@ -2743,14 +3461,14 @@
      "back"
     ],
     "ai": {
-     "overtakes": 1,
+     "overtakes": 2,
      "done": 1,
-     "aborts": 0
+     "aborts": 1
     },
     "signal": {
      "signal": "L",
      "kind": "lane",
-     "toEnd": 7.4,
+     "toEnd": 15,
      "overtaking": false
     },
     "overtook": {
@@ -2765,14 +3483,14 @@
     "turnSignal": {
      "signal": "L",
      "kind": "lane",
-     "toEnd": 7.4,
+     "toEnd": 15,
      "overtaking": false
     }
    },
    "screenshots": [
     "public/docs/screenshots/48_traffic_overtake.png"
    ],
-   "ms": 21545
+   "ms": 16225
   },
   {
    "id": "phase4_damage_model",
@@ -2787,7 +3505,7 @@
       "right": 0
      },
      "percent": 21,
-     "dented": 18,
+     "dented": 19,
      "hits": 1,
      "pull": 0,
      "hood": 0,
@@ -2802,7 +3520,7 @@
       "right": 0
      },
      "percent": 39,
-     "dented": 27,
+     "dented": 28,
      "hits": 2,
      "pull": 0.036,
      "hood": 0,
@@ -2833,7 +3551,7 @@
       "right": 0
      },
      "percent": 21,
-     "dented": 18,
+     "dented": 19,
      "hits": 1,
      "pull": 0,
      "hood": 0,
@@ -2848,7 +3566,7 @@
       "right": 0
      },
      "percent": 39,
-     "dented": 27,
+     "dented": 28,
      "hits": 2,
      "pull": 0.036,
      "hood": 0,
@@ -2877,7 +3595,7 @@
    "screenshots": [
     "public/docs/screenshots/49_damage_dents.png"
    ],
-   "ms": 6003
+   "ms": 5997
   },
   {
    "id": "phase4_garage",
@@ -2917,11 +3635,11 @@
    "screenshots": [
     "public/docs/screenshots/50_kiosk_garage.png"
    ],
-   "ms": 2799
+   "ms": 3871
   },
   {
    "id": "phase4_screen2",
-   "title": "Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie",
+   "title": "Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with ElevenLabs-voiced cues; the drive-in runs it as the midnight movie",
    "pass": true,
    "details": {
     "prompt": "🎟️ You have a ticket: Screen 1 is through the lobby, Screen 2 through the west door",
@@ -2930,8 +3648,8 @@
     "film": "pumpkin",
     "watching": "palace2",
     "framesBy": {
-     "v8": 1747,
-     "pumpkin": 334
+     "v8": 1846,
+     "pumpkin": 343
     },
     "dialog": [
      "clock13",
@@ -2953,8 +3671,8 @@
      "film": "pumpkin",
      "watching": "palace2",
      "framesBy": {
-      "v8": 1747,
-      "pumpkin": 334
+      "v8": 1846,
+      "pumpkin": 343
      },
      "dialog": [
       "clock13",
@@ -2965,8 +3683,8 @@
      ]
     },
     "filmDrawn": {
-     "v8": 1747,
-     "pumpkin": 334
+     "v8": 1846,
+     "pumpkin": 343
     },
     "cuePlayed": [
      "secret_room",
@@ -2977,12 +3695,22 @@
     "driveInMidnight": {
      "film": "pumpkin",
      "map": true
+    },
+    "cast": {
+     "eleven": 7,
+     "files": 7,
+     "total": 138
+    },
+    "screen2CastElevenLabs": {
+     "eleven": 7,
+     "files": 7,
+     "total": 138
     }
    },
    "screenshots": [
     "public/docs/screenshots/51_screen2_seated.png"
    ],
-   "ms": 4531
+   "ms": 4825
   },
   {
    "id": "phase4_gamepad",
@@ -2991,28 +3719,28 @@
    "details": {
     "walked": 4.53,
     "inCar": true,
-    "speed": 12.88,
+    "speed": 13.1,
     "mode": "paused",
     "stickWalk": 4.53,
     "aInteracts": true,
-    "rtThrottle": 12.88,
+    "rtThrottle": 13.1,
     "startPauses": "paused"
    },
    "screenshots": [],
-   "ms": 8841
+   "ms": 8974
   },
   {
    "id": "perf",
    "title": "Performance snapshot (draw calls, triangles, FPS on this GPU)",
    "pass": true,
    "details": {
-    "fps": 47.5,
-    "drawCalls": 1211,
-    "triangles": 1648871,
+    "fps": 42.5,
+    "drawCalls": 1525,
+    "triangles": 1778651,
     "vehicles": 9
    },
    "screenshots": [],
-   "ms": 3310
+   "ms": 3306
   },
   {
    "id": "final_errors",
@@ -3025,7 +3753,7 @@
     }
    },
    "screenshots": [],
-   "ms": 70
+   "ms": 72
   }
  ]
 }

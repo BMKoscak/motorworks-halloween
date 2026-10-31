@@ -554,7 +554,7 @@ Existing voices also got new lines: Big Sal's shift lines, the robot arcade and 
 `npm test` (`tests/qa.mjs`) drives the real game in Playwright Chromium on the local GPU. It presses real keys, measures the results through `window.__MW`, captures every screenshot in this document, and writes `tests/qa-results.json` plus the `qa` section of `TELEMETRY.json`.
 
 <!-- AUTO:QA -->
-Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).
+Last run: 2026-10-31T07:24:07.060Z — **49/50 checks passed** in 582s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).
 
 - [x] **boot** — Page loads, Blender assets stream in, zero console errors / uncaught exceptions
 - [x] **assets** — All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes
@@ -575,10 +575,10 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
 - [x] **enterable_buildings** — Walk through hinged front doors into the Diner, Hardware Store, Police Station and a House (no collider blocking)
 - [x] **seated_drivers** — Traffic cars, police cruisers, the forklift (and the player) have seated drivers; arms + steering wheel follow the steering; cabin glass is see-through
 - [x] **navigation_and_bounds** — 30 s of traffic + police pursuit: no vehicle leaves |x|,|z| < 600 or floats (|y - support| < 0.75; physics vehicles may hop a little on kerbs and queued traffic); traffic stays on the road graph
-- [ ] **police_foot_chase** — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars ⚠️ {"dismounts":3,"footChases":8,"officers":[{"state":"foot","pos":[116.9,0,6.7],"armed":false},{"state":"foot","pos":[32.7,0,-2.6],"armed":false},{"state":"beat","pos":[129.2,0,13],"armed":false},{"state":"foot","pos":[-75
+- [ ] **police_foot_chase** — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars ⚠️ {"dismounts":4,"footChases":9,"officers":[{"state":"foot","pos":[122,0.2,7.6],"armed":false},{"state":"foot","pos":[27.5,0,-3.1],"armed":false},{"state":"beat","pos":[127.6,0,13.2],"armed":true},{"state":"foot","pos":[-7
 - [x] **weapons_and_shooting** — Buy/equip a pistol, aim (RMB/Q) and fire at a car tyre and a streetlight: ammo decrements, tyre pops, light goes out, impact FX
 - [x] **light_switches** — Interior wall switch (E) toggles the building lights (fixtures + light sources + window glow); breaker box cuts power; Night Shift switch re-lights the plant
-- [ ] **doorbell_and_burglary** — Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it ⚠️ {"doorbell":{"prompt":"[E] Ring doorbell","door":{"t":1,"target":1,"locked":false,"center":[-147,1.55,-25.5]},"homeowners":[{"state":"greet","ageGroup":"adult_male","pos":[-147,0.45,-26.2]}],"tip":37,"rings":1},"doorbell
+- [x] **doorbell_and_burglary** — Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it
 - [x] **fuel_and_gas_station** — Driving burns fuel (stalls when empty); refuelling at the Gas Station pumps restores 100% at $2/gal; jerrycan adds +35%
 - [x] **pumpkins** — Golden Pumpkins: collecting all 5 unlocks the Monster Mash kiosk pack
 - [x] **phantom** — Phantom Hearse: honking 3x at the Vlad crypt summons a ghost hearse race
@@ -602,7 +602,7 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
 - [x] **phase4_traffic_ai** — AI traffic: turn signals before junction turns; a car abandoned in the lane is seen, signalled around and overtaken (oncoming lane checked)
 - [x] **phase4_damage_model** — Damage model: a wall crash dents the front panels, side hits scuff and bend the alignment, the Custom Bay bodywork repairs it all
 - [x] **phase4_garage** — Kiosk garage: save named builds (browser storage), list them in the Garage tab, load one back into the configurator
-- [x] **phase4_screen2** — Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie
+- [x] **phase4_screen2** — Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with ElevenLabs-voiced cues; the drive-in runs it as the midnight movie
 - [x] **phase4_gamepad** — Gamepad (standard mapping): left stick walks, A interacts, RT/LT drive, Start pauses; menus and keyboard keep working
 - [x] **perf** — Performance snapshot (draw calls, triangles, FPS on this GPU)
 - [x] **final_errors** — Zero console errors or uncaught exceptions during the whole QA run
@@ -612,21 +612,21 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
 ```json
 {
  "boot": {
-  "loadMs": 3182,
+  "loadMs": 3302,
   "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "consoleErrors": []
  },
  "factory_jumbotron_and_conveyor": {
   "factory": {
-   "ikSolves": 1663,
+   "ikSolves": 1579,
    "pressCycles": 1,
    "partsCarried": 3,
    "nightShift": false
   },
   "jumbotron": {
    "before": {
-    "frames": 115,
-    "overlay": 21,
+    "frames": 114,
+    "overlay": 20,
     "faces": 4
    },
    "viewStart": {
@@ -635,7 +635,7 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
     "faces": 4
    },
    "after": {
-    "frames": 149,
+    "frames": 152,
     "overlay": 34,
     "faces": 4
    }
@@ -643,35 +643,35 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
  },
  "physics": {
   "inCar": true,
-  "fpsDuringDrive": 33.9,
-  "speedAfterW": 16.66,
-  "leftHeadingDelta": 0.79,
-  "rightHeadingDelta": -0.664,
+  "fpsDuringDrive": 31,
+  "speedAfterW": 16.5,
+  "leftHeadingDelta": 0.809,
+  "rightHeadingDelta": -0.306,
   "braking": {
-   "before": 26.71,
-   "after": 12.19
+   "before": 26.38,
+   "after": 11.63
   },
   "highSpeed": {
-   "speed": 24.23,
-   "dHeading": -0.525
+   "speed": 23.86,
+   "dHeading": -0.513
   },
   "highSpeedTurn": {
-   "speed": 24.23,
-   "dHeading": -0.525
+   "speed": 23.86,
+   "dHeading": -0.513
   },
-  "skidMarks": 399
+  "skidMarks": 879
  },
  "theft": {
   "inStolenCar": true,
   "doorSwungOpen": 1,
   "markedStolen": true,
-  "wantedLevel": 2,
+  "wantedLevel": 3,
   "pursuit": [
    {
     "mode": "pursuit",
     "pos": [
-     75.4,
-     2.5
+     0.2,
+     7.8
     ],
     "siren": true,
     "parked": true
@@ -679,21 +679,39 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    {
     "mode": "pursuit",
     "pos": [
-     73.5,
-     -15.6
+     63,
+     -9.6
+    ],
+    "siren": true,
+    "parked": true
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     -21.1,
+     4.6
+    ],
+    "siren": true,
+    "parked": false
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     48.7,
+     2.6
     ],
     "siren": true,
     "parked": false
    }
   ],
   "police": {
-   "level": 2,
+   "level": 3,
    "cars": [
     {
      "mode": "pursuit",
      "pos": [
-      75.4,
-      2.5
+      0.2,
+      7.8
      ],
      "siren": true,
      "parked": true
@@ -701,8 +719,26 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
     {
      "mode": "pursuit",
      "pos": [
-      73.5,
-      -15.6
+      63,
+      -9.6
+     ],
+     "siren": true,
+     "parked": true
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      -21.1,
+      4.6
+     ],
+     "siren": true,
+     "parked": false
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      48.7,
+      2.6
      ],
      "siren": true,
      "parked": false
@@ -712,11 +748,47 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
     {
      "state": "foot",
      "pos": [
-      76.4,
+      23.1,
       0,
-      4.5
+      19.3
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      68.3,
+      0,
+      4.8
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      148.5,
+      0.2,
+      10.2
+     ],
+     "armed": true
+    },
+    {
+     "state": "beat",
+     "pos": [
+      -86.5,
+      0.2,
+      -8
      ],
      "armed": false
+    },
+    {
+     "state": "foot",
+     "pos": [
+      57.8,
+      0.2,
+      11
+     ],
+     "armed": true
     },
     {
      "state": "seated",
@@ -728,29 +800,11 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
      "armed": false
     },
     {
-     "state": "foot",
+     "state": "seated",
      "pos": [
-      136.6,
-      0.2,
-      7.2
-     ],
-     "armed": false
-    },
-    {
-     "state": "beat",
-     "pos": [
-      -86.8,
-      0.2,
-      -8
-     ],
-     "armed": false
-    },
-    {
-     "state": "beat",
-     "pos": [
-      35,
-      0.2,
-      8.7
+      0.4,
+      0,
+      0.1
      ],
      "armed": false
     }
@@ -758,22 +812,27 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    "stats": {
     "crimes": [
      {
-      "kind": "speeding",
-      "at": 107598,
+      "kind": "rammed",
+      "at": 101699,
       "level": 1
      },
      {
-      "kind": "theft",
-      "at": 138009,
+      "kind": "rammed",
+      "at": 111236,
       "level": 2
+     },
+     {
+      "kind": "theft",
+      "at": 139440,
+      "level": 3
      }
     ],
-    "maxLevel": 2,
+    "maxLevel": 3,
     "busts": 0,
-    "escapes": 1,
-    "dismounts": 1,
-    "footChases": 3,
-    "shotsAtPlayer": 0,
+    "escapes": 0,
+    "dismounts": 2,
+    "footChases": 4,
+    "shotsAtPlayer": 2,
     "resets": 0
    }
   }
@@ -788,24 +847,26 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    "velocityClamps": 0,
    "spinClamps": 0,
    "outOfBounds": 0,
-   "activeBodies": 119,
+   "activeBodies": 120,
    "traffic": {
     "whiskerBrakes": 0,
-    "junctionWaits": 2361,
+    "junctionWaits": 1700,
     "resets": 0,
-    "redStops": 17,
+    "redStops": 23,
     "redRuns": 0,
-    "stopSigns": 22,
+    "stopSigns": 24,
     "honks": 0,
-    "rage": 4,
+    "rage": 5,
     "relocated": 0,
-    "signalling": 1073.8441999988631
+    "signalling": 1189.7688999989055,
+    "overtakes": 1,
+    "overtakeAborts": 1
    },
    "nav": {
     "nodes": 1448,
-    "edges": 4505,
-    "rays": 10258,
-    "buildMs": 149
+    "edges": 4523,
+    "rays": 15561,
+    "buildMs": 141
    },
    "policeResets": 0
   }
@@ -820,7 +881,7 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    "after": 58.86
   },
   "stall": {
-   "speed": -0.77,
+   "speed": -0.39,
    "fs": {
     "fuel": 0,
     "stalled": true,
@@ -861,80 +922,32 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
   },
   "refuel": {
    "prompt": "[E] Refuel — $2/gal (35% now)",
-   "fuel": 99.96,
-   "cost": 20.81,
+   "fuel": 99.99,
+   "cost": 20.82,
    "stats": {
     "refuels": 1,
-    "gallons": 10.403159999942776,
-    "spent": 20.806319999885552,
+    "gallons": 10.407599999999988,
+    "spent": 20.815199999999976,
     "jerrycans": 1
    }
   },
   "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
-  "tankFull": 99.96,
+  "tankFull": 99.99,
   "chargedTwoDollarsPerGallon": {
-   "paid": 20.806319999828702,
-   "gal": 10.403159999942776
+   "paid": 20.815199999837205,
+   "gal": 10.407599999999988
   }
  },
  "traffic_obeys_signals": {
   "stats": {
-   "redStops": 6,
+   "redStops": 3,
    "redRuns": 0,
-   "stopSigns": 5,
-   "junctionWaits": 4016,
+   "stopSigns": 2,
+   "junctionWaits": 2892,
    "honks": 0
   },
-  "heldSamples": 19,
+  "heldSamples": 50,
   "redCars": [
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 62.2,
-    "toEnd": 17.5,
-    "x": -32,
-    "z": 3,
-    "sig": null
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 25,
-    "toEnd": 18.6,
-    "x": -33,
-    "z": 3,
-    "sig": null
-   },
-   {
-    "road": "exit",
-    "kind": "lane",
-    "speed": 1.4,
-    "red": true,
-    "blocked": null,
-    "bt": 0,
-    "toEnd": 3.1,
-    "x": 74,
-    "z": -17,
-    "sig": "R"
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 22.1,
-    "toEnd": 18.5,
-    "x": -33,
-    "z": 3,
-    "sig": "R"
-   },
    {
     "road": "main_le",
     "kind": "lane",
@@ -946,28 +959,16 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
     "x": 17,
     "z": -3,
     "sig": "L"
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 10.7,
-    "toEnd": 18.4,
-    "x": -33,
-    "z": 3,
-    "sig": null
    }
   ],
   "playerCars": [
    [
     61,
-    -8
+    -7
    ],
    [
-    63,
-    26
+    -39,
+    7
    ],
    [
     43,
@@ -975,19 +976,19 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    ],
    [
     0,
-    249
+    242
    ]
   ],
   "carsHoldAtRed": {
-   "redStops": 6,
+   "redStops": 3,
    "redRuns": 0,
-   "stopSigns": 5,
-   "junctionWaits": 4016,
+   "stopSigns": 2,
+   "junctionWaits": 2892,
    "honks": 0
   },
   "noRedLightRunners": 0,
   "heldCar": [
-   16.567826534357952,
+   16.558803542042337,
    -2.6
   ]
  },
@@ -999,11 +1000,20 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
    "pois": 41
   },
   "stats": {
-   "trips": 62,
-   "crossings": 32,
-   "signalWaits": 7483,
-   "gapWaits": 1387,
-   "ch
+   "trips": 87,
+   "crossings": 37,
+   "signalWaits": 12684,
+   "gapWaits": 1019,
+   "chats": 32,
+   "honkReactions": 0,
+   "trickOrTreats": 15,
+   "visits": 43
+  },
+  "states": {
+   "walk": 13,
+   "chat": 2,
+   "do": 2,
+   "inside":
 ```
 </details>
 <!-- /AUTO:QA -->
@@ -1076,24 +1086,24 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
 <!-- AUTO:TELEMETRY -->
 | Metric | Value |
 |---|---|
-| Build started → finished | 2026-10-23T06:41:18Z → 2026-10-30T21:20:30.840Z (**182h 39m**) |
+| Build started → finished | 2026-10-23T06:41:18Z → 2026-10-31T07:25:46.696Z (**192h 44m**) |
 | LLM API calls (agent turns) | ~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150) — approx. agent turns / tool round-trips, counted from the session |
 | LLM input tokens | ~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M) |
 | LLM output tokens | ~540k (est.) |
 | Estimated LLM cost | metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%) |
 | Context window at finish | ~620k / 1M tokens (measured via session usage API) |
 | ElevenLabs API key present | no |
-| ElevenLabs API calls / characters | 131 calls / 8620 chars |
-| ElevenLabs voice IDs (planned per character) | foreman: `8vYCG1Q6bAbJWXdRuCIr`, skeleton: `RDSy0QN68yhrjuOgqzQ4`, groundskeeper: `7lJ2JuXZKHyck5zlS7XQ`, waitress: `tmHt9OXLAa0z2IPF4k0Y`, panic: `b8JMPeNuVrqqWExQc8e9`, civilian: `MJw0jtAmgm4D71m0HUJU`, dispatch: `umwdC76NumBsGtudno3p`, cop: `R3brgFoQWI6vjwB1A4aP`, dj: `CeNX9CMwmxDxUF5Q2Inm`, kiosk: `DXav2Iq8VRhoGarNlWcx`, phantom: `d3qrd1ge6zWDvUxIeXiH`, worker: `t1yzxMpe9zK42bXmI1T2`, worker2: `ZQF62XTHtHemfMB0pp0G`, pa: `no52gq1ZwK7Lmejv1EHz`, civ_m: `CwhRBWXzGAHq8TQ4Fs17`, panic_m: `iP95p4xoKVk53GoZ742B`, homeowner_m: `iP95p4xoKVk53GoZ742B`, homeowner_f: `MJw0jtAmgm4D71m0HUJU`, kid_b: `XjGYkUkzth8BPs29fmcV`, kid_g: `Nggzl2QAXh3OijoXD116`, fence: `2UyW0L6yjNuo3ZH3XnoV`, clerk: `t1yzxMpe9zK42bXmI1T2`, attendant: `tmHt9OXLAa0z2IPF4k0Y`, boxoffice: `EMYWJ6jws25NB7xJgDxG`, usher: `RhcROc65RG054lfxtUIT`, vendor: `ZQF62XTHtHemfMB0pp0G`, projectionist: `1BfrkuYXmEwp8AWqSLWk`, narrator: `9GVWvaD23xXLseHJlxy8`, hero: `W3C2vBPukr5b5jvoXhPK`, villain: `Vs5CmVCVJwW4odQS2pVf`, dynotech: `o9B86nZP8mMLaT5FBEzP`, marshal: `DduhIyyKkOosbP8VefhP`, rival: `sfb7P99ZKEnBPrm3Hqam`, payphone: `qhH5VOAvpCwvNpmn2srO`, farmer: `7lJ2JuXZKHyck5zlS7XQ`, sheriff: `W3C2vBPukr5b5jvoXhPK`, pumpkin: `d3qrd1ge6zWDvUxIeXiH` |
-| Dialogue lines synthesised / characters | 138 lines / 9047 chars (elevenlabs: 131, sapi-local: 7) |
-| Audio caching | 138 lines cached in public/audio/dialogue (re-runs skip unchanged lines; 131 cache hits this run) |
+| ElevenLabs API calls / characters | 138 calls / 9047 chars |
+| ElevenLabs voice IDs (planned per character) | foreman: `8vYCG1Q6bAbJWXdRuCIr`, skeleton: `RDSy0QN68yhrjuOgqzQ4`, groundskeeper: `7lJ2JuXZKHyck5zlS7XQ`, waitress: `tmHt9OXLAa0z2IPF4k0Y`, panic: `b8JMPeNuVrqqWExQc8e9`, civilian: `MJw0jtAmgm4D71m0HUJU`, dispatch: `umwdC76NumBsGtudno3p`, cop: `R3brgFoQWI6vjwB1A4aP`, dj: `CeNX9CMwmxDxUF5Q2Inm`, kiosk: `DXav2Iq8VRhoGarNlWcx`, phantom: `d3qrd1ge6zWDvUxIeXiH`, worker: `t1yzxMpe9zK42bXmI1T2`, worker2: `ZQF62XTHtHemfMB0pp0G`, pa: `no52gq1ZwK7Lmejv1EHz`, civ_m: `CwhRBWXzGAHq8TQ4Fs17`, panic_m: `iP95p4xoKVk53GoZ742B`, homeowner_m: `iP95p4xoKVk53GoZ742B`, homeowner_f: `MJw0jtAmgm4D71m0HUJU`, kid_b: `XjGYkUkzth8BPs29fmcV`, kid_g: `Nggzl2QAXh3OijoXD116`, fence: `2UyW0L6yjNuo3ZH3XnoV`, clerk: `t1yzxMpe9zK42bXmI1T2`, attendant: `tmHt9OXLAa0z2IPF4k0Y`, boxoffice: `EMYWJ6jws25NB7xJgDxG`, usher: `RhcROc65RG054lfxtUIT`, vendor: `ZQF62XTHtHemfMB0pp0G`, projectionist: `1BfrkuYXmEwp8AWqSLWk`, narrator: `9GVWvaD23xXLseHJlxy8`, hero: `W3C2vBPukr5b5jvoXhPK`, villain: `Vs5CmVCVJwW4odQS2pVf`, dynotech: `o9B86nZP8mMLaT5FBEzP`, marshal: `DduhIyyKkOosbP8VefhP`, rival: `sfb7P99ZKEnBPrm3Hqam`, payphone: `qhH5VOAvpCwvNpmn2srO`, farmer: `8vYCG1Q6bAbJWXdRuCIr`, sheriff: `ISwSE9hIuXvEskn6jKEB`, pumpkin: `d3qrd1ge6zWDvUxIeXiH` |
+| Dialogue lines synthesised / characters | 138 lines / 9047 chars (elevenlabs: 138) |
+| Audio caching | 138 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run) |
 | Blender GLB assets | 30 files, 517.984 triangles, 21.8 MB |
-| QA self-check runs / last result | 30 full runs · last 48/50 · 883 individual check passes in total |
-| Phase 2 build window | 2026-10-23T11:45:00Z → 2026-10-30T21:20:30.840Z |
+| QA self-check runs / last result | 33 full runs · last 49/50 · 1026 individual check passes in total |
+| Phase 2 build window | 2026-10-23T11:45:00Z → 2026-10-31T07:25:46.696Z |
 | Phase 2 ElevenLabs delta | +28 lines · +1587 chars · **+1796 credits** (9 new voices) |
 | Phase 2 LLM usage | ~150 (est.) calls · ~120M processed (est.; prompt-cache reads of a context that grew to ~920k) input · ~190k (est.) output |
 | Phase 2 performance | headless Chromium on the R5 M330: 5-7 fps -> 26-37 fps after the broadphase / collision-matrix / batching pass (physics 98 -> 10 ms, render 45 -> 20 ms per frame) |
-| Phase 3 build window | 2026-10-24T15:00:00Z → 2026-10-30T21:20:30.840Z |
+| Phase 3 build window | 2026-10-24T15:00:00Z → 2026-10-31T07:25:46.696Z |
 | Phase 3 ElevenLabs delta | +49 lines · +2766 chars · **+3545 credits** (11 new voices) |
 | Phase 3 Blender | roads.glb: 319 objects, 29,620 tris, 1720 KB · cinema.glb: 423 objects, 17,096 tris, 1166 KB · plant.glb + props.glb extended (dyno cell, break room, receiving dock, secret annex, bus stop, arcade, vending, time clock, crate, payphone, UFO, popcorn) |
 | Phase 3 LLM usage | ~150 tool round-trips calls · ~95M processed (est., prompt-cache reads; context peaked ~890k/1M) input · ~120k (est.) output |
@@ -1105,25 +1115,25 @@ Last run: 2026-10-30T21:07:27.267Z — **48/50 checks passed** in 587s (Playwrig
 |---|---|---|---|
 | Environment survey & scaffold | 2026-10-23T06:41:18Z | 2026-10-30T18:36:31.972Z | 10795 |
 | Blender asset pipeline (27 GLBs) | 2026-10-30T19:03:39.155Z | 2026-10-30T19:49:16.352Z | 46 |
-| Dialogue synthesis (54 lines) | 2026-10-30T19:48:25.663Z | 2026-10-30T19:49:26.857Z | 1 |
-| Engine, world & gameplay code | 2026-10-30T19:23:12.350Z | 2026-10-30T20:03:03.359Z | 40 |
-| Automated QA loop | 2026-10-30T20:50:18.920Z | 2026-10-30T21:07:27.269Z | 17 |
-| Documentation | 2026-10-30T20:01:37.347Z | 2026-10-30T21:20:30.840Z | 79 |
+| Dialogue synthesis (54 lines) | 2026-10-31T06:49:09.023Z | 2026-10-31T06:49:12.638Z | 1 |
+| Engine, world & gameplay code | 2026-10-30T19:23:12.350Z | 2026-10-31T07:00:19.840Z | 697 |
+| Automated QA loop | 2026-10-31T07:00:31.923Z | 2026-10-31T07:24:07.063Z | 24 |
+| Documentation | 2026-10-30T20:01:37.347Z | 2026-10-31T07:25:46.696Z | 684 |
 | Phase 2 · Blender interiors, plant, props, characters | 2026-10-23T11:45:00Z | 2026-10-30T19:47:54.163Z | 10563 |
-| Phase 2 · ElevenLabs demographic voices (28 lines) | 2026-10-30T19:43:26.857Z | 2026-10-30T19:49:26.857Z | 6 |
-| Phase 2 · Game systems (10 upgrades) | 2026-10-30T18:36:32.534Z | 2026-10-30T20:03:03.359Z | 87 |
-| Phase 2 · QA expansion & perf pass | 2026-10-30T19:50:56.598Z | 2026-10-30T21:07:27.269Z | 77 |
+| Phase 2 · ElevenLabs demographic voices (28 lines) | 2026-10-31T06:43:12.638Z | 2026-10-31T06:49:12.638Z | 6 |
+| Phase 2 · Game systems (10 upgrades) | 2026-10-30T18:36:32.534Z | 2026-10-31T07:00:19.840Z | 744 |
+| Phase 2 · QA expansion & perf pass | 2026-10-30T19:50:56.598Z | 2026-10-31T07:24:07.063Z | 693 |
 | Phase 3 · streets.json + Blender road network (roads.glb) | 2026-10-24T15:00:00Z | 2026-10-30T19:49:14.366Z | 8929 |
 | Phase 3 · Blender cinema, dyno cell, break room, props | 2026-10-30T19:49:14.366Z | 2026-10-30T19:49:06.196Z | 1 |
-| Phase 3 · ElevenLabs cast (49 lines, 11 voices) | 2026-10-30T18:36:32.522Z | 2026-10-30T19:49:26.857Z | 73 |
-| Phase 3 · cinema, activities, secrets, townsfolk, signals | 2026-10-30T18:36:32.561Z | 2026-10-30T20:03:03.359Z | 87 |
-| Phase 3 · QA expansion (12 checks) | 2026-10-30T20:03:03.359Z | 2026-10-30T21:07:27.269Z | 64 |
+| Phase 3 · ElevenLabs cast (49 lines, 11 voices) | 2026-10-30T18:36:32.522Z | 2026-10-31T06:49:12.638Z | 733 |
+| Phase 3 · cinema, activities, secrets, townsfolk, signals | 2026-10-30T18:36:32.561Z | 2026-10-31T07:00:19.840Z | 744 |
+| Phase 3 · QA expansion (12 checks) | 2026-10-31T07:00:19.840Z | 2026-10-31T07:24:07.063Z | 24 |
 | Phase 4 · drag-race launch fix | 2026-10-30T18:35:00Z | 2026-10-30T19:00:42.376Z | 26 |
 | Phase 4 · Blender HD pass (mwlib MW_DETAIL) + render pipeline | 2026-10-30T19:00:42.376Z | 2026-10-30T19:23:12.295Z | 22 |
 | Phase 4 · perf pass (physics, culling, Jumbotron) + day/night | 2026-10-30T19:23:12.295Z | 2026-10-30T19:30:13.003Z | 7 |
 | Phase 4 · traffic signals/overtaking, damage, garage | 2026-10-30T19:32:24.521Z | 2026-10-30T19:40:43.244Z | 8 |
 | Phase 4 · Palace Screen 2 + Attack of the 50 ft Pumpkin | 2026-10-30T19:40:43.244Z | 2026-10-30T19:49:06.196Z | 8 |
-| Phase 4 · gamepad + touch, QA expansion, docs | 2026-10-30T19:56:05.991Z | 2026-10-30T21:07:27.269Z | 71 |
+| Phase 4 · gamepad + touch, QA expansion, docs | 2026-10-30T19:56:05.991Z | 2026-10-31T07:24:07.063Z | 688 |
 <!-- /AUTO:TELEMETRY -->
 
 ## 10. Screenshot gallery
@@ -1390,7 +1400,7 @@ The HUD shows a clock with a ☀️/🌙 icon. The pause menu has a **Time of Da
 ### 11.7 Palace Screen 2 and a second film
 
 - **The annex** (`blender/build_world.py`). A second auditorium is built onto the Palace's west side: 11 × 25.6 m, entered through a new doorway in the lobby's west wall. It has its own screen (`Cinema_Screen2`), stage, curtains and valance, 6 rows of 14 seats facing the opposite way to Screen 1, aisle lights, sconces, pendant fixtures, a wall-shelf projector with a beam, a **SCREEN 2** neon on the street side, and SCREEN 1 / SCREEN 2 signs over the doorways. The marquee now lists both features.
-- ***Attack of the 50 ft Pumpkin*** (`PumpkinFilm` in `src/world/cinema.js`). A 98-second procedural reel built on the same film-look engine: leader, studio card, title, Hollis farm patch, growth, Main Street rampage, the sheriff's ramp jump, *SQUASHED.*, credits and a post-credits sprout. It has **7 voiced cue lines** from 3 new characters (Old Man Hollis, Sheriff Mabel Gourd and The Pumpkin). Their voices are local Windows SAPI takes from the existing pipeline (`npm run dialogue` with no API key; cached, and no ElevenLabs credits used). Setting `ELEVENLABS_API_KEY` upgrades them, because the new voices reuse the IDs of similar ElevenLabs cast members.
+- ***Attack of the 50 ft Pumpkin*** (`PumpkinFilm` in `src/world/cinema.js`). A 98-second procedural reel built on the same film-look engine: leader, studio card, title, Hollis farm patch, growth, Main Street rampage, the sheriff's ramp jump, *SQUASHED.*, credits and a post-credits sprout. It has **7 voiced cue lines** from 3 new characters (Old Man Hollis, Sheriff Mabel Gourd and The Pumpkin). All seven are **ElevenLabs `eleven_v4` takes** (Phase 4.1), generated through the ElevenLabs connector and imported with `scripts/import-elevenlabs.mjs`. That makes the whole cast, all 138 lines, ElevenLabs. The voices are the Movie Trailer Voice narrator, Grits Oxley (the Gritty Grandpa voice) for the farmer, **Michelle Strong Southern** for the sheriff (new to the cast), and the Final Boss voice for the Pumpkin. The 7 lines cost about 711 credits.
 - **Programming.** Screen 1 shows *Night of the V8* and Screen 2 shows *Attack of the 50 ft Pumpkin*. One $8 ticket covers both, and the usher checks both doors. The **drive-in** runs the V8 as the early show and the Pumpkin as the **midnight movie** (00:00–12:00 on the clock). Each reel redraws only while one of its screens is near the camera.
 
 ![Screen 2 annex, lobby doorway, auditorium, drive-in midnight movie](public/docs/screenshots/phase4/43_screen2_grid.png)
@@ -1409,14 +1419,21 @@ Measured by `tests/controlsprobe.mjs`. Gamepad: the left stick walked 6.4 m, A g
 
 Eight new checks: `phase4_render_pipeline`, `phase4_perf_culling`, `phase4_day_night`, `phase4_traffic_ai`, `phase4_damage_model`, `phase4_garage`, `phase4_screen2` and `phase4_gamepad`. The existing `drag_race` check now also asserts the staged car stays on the strip. QA freezes the clock at 18:00 so the documentation screenshots keep the classic dusk look. Results are in §7.
 
-**Result: 48/50 on the final run.** All Phase 4 checks pass, and so does the drag-race regression assertion. The two misses are flaky checks that predate this work:
+**Result: 49/50 on the production build** (`npm run build` served by `vite preview`, which is what GitHub Pages serves). All Phase 4 checks pass, and so does the drag-race regression assertion. Across runs, two checks have been flaky in ways that predate this work:
 
 - **`doorbell_and_burglary`'s fence step:** a single E press at the fence sometimes doesn't sell.
-- **`police_foot_chase`:** the officer has to close within 20 m in a fixed window, and the run measured 20.4–22.7 m.
+- **`police_foot_chase`:** the officer has to close within 20 m in a fixed window after earlier checks have left other officers on the street. In isolation the officer closes from 13.7 m to 0.8 m and tackles.
 
 To check that these weren't regressions, the original Phase 3 build was run with its own 42 checks in a separate worktree on the same machine. It scored **40/42**, failing the fence step and `traffic_obeys_signals`.
 
 Investigating `traffic_obeys_signals` turned up a real, pre-existing jam: traffic queued forever behind a police cruiser left standing in the lane (one car had waited 286 s). Phase 4 now overtakes a stationary cruiser like any parked car and, near junctions, nudges past it after 6 s. That check passes in the final run.
+
+**Phase 4.1 traffic fixes**, found by running QA on the production build:
+
+- **Braking distance.** Traffic now looks *braking distance* ahead (v²/14 on top of its following distance) for anything standing still in the lane. At 12 m/s it used to see an abandoned car too late, shunt it 20 m down the street and stall.
+- **Overtaking near junctions.** An overtake only needs room to clear the obstacle before the junction (distance to it + 11 m) instead of a flat 30 m. Once alongside, the car doesn't abort for the junction.
+- **No permanent jams.** If it can't overtake, the head car nudges a stationary car or cruiser along at walking pace after 8 s. Cars waiting behind it no longer use the deadlock creep, which used to stack a whole queue onto one spot. One test car left 19 m before a junction had held 6+ cars for 230 s.
+- **Minified builds.** QA hooks name activities with a stable `activityName`, because the production bundle minifies class names (the dyno and arcade checks read `PT` / `LT`).
 
 Other test-only fixes:
 

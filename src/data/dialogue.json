@@ -380,8 +380,8 @@
       "rate": -2,
       "pitch": 0.82,
       "fx": "film",
-      "eleven": "7lJ2JuXZKHyck5zlS7XQ",
-      "elevenVoiceName": "Romulus II Deep Mysterious",
+      "eleven": "8vYCG1Q6bAbJWXdRuCIr",
+      "elevenVoiceName": "Grits Oxley - Gritty Grandpa",
       "elevenPitch": 1,
       "demo": "film"
     },
@@ -391,9 +391,9 @@
       "rate": 0,
       "pitch": 0.94,
       "fx": "film",
-      "eleven": "W3C2vBPukr5b5jvoXhPK",
-      "elevenVoiceName": "Kira X - Video Game, Bold & Cinematic",
-      "elevenPitch": 0.96,
+      "eleven": "ISwSE9hIuXvEskn6jKEB",
+      "elevenVoiceName": "Michelle Strong Southern voice",
+      "elevenPitch": 1,
       "demo": "film"
     },
     "pumpkin": {
@@ -404,7 +404,7 @@
       "fx": "film",
       "eleven": "d3qrd1ge6zWDvUxIeXiH",
       "elevenVoiceName": "Final Boss - Evil Villain",
-      "elevenPitch": 0.9,
+      "elevenPitch": 0.92,
       "demo": "film"
     }
   },

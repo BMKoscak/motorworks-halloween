@@ -14,7 +14,7 @@ A third-person 3D car factory, customization and open-town action game that runs
 ![cannon-es](https://img.shields.io/badge/physics-cannon--es-2f6db5?style=flat-square)
 ![Blender](https://img.shields.io/badge/models-Blender_5.2-e87d0d?style=flat-square&logo=blender&logoColor=white)
 ![ElevenLabs](https://img.shields.io/badge/voices-ElevenLabs-000?style=flat-square)
-![QA](https://img.shields.io/badge/automated_QA-48%2F50_(2_known_flakes)-39ff14?style=flat-square)
+![QA](https://img.shields.io/badge/automated_QA-49%2F50_passing-39ff14?style=flat-square)
 
 <img src="public/docs/screenshots/32_palace_cinema_marquee.png" alt="The Palace Cinema on Main Street" width="100%"/>
 
@@ -36,7 +36,7 @@ A third-person 3D car factory, customization and open-town action game that runs
 - 🌗 **A day/night cycle.** Dusk, a moonlit night, an orange dawn and an overcast autumn day, with a HUD clock and a pause-menu time slider.
 - 🚦 **AI turn signals and overtaking.** Traffic blinks before turns and pulls around cars abandoned in the lane. Before, it rammed them.
 - 💥 **A damage model.** Dents, a sprung hood, flickering headlights, scuffed paint and bent alignment. The Custom Bay fixes it all. There's also a **🗄️ Garage** tab in the kiosk for saving and loading builds.
-- 🎬 **Palace Screen 2.** A new annex auditorium shows a second film, ***ATTACK OF THE 50 FT PUMPKIN***, which is also the drive-in's midnight movie.
+- 🎬 **Palace Screen 2.** A new annex auditorium shows a second film, ***ATTACK OF THE 50 FT PUMPKIN***, voiced by ElevenLabs (a narrator, a farmer, a Southern sheriff and the Pumpkin itself). It's also the drive-in's midnight movie.
 - 🎮 **Gamepad and 📱 touch controls.**
 
 Full build log, measurements and before/after shots: **[DOCUMENTATION.md §11](DOCUMENTATION.md#11-phase-4-build-log-rtx-graphics-performance-drag-race-fix-and-the-roadmap)**.
@@ -98,7 +98,7 @@ Full build log, measurements and before/after shots: **[DOCUMENTATION.md §11](D
 
 **Under the hood:**
 - 🚗 Raycast-vehicle physics with fuel, tire and engine damage, drifts, skid marks, and chase and cockpit cameras.
-- 🗣 Over 130 ElevenLabs voice lines matched to each NPC's age and gender (kids, adults and spirits), with per-character radio, ghost and robot effects.
+- 🗣 138 ElevenLabs voice lines matched to each NPC's age and gender (kids, adults and spirits), with per-character radio, ghost and robot effects.
 - 🔫 Weapons, burglary, a fence, refuelling, light switches and breaker boxes.
 - 🎛 Pause menu with volume and graphics settings, automatic quality fallback for slower GPUs, and a secrets tracker.
 
@@ -156,7 +156,7 @@ tests/            Playwright QA suite + probes
 ```
 
 - **Every 3D model is generated in Blender from Python.** No assets were downloaded. Even the streets are modelled by `blender/build_roads.py`, which reads the same `src/data/streets.json` that the AI lanes, signals and pedestrian crossings use, so the paint always matches where cars stop and people cross.
-- **The movie is code.** *Night of the V8* is drawn frame by frame into a canvas texture: the countdown leader, studio logo, title, road chase, factory, gate jump, trailer card, credits and post-credits stinger, with grain and scratches. Its voiced lines are ElevenLabs takes cued to the film clock.
+- **The movies are code.** *Night of the V8* and *Attack of the 50 ft Pumpkin* are drawn frame by frame into a canvas texture: the countdown leader, studio logo, title, road chase, factory, gate jump, trailer card, credits and post-credits stinger, with grain and scratches. Their voiced lines are ElevenLabs takes cued to the film clock.
 - **QA.** The automated suite drives the real game with keypresses. It checks traffic signals, red-light behaviour, jaywalking, the cinema flow, the dyno, the drag race, the shift job, the arcade, the secrets and more, and captures the screenshots used in the [docs](DOCUMENTATION.md).
 
 See **[DOCUMENTATION.md](DOCUMENTATION.md)** for the full build log, QA report, telemetry and screenshots.
@@ -170,7 +170,7 @@ See **[DOCUMENTATION.md](DOCUMENTATION.md)** for the full build log, QA report, 
 - [x] Gamepad and mobile touch controls *(Phase 4)*
 - [ ] Multi-lane avenues with real lane changes
 - [ ] Persist the owned car (and its damage) between sessions
-- [ ] ElevenLabs takes for the Screen 2 cast (currently local voices)
+- [x] ElevenLabs takes for the Screen 2 cast *(Phase 4.1: all 138 lines are now ElevenLabs)*
 
 ## 🙏 Credits
 

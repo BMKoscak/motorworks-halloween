@@ -147,6 +147,9 @@ export class Traffic {
       return hit;
     };
     const reach = 6.5 + car.speed * 0.55;
+    // something standing still in the lane needs the braking distance on top (v^2 / 2a at ~7 m/s^2): with the
+    // following-distance reach alone a car at 12 m/s saw an abandoned car too late and shunted it down the street
+    const stopReach = reach + (car.speed * car.speed) / 14;
     if (!g.player.vehicle && check(g.player.position, 1.5, reach, 1)) return 'player';
     if (g.player.vehicle && check(g.player.vehicle.position, 2.0, reach, g.player.vehicle.speedAbs)) return 'car';
     for (const o of this.driving) {
@@ -157,14 +160,14 @@ export class Traffic {
       const oDir = o.seg.at(o.s).dir;
       if (oDir.dot(dir) < -0.25) continue;
       // a stalled / rammed car (cooldown, disabled) counts as a stationary obstacle that can be overtaken
-      if (check(o.body.position, 1.75, reach, o.cooldown > 0 || o.disabled ? 0 : Math.max(o.speed, o.redHold || o.wait > 0 ? 1 : 0))) return 'car';
+      if (check(o.body.position, 1.75, reach, o.cooldown > 0 || o.disabled ? 0 : Math.max(o.speed, o.redHold || o.wait > 0 ? 1 : 0))) { car.blockCar = o; return 'car'; }
     }
     // a cruiser parked in the lane (a dismounted officer, a stop) is passed like any stationary car; one on the move is followed
-    for (const c of g.police.cars) if (check(c.position, 2.0, reach, c.vehicle.speedAbs)) return 'police';
+    for (const c of g.police.cars) if (check(c.position, 2.0, c.vehicle.speedAbs < 0.5 ? stopReach : reach, c.vehicle.speedAbs)) return 'police';
     for (const pk of this.parked) if (check(pk.body.position, 1.55, Math.min(8, reach), 0)) return 'parked';
     // cars the player has parked, abandoned or stolen-and-dumped are Vehicles outside the lists above: traffic used to
     // drive straight into them (Phase 4 fix); they are obstacles like any parked car, and can be overtaken
-    for (const v of g.vehicles) if (v.kind === 'player' && v !== g.player.vehicle && check(v.body.position, 1.75, Math.min(9, reach), v.speedAbs)) return 'parked';
+    for (const v of g.vehicles) if (v.kind === 'player' && v !== g.player.vehicle && check(v.body.position, 1.75, v.speedAbs < 0.5 ? stopReach : reach, v.speedAbs)) return 'parked';
     for (const ped of g.npcs.walkers()) if (check(ped.char.root.position, 1.3, Math.min(8, reach), 1)) return 'ped';
     car.whisker = false;
     return null;
@@ -195,8 +198,11 @@ export class Traffic {
     const W = (c.seg.w || 2.6) * 2;
     const O = c.ot;
     if (!O) {
-      if (c.seg.kind !== 'lane' || c.redHold || toEnd < 30 || c.s < 4 || c.blockedT < 1.6) return;
+      if (c.seg.kind !== 'lane' || c.redHold || c.s < 4 || c.blockedT < 1.6) return;
       if (!['parked', 'car', 'player', 'police'].includes(c.blocked) || (c.blockSpeed || 0) > 0.5 || !c.blockPos) return;
+      // enough lane left to get past the obstacle (and 7 m beyond it) and back in before the junction
+      const alongObs = (c.blockPos.x - p.x) * dir.x + (c.blockPos.z - p.z) * dir.z;
+      if (toEnd < alongObs + 11) return;
       if (!this._oncomingClear(c, p, dir, 45)) return;
       c.ot = { phase: 'out', obs: c.blockPos.clone(), road: c.seg.road, lane: c.seg };
       this.stats.overtakes = (this.stats.overtakes || 0) + 1;
@@ -211,7 +217,8 @@ export class Traffic {
       const along = (O.obs.x - p.x) * dir.x + (O.obs.z - p.z) * dir.z;
       if (along < -7) O.phase = 'back';
     } else c.latV = -1.5;
-    if (O.phase !== 'back' && (toEnd < 12 || !this._oncomingClear(c, p, dir, 24))) { O.phase = 'back'; this.stats.overtakeAborts = (this.stats.overtakeAborts || 0) + 1; }
+    const abort = O.phase === 'out' ? !this._oncomingClear(c, p, dir, 24) : O.phase === 'pass' && (!this._oncomingClear(c, p, dir, 10) || toEnd < 3);
+    if (abort) { O.phase = 'back'; this.stats.overtakeAborts = (this.stats.overtakeAborts || 0) + 1; }
     c.lat = THREE.MathUtils.clamp(c.lat + c.latV * dt, 0, W);
     if (O.phase === 'back' && c.lat <= 0) { c.ot = null; c.latV = 0; this.stats.overtakesDone = (this.stats.overtakesDone || 0) + 1; }
   }
@@ -282,6 +289,8 @@ export class Traffic {
       // obstacle checks from where the car really is (it may be out in the oncoming lane, overtaking)
       const here = c.lat ? _pos.copy(p).addScaledVector(_left.set(dir.z, 0, -dir.x), c.lat) : p;
       c.blocked = this._blocked(c, here, dir);
+      // in a queue behind something standing in the lane (used by the deadlock rule below)
+      c.queued = ['parked', 'police'].includes(c.blocked) || (c.blocked === 'car' && !!c.blockCar && !!c.blockCar.queued);
       c.honkCd = Math.max(0, (c.honkCd || 0) - dt);
       if ((c.blocked === 'player' || (c.blocked === 'car' && this.game.player.vehicle && this.game.player.vehicle.position.distanceTo(c.body.position) < 14)) && c.blockedT > 2.2 && c.honkCd <= 0) {
         c.honkCd = 5 + Math.random() * 4;
@@ -293,9 +302,10 @@ export class Traffic {
         // swinging out around the obstacle: creep forward while the gap opens
         if (c.ot && c.ot.phase === 'out') target = 1.2;
         // Break any car-vs-car deadlock after 2.5s so traffic always flows
-        else if (c.blocked === 'car' && c.blockedT > 2.5) target = 3.5;
-        // a cruiser left standing near a junction (too close to overtake) used to hold its queue forever: nudge past
-        else if (c.blocked === 'police' && c.blockedT > 6 && (c.blockSpeed || 0) < 0.5) target = 2;
+        // (not inside a queue waiting behind an obstacle: creeping there just stacked the queue into one spot)
+        else if (c.blocked === 'car' && c.blockedT > 2.5 && !(c.blockCar && c.blockCar.queued)) target = 3.5;
+        // a car or cruiser left standing where it can't be overtaken used to hold its queue forever: nudge it along
+        else if (['police', 'parked'].includes(c.blocked) && c.blockedT > 8 && (c.blockSpeed || 0) < 0.5) target = 2;
         else target = 0;
       } else {
         c.blockedT = 0;

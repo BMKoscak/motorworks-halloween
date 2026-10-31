@@ -1,8 +1,8 @@
 {
   "elevenlabs": {
     "apiKeyPresent": false,
-    "apiCalls": 131,
-    "charactersSynthesized": 8620,
+    "apiCalls": 138,
+    "charactersSynthesized": 9047,
     "voiceIdsUsed": [
       "8vYCG1Q6bAbJWXdRuCIr",
       "RDSy0QN68yhrjuOgqzQ4",
@@ -32,7 +32,8 @@
       "o9B86nZP8mMLaT5FBEzP",
       "DduhIyyKkOosbP8VefhP",
       "sfb7P99ZKEnBPrm3Hqam",
-      "qhH5VOAvpCwvNpmn2srO"
+      "qhH5VOAvpCwvNpmn2srO",
+      "ISwSE9hIuXvEskn6jKEB"
     ],
     "plannedVoiceIds": {
       "foreman": "8vYCG1Q6bAbJWXdRuCIr",
@@ -69,15 +70,15 @@
       "marshal": "DduhIyyKkOosbP8VefhP",
       "rival": "sfb7P99ZKEnBPrm3Hqam",
       "payphone": "qhH5VOAvpCwvNpmn2srO",
-      "farmer": "7lJ2JuXZKHyck5zlS7XQ",
-      "sheriff": "W3C2vBPukr5b5jvoXhPK",
+      "farmer": "8vYCG1Q6bAbJWXdRuCIr",
+      "sheriff": "ISwSE9hIuXvEskn6jKEB",
       "pumpkin": "d3qrd1ge6zWDvUxIeXiH"
     },
     "quotaHit": false,
-    "cacheStatus": "138 lines cached in public/audio/dialogue (re-runs skip unchanged lines; 131 cache hits this run)",
-    "note": "No ELEVENLABS_API_KEY in environment; local SAPI fallback synthesised the missing lines",
+    "cacheStatus": "138 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run)",
+    "note": "Generated through the ElevenLabs connector (Flows, eleven_v4); the local SAPI pipeline stays as the fallback for new or changed lines",
     "connector": "ElevenLabs MCP connector (Flows, eleven_v4)",
-    "creditsSpent": 9788,
+    "creditsSpent": 10499,
     "flowId": "fj08eJgNX2F3WEMKUxW8",
     "model": "eleven_v4",
     "estimateBeforeSpend": "145 credits / .026 for one line; total run ~4,700 credits"
@@ -86,22 +87,17 @@
     "lines": 138,
     "totalCharacters": 9047,
     "engines": {
-      "elevenlabs": 131,
-      "sapi-local": 7
+      "elevenlabs": 138
     },
-    "totalBytes": 15004674,
-    "localVoices": [
-      "Microsoft David Desktop",
-      "Microsoft Zira Desktop"
-    ]
+    "totalBytes": 13814236
   },
   "qa": {
-    "runs": 30,
-    "lastRun": "2026-10-30T21:07:27.267Z",
-    "lastPassed": 48,
+    "runs": 33,
+    "lastRun": "2026-10-31T07:24:07.060Z",
+    "lastPassed": 49,
     "lastTotal": 50,
     "allPassRuns": 7,
-    "totalChecksPassed": 883
+    "totalChecksPassed": 1026
   },
   "llm": {
     "model": "claude-opus-5-5 (Claude Code desktop agent)",
@@ -114,15 +110,15 @@
     "note": "The agent cannot read exact per-call token counters; figures marked est. are estimates, the context size and plan usage were measured."
   },
   "summary": {
-    "buildTime": "182h 39m",
+    "buildTime": "192h 44m",
     "startedAt": "2026-10-23T06:41:18Z",
-    "finishedAt": "2026-10-30T21:20:30.840Z",
+    "finishedAt": "2026-10-31T07:25:46.696Z",
     "llmCalls": "~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150)",
     "inputTokens": "~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M)",
     "outputTokens": "~540k (est.)",
     "estimatedCost": "metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%)",
     "glbAssets": 30,
-    "qaPasses": "48/50"
+    "qaPasses": "49/50"
   },
   "phases": [
     {
@@ -139,27 +135,27 @@
     },
     {
       "name": "Dialogue synthesis (54 lines)",
-      "start": "2026-10-30T19:48:25.663Z",
-      "end": "2026-10-30T19:49:26.857Z",
+      "start": "2026-10-31T06:49:09.023Z",
+      "end": "2026-10-31T06:49:12.638Z",
       "minutes": 1
     },
     {
       "name": "Engine, world & gameplay code",
       "start": "2026-10-30T19:23:12.350Z",
-      "end": "2026-10-30T20:03:03.359Z",
-      "minutes": 40
+      "end": "2026-10-31T07:00:19.840Z",
+      "minutes": 697
     },
     {
       "name": "Automated QA loop",
-      "start": "2026-10-30T20:50:18.920Z",
-      "end": "2026-10-30T21:07:27.269Z",
-      "minutes": 17
+      "start": "2026-10-31T07:00:31.923Z",
+      "end": "2026-10-31T07:24:07.063Z",
+      "minutes": 24
     },
     {
       "name": "Documentation",
       "start": "2026-10-30T20:01:37.347Z",
-      "end": "2026-10-30T21:20:30.840Z",
-      "minutes": 79
+      "end": "2026-10-31T07:25:46.696Z",
+      "minutes": 684
     },
     {
       "name": "Phase 2 · Blender interiors, plant, props, characters",
@@ -169,21 +165,21 @@
     },
     {
       "name": "Phase 2 · ElevenLabs demographic voices (28 lines)",
-      "start": "2026-10-30T19:43:26.857Z",
-      "end": "2026-10-30T19:49:26.857Z",
+      "start": "2026-10-31T06:43:12.638Z",
+      "end": "2026-10-31T06:49:12.638Z",
       "minutes": 6
     },
     {
       "name": "Phase 2 · Game systems (10 upgrades)",
       "start": "2026-10-30T18:36:32.534Z",
-      "end": "2026-10-30T20:03:03.359Z",
-      "minutes": 87
+      "end": "2026-10-31T07:00:19.840Z",
+      "minutes": 744
     },
     {
       "name": "Phase 2 · QA expansion & perf pass",
       "start": "2026-10-30T19:50:56.598Z",
-      "end": "2026-10-30T21:07:27.269Z",
-      "minutes": 77
+      "end": "2026-10-31T07:24:07.063Z",
+      "minutes": 693
     },
     {
       "name": "Phase 3 · streets.json + Blender road network (roads.glb)",
@@ -200,20 +196,20 @@
     {
       "name": "Phase 3 · ElevenLabs cast (49 lines, 11 voices)",
       "start": "2026-10-30T18:36:32.522Z",
-      "end": "2026-10-30T19:49:26.857Z",
-      "minutes": 73
+      "end": "2026-10-31T06:49:12.638Z",
+      "minutes": 733
     },
     {
       "name": "Phase 3 · cinema, activities, secrets, townsfolk, signals",
       "start": "2026-10-30T18:36:32.561Z",
-      "end": "2026-10-30T20:03:03.359Z",
-      "minutes": 87
+      "end": "2026-10-31T07:00:19.840Z",
+      "minutes": 744
     },
     {
       "name": "Phase 3 · QA expansion (12 checks)",
-      "start": "2026-10-30T20:03:03.359Z",
-      "end": "2026-10-30T21:07:27.269Z",
-      "minutes": 64
+      "start": "2026-10-31T07:00:19.840Z",
+      "end": "2026-10-31T07:24:07.063Z",
+      "minutes": 24
     },
     {
       "name": "Phase 4 · drag-race launch fix",
@@ -248,8 +244,8 @@
     {
       "name": "Phase 4 · gamepad + touch, QA expansion, docs",
       "start": "2026-10-30T19:56:05.991Z",
-      "end": "2026-10-30T21:07:27.269Z",
-      "minutes": 71
+      "end": "2026-10-31T07:24:07.063Z",
+      "minutes": 688
     }
   ],
   "assets": {

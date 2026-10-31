@@ -422,6 +422,7 @@ export class Cinema {
     this.lastCue = -1;
     this.honks = [];
     this.audience = [];
+    this.activityName = 'Cinema';
     this.ownsChar = true; // while seated, the cinema poses the player character itself
   }
 

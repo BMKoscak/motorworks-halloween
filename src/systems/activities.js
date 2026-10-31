@@ -29,6 +29,7 @@ export function enginePower(v) {
 class Dyno {
   constructor(sys) {
     this.sys = sys;
+    this.activityName = 'Dyno'; // stable name for QA hooks (class names are minified in production builds)
     const g = sys.game, f = g.factory;
     this.nodes = f.dyno || {};
     this.spot = f.building.spots.Dyno;
@@ -398,6 +399,7 @@ class PartsRunner {
 class Arcade {
   constructor(sys) {
     this.sys = sys;
+    this.activityName = 'Arcade';
     this.hi = load('mw_arcade_hi', 0);
     this.stats = { plays: 0, best: this.hi };
     this.screenCanvas = document.createElement('canvas'); this.screenCanvas.width = 128; this.screenCanvas.height = 104;

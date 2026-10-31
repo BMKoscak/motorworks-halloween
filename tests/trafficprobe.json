@@ -12,21 +12,30 @@
  },
  "track": [
   {
-   "x": -147.9,
+   "x": -149.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 9.6,
+   "speed": 9.1,
    "blocked": null
   },
   {
-   "x": -145.8,
+   "x": -147.4,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 9.8,
+   "blocked": null
+  },
+  {
+   "x": -145.3,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 10.4,
    "blocked": null
   },
   {
@@ -35,26 +44,26 @@
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 11.1,
    "blocked": null
   },
   {
-   "x": -140.4,
+   "x": -140.3,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 10.7,
    "blocked": null
   },
   {
-   "x": -138.3,
+   "x": -138.2,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
-   "blocked": null
+   "speed": 9.4,
+   "blocked": "parked"
   },
   {
    "x": -136.1,
@@ -62,17 +71,26 @@
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 8.5,
    "blocked": null
   },
   {
-   "x": -134,
+   "x": -134.6,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
-   "blocked": null
+   "speed": 7.4,
+   "blocked": "parked"
+  },
+  {
+   "x": -133,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 6.4,
+   "blocked": "parked"
   },
   {
    "x": -131.7,
@@ -80,137 +98,83 @@
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 5.6,
    "blocked": null
   },
   {
-   "x": -129.5,
+   "x": -130.6,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 10,
+   "speed": 4.8,
    "blocked": null
   },
   {
-   "x": -127.4,
+   "x": -129.7,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 8.6,
+   "speed": 3.9,
+   "blocked": null
+  },
+  {
+   "x": -128.9,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 3.2,
+   "blocked": null
+  },
+  {
+   "x": -128.3,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 2.4,
    "blocked": "parked"
   },
   {
-   "x": -125.8,
+   "x": -127.9,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 6.6,
-   "blocked": "parked"
-  },
-  {
-   "x": -124.6,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 4.6,
-   "blocked": "parked"
-  },
-  {
-   "x": -123.8,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 2.6,
-   "blocked": "parked"
-  },
-  {
-   "x": -123.5,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.7,
-   "blocked": "parked"
-  },
-  {
-   "x": -123.4,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.3,
+   "speed": 2.1,
    "blocked": null
   },
   {
-   "x": -123.3,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 1,
-   "blocked": null
-  },
-  {
-   "x": -123,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 1.7,
-   "blocked": null
-  },
-  {
-   "x": -122.5,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 2.3,
-   "blocked": null
-  },
-  {
-   "x": -121.9,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 2.6,
-   "blocked": "parked"
-  },
-  {
-   "x": -121.4,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 2.3,
-   "blocked": null
-  },
-  {
-   "x": -121,
+   "x": -127.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
    "speed": 1.6,
-   "blocked": "parked"
+   "blocked": null
   },
   {
-   "x": -120.7,
+   "x": -127.2,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
-   "speed": 0.9,
+   "speed": 1,
    "blocked": "parked"
   },
   {
-   "x": -120.5,
+   "x": -127,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.7,
+   "blocked": "parked"
+  },
+  {
+   "x": -126.9,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -219,25 +183,25 @@
    "blocked": null
   },
   {
-   "x": -120.4,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.5,
-   "blocked": "parked"
-  },
-  {
-   "x": -120.3,
+   "x": -126.8,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": null,
    "speed": 0.3,
+   "blocked": "parked"
+  },
+  {
+   "x": -126.7,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.4,
    "blocked": null
   },
   {
-   "x": -120.2,
+   "x": -126.7,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -246,7 +210,34 @@
    "blocked": null
   },
   {
-   "x": -120.2,
+   "x": -126.6,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.2,
+   "blocked": null
+  },
+  {
+   "x": -126.6,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.2,
+   "blocked": null
+  },
+  {
+   "x": -126.6,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0.2,
+   "blocked": null
+  },
+  {
+   "x": -126.6,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -255,43 +246,7 @@
    "blocked": null
   },
   {
-   "x": -120.2,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.1,
-   "blocked": "parked"
-  },
-  {
-   "x": -120.1,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.1,
-   "blocked": null
-  },
-  {
-   "x": -120.1,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0,
-   "blocked": null
-  },
-  {
-   "x": -120.1,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0,
-   "blocked": null
-  },
-  {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -300,7 +255,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -309,7 +264,34 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -126.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -126.5,
+   "z": 2.6,
+   "lat": 0,
+   "phase": null,
+   "signal": null,
+   "speed": 0,
+   "blocked": "parked"
+  },
+  {
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -318,16 +300,7 @@
    "blocked": null
   },
   {
-   "x": -120.1,
-   "z": 2.6,
-   "lat": 0,
-   "phase": null,
-   "signal": null,
-   "speed": 0.1,
-   "blocked": null
-  },
-  {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -336,7 +309,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -345,7 +318,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -354,7 +327,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -363,7 +336,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -372,7 +345,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -381,7 +354,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -390,7 +363,7 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
+   "x": -126.5,
    "z": 2.6,
    "lat": 0,
    "phase": null,
@@ -399,70 +372,70 @@
    "blocked": "parked"
   },
   {
-   "x": -120.1,
-   "z": 2.42,
-   "lat": 0.18,
+   "x": -126.5,
+   "z": 2.32,
+   "lat": 0.28,
    "phase": "out",
    "signal": "L",
-   "speed": 0.3,
+   "speed": 0.5,
    "blocked": "parked"
   },
   {
-   "x": -119.9,
-   "z": 2.03,
-   "lat": 0.57,
+   "x": -126.3,
+   "z": 1.97,
+   "lat": 0.63,
    "phase": "out",
    "signal": "L",
-   "speed": 1,
+   "speed": 1.1,
    "blocked": "parked"
   },
   {
-   "x": -119.6,
-   "z": 1.66,
-   "lat": 0.94,
-   "phase": "out",
-   "signal": "L",
-   "speed": 1.2,
-   "blocked": "parked"
-  },
-  {
-   "x": -119.4,
-   "z": 1.25,
-   "lat": 1.35,
-   "phase": "out",
-   "signal": "L",
-   "speed": 1.2,
-   "blocked": "parked"
-  },
-  {
-   "x": -119.1,
-   "z": 0.88,
-   "lat": 1.72,
+   "x": -126,
+   "z": 1.59,
+   "lat": 1.01,
    "phase": "out",
    "signal": "L",
    "speed": 1.2,
    "blocked": "parked"
   },
   {
-   "x": -118.8,
-   "z": 0.5,
-   "lat": 2.1,
+   "x": -125.7,
+   "z": 1.21,
+   "lat": 1.39,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.2,
+   "blocked": "parked"
+  },
+  {
+   "x": -125.5,
+   "z": 0.85,
+   "lat": 1.75,
+   "phase": "out",
+   "signal": "L",
+   "speed": 1.2,
+   "blocked": "parked"
+  },
+  {
+   "x": -125.2,
+   "z": 0.48,
+   "lat": 2.12,
    "phase": "out",
    "signal": "L",
    "speed": 1.8,
    "blocked": null
   },
   {
-   "x": -118.3,
-   "z": 0.13,
-   "lat": 2.47,
+   "x": -124.7,
+   "z": 0.11,
+   "lat": 2.49,
    "phase": "out",
    "signal": "L",
    "speed": 2.5,
    "blocked": null
   },
   {
-   "x": -117.7,
+   "x": -124.1,
    "z": -0.25,
    "lat": 2.85,
    "phase": "out",
@@ -471,7 +444,7 @@
    "blocked": null
   },
   {
-   "x": -116.9,
+   "x": -123.3,
    "z": -0.63,
    "lat": 3.23,
    "phase": "out",
@@ -480,192 +453,192 @@
    "blocked": null
   },
   {
-   "x": -116,
-   "z": -0.99,
-   "lat": 3.59,
+   "x": -122.4,
+   "z": -1.01,
+   "lat": 3.61,
    "phase": "out",
    "signal": "L",
    "speed": 4.4,
    "blocked": null
   },
   {
-   "x": -114.9,
-   "z": -1.38,
-   "lat": 3.98,
+   "x": -121.3,
+   "z": -1.4,
+   "lat": 4,
    "phase": "out",
    "signal": "L",
    "speed": 5.1,
    "blocked": null
   },
   {
-   "x": -113.7,
-   "z": -1.75,
-   "lat": 4.35,
+   "x": -120.1,
+   "z": -1.78,
+   "lat": 4.38,
    "phase": "out",
    "signal": "L",
    "speed": 5.8,
    "blocked": null
   },
   {
-   "x": -112.4,
-   "z": -2.12,
-   "lat": 4.72,
+   "x": -118.6,
+   "z": -2.17,
+   "lat": 4.77,
    "phase": "out",
    "signal": "L",
-   "speed": 6.4,
+   "speed": 6.5,
    "blocked": null
   },
   {
-   "x": -110.9,
-   "z": -2.49,
-   "lat": 5.09,
+   "x": -117.1,
+   "z": -2.55,
+   "lat": 5.15,
    "phase": "out",
    "signal": "L",
    "speed": 7.1,
    "blocked": null
   },
   {
-   "x": -109.2,
-   "z": -2.59,
-   "lat": 5.19,
+   "x": -115.5,
+   "z": -2.6,
+   "lat": 5.2,
    "phase": "pass",
    "signal": "L",
-   "speed": 7.7,
+   "speed": 7.8,
    "blocked": null
   },
   {
-   "x": -101.2,
-   "z": -1.81,
-   "lat": 4.41,
+   "x": -106.7,
+   "z": -1.69,
+   "lat": 4.29,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 10.6,
    "blocked": null
   },
   {
-   "x": -99,
-   "z": -1.47,
-   "lat": 4.07,
+   "x": -104.3,
+   "z": -1.36,
+   "lat": 3.96,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 11.3,
    "blocked": null
   },
   {
-   "x": -96.7,
-   "z": -1.13,
-   "lat": 3.73,
+   "x": -101.7,
+   "z": -1.03,
+   "lat": 3.63,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -94.6,
-   "z": -0.81,
-   "lat": 3.41,
+   "x": -99.1,
+   "z": -0.71,
+   "lat": 3.31,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -92.3,
-   "z": -0.47,
-   "lat": 3.07,
+   "x": -96.3,
+   "z": -0.36,
+   "lat": 2.96,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -90,
-   "z": -0.14,
-   "lat": 2.74,
+   "x": -93.8,
+   "z": -0.04,
+   "lat": 2.64,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -87.8,
-   "z": 0.19,
-   "lat": 2.41,
+   "x": -91.3,
+   "z": 0.26,
+   "lat": 2.34,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -85.6,
-   "z": 0.53,
-   "lat": 2.07,
+   "x": -88.5,
+   "z": 0.62,
+   "lat": 1.98,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -83.4,
-   "z": 0.86,
-   "lat": 1.74,
+   "x": -85.9,
+   "z": 0.94,
+   "lat": 1.66,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -81.1,
-   "z": 1.21,
-   "lat": 1.39,
+   "x": -83.3,
+   "z": 1.26,
+   "lat": 1.34,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -78.8,
-   "z": 1.54,
-   "lat": 1.06,
+   "x": -80.9,
+   "z": 1.57,
+   "lat": 1.03,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -76.6,
-   "z": 1.88,
-   "lat": 0.72,
+   "x": -78.1,
+   "z": 1.92,
+   "lat": 0.68,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -74.3,
-   "z": 2.22,
-   "lat": 0.38,
+   "x": -75.4,
+   "z": 2.25,
+   "lat": 0.35,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -72.1,
-   "z": 2.56,
-   "lat": 0.04,
+   "x": -72.7,
+   "z": 2.59,
+   "lat": 0.01,
    "phase": "back",
    "signal": "R",
-   "speed": 10,
+   "speed": 12,
    "blocked": null
   },
   {
-   "x": -70,
+   "x": -70.1,
    "z": 2.6,
    "lat": 0,
    "phase": null,
    "signal": "L",
-   "speed": 9.2,
+   "speed": 11.3,
    "blocked": null
   }
  ],
@@ -674,7 +647,7 @@
   "turn": "turn:L"
  },
  "sig": {
-  "signallingSeconds": 80.2,
+  "signallingSeconds": 77.4,
   "errors": []
  }
 }

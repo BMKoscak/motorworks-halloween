@@ -399,7 +399,7 @@ npm run dev</code></pre>
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="docs/screenshots/30_main_elm_intersection_signals.png" target="_blank"><img alt="" src="docs/screenshots/30_main_elm_intersection_signals.png" loading="lazy"/></a></td><td><a href="docs/screenshots/30_traffic_waiting_at_red.png" target="_blank"><img alt="" src="docs/screenshots/30_traffic_waiting_at_red.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/32_palace_cinema_marquee.png" target="_blank"><img alt="" src="docs/screenshots/32_palace_cinema_marquee.png" loading="lazy"/></a></td><td><a href="docs/screenshots/32_palace_seated_watching_night_of_the_v8.png" target="_blank"><img alt="" src="docs/screenshots/32_palace_seated_watching_night_of_the_v8.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/32_palace_film_chase_scene.png" target="_blank"><img alt="" src="docs/screenshots/32_palace_film_chase_scene.png" loading="lazy"/></a></td><td><a href="docs/screenshots/32_projection_booth_ghost.png" target="_blank"><img alt="" src="docs/screenshots/32_projection_booth_ghost.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/33_drive_in_from_car.png" target="_blank"><img alt="" src="docs/screenshots/33_drive_in_from_car.png" loading="lazy"/></a></td><td><a href="docs/screenshots/33_drive_in_intermission_reel.png" target="_blank"><img alt="" src="docs/screenshots/33_drive_in_intermission_reel.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/34_dyno_pull_in_progress.png" target="_blank"><img alt="" src="docs/screenshots/34_dyno_pull_in_progress.png" loading="lazy"/></a></td><td><a href="docs/screenshots/34_dyno_power_curve_display.png" target="_blank"><img alt="" src="docs/screenshots/34_dyno_power_curve_display.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/35_drag_strip_staging_tree.png" target="_blank"><img alt="" src="docs/screenshots/35_drag_strip_staging_tree.png" loading="lazy"/></a></td><td><a href="docs/screenshots/36_parts_runner_delivery_ring.png" target="_blank"><img alt="" src="docs/screenshots/36_parts_runner_delivery_ring.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/37_pumpkin_panic_arcade.png" target="_blank"><img alt="" src="docs/screenshots/37_pumpkin_panic_arcade.png" loading="lazy"/></a></td><td><a href="docs/screenshots/39_ufo_tractor_beam.png" target="_blank"><img alt="" src="docs/screenshots/39_ufo_tractor_beam.png" loading="lazy"/></a></td></tr><tr><td><a href="docs/screenshots/31_townsfolk_town_square.png" target="_blank"><img alt="" src="docs/screenshots/31_townsfolk_town_square.png" loading="lazy"/></a></td><td><a href="docs/screenshots/39_developers_room.png" target="_blank"><img alt="" src="docs/screenshots/39_developers_room.png" loading="lazy"/></a></td></tr></tbody></table>
 <h2 id="7-automated-qa-self-test-loop">7. Automated QA self-test loop</h2>
 <p><code>npm test</code> (<code>tests/qa.mjs</code>) drives the real game in Playwright Chromium on the local GPU. It presses real keys, measures the results through <code>window.__MW</code>, captures every screenshot in this document, and writes <code>tests/qa-results.json</code> plus the <code>qa</code> section of <code>TELEMETRY.json</code>.</p>
-<p>Last run: 2026-10-30T21:07:27.267Z — <b>48/50 checks passed</b> in 587s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).</p>
+<p>Last run: 2026-10-31T07:24:07.060Z — <b>49/50 checks passed</b> in 582s (Playwright, Chromium + ANGLE/D3D11 on the local GPU).</p>
 <ul>
 <li><span class="cb ok">✔</span> <b>boot</b> — Page loads, Blender assets stream in, zero console errors / uncaught exceptions</li>
 <li><span class="cb ok">✔</span> <b>assets</b> — All Blender .glb assets load with valid bounding boxes and hinged/jointed child nodes</li>
@@ -420,10 +420,10 @@ npm run dev</code></pre>
 <li><span class="cb ok">✔</span> <b>enterable_buildings</b> — Walk through hinged front doors into the Diner, Hardware Store, Police Station and a House (no collider blocking)</li>
 <li><span class="cb ok">✔</span> <b>seated_drivers</b> — Traffic cars, police cruisers, the forklift (and the player) have seated drivers; arms + steering wheel follow the steering; cabin glass is see-through</li>
 <li><span class="cb ok">✔</span> <b>navigation_and_bounds</b> — 30 s of traffic + police pursuit: no vehicle leaves |x|,|z| &lt; 600 or floats (|y - support| &lt; 0.75; physics vehicles may hop a little on kerbs and queued traffic); traffic stays on the road graph</li>
-<li><span class="cb no">✘</span> <b>police_foot_chase</b> — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars ⚠️ {"dismounts":3,"footChases":8,"officers":[{"state":"foot","pos":[116.9,0,6.7],"armed":false},{"state":"foot","pos":[32.7,0,-2.6],"armed":false},{"state":"beat","pos":[129.2,0,13],"armed":false},{"state":"foot","pos":[-75</li>
+<li><span class="cb no">✘</span> <b>police_foot_chase</b> — Wanted on foot: an officer dismounts the cruiser (hinged door) and chases the player on foot; armed response at 3+ stars ⚠️ {"dismounts":4,"footChases":9,"officers":[{"state":"foot","pos":[122,0.2,7.6],"armed":false},{"state":"foot","pos":[27.5,0,-3.1],"armed":false},{"state":"beat","pos":[127.6,0,13.2],"armed":true},{"state":"foot","pos":[-7</li>
 <li><span class="cb ok">✔</span> <b>weapons_and_shooting</b> — Buy/equip a pistol, aim (RMB/Q) and fire at a car tyre and a streetlight: ammo decrements, tyre pops, light goes out, impact FX</li>
 <li><span class="cb ok">✔</span> <b>light_switches</b> — Interior wall switch (E) toggles the building lights (fixtures + light sources + window glow); breaker box cuts power; Night Shift switch re-lights the plant</li>
-<li><span class="cb no">✘</span> <b>doorbell_and_burglary</b> — Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it ⚠️ {"doorbell":{"prompt":"[E] Ring doorbell","door":{"t":1,"target":1,"locked":false,"center":[-147,1.55,-25.5]},"homeowners":[{"state":"greet","ageGroup":"adult_male","pos":[-147,0.45,-26.2]}],"tip":37,"rings":1},"doorbell</li>
+<li><span class="cb ok">✔</span> <b>doorbell_and_burglary</b> — Ring a doorbell (E): chime, hinged front door opens, a demographic homeowner greets + tips; steal the TV and stash it visibly in an open car trunk; fence it</li>
 <li><span class="cb ok">✔</span> <b>fuel_and_gas_station</b> — Driving burns fuel (stalls when empty); refuelling at the Gas Station pumps restores 100% at $2/gal; jerrycan adds +35%</li>
 <li><span class="cb ok">✔</span> <b>pumpkins</b> — Golden Pumpkins: collecting all 5 unlocks the Monster Mash kiosk pack</li>
 <li><span class="cb ok">✔</span> <b>phantom</b> — Phantom Hearse: honking 3x at the Vlad crypt summons a ghost hearse race</li>
@@ -447,7 +447,7 @@ npm run dev</code></pre>
 <li><span class="cb ok">✔</span> <b>phase4_traffic_ai</b> — AI traffic: turn signals before junction turns; a car abandoned in the lane is seen, signalled around and overtaken (oncoming lane checked)</li>
 <li><span class="cb ok">✔</span> <b>phase4_damage_model</b> — Damage model: a wall crash dents the front panels, side hits scuff and bend the alignment, the Custom Bay bodywork repairs it all</li>
 <li><span class="cb ok">✔</span> <b>phase4_garage</b> — Kiosk garage: save named builds (browser storage), list them in the Garage tab, load one back into the configurator</li>
-<li><span class="cb ok">✔</span> <b>phase4_screen2</b> — Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with voiced cues; the drive-in runs it as the midnight movie</li>
+<li><span class="cb ok">✔</span> <b>phase4_screen2</b> — Palace Screen 2: annex auditorium entered from the lobby, one ticket for both screens, ATTACK OF THE 50 FT PUMPKIN plays with ElevenLabs-voiced cues; the drive-in runs it as the midnight movie</li>
 <li><span class="cb ok">✔</span> <b>phase4_gamepad</b> — Gamepad (standard mapping): left stick walks, A interacts, RT/LT drive, Start pauses; menus and keyboard keep working</li>
 <li><span class="cb ok">✔</span> <b>perf</b> — Performance snapshot (draw calls, triangles, FPS on this GPU)</li>
 <li><span class="cb ok">✔</span> <b>final_errors</b> — Zero console errors or uncaught exceptions during the whole QA run</li>
@@ -455,21 +455,21 @@ npm run dev</code></pre>
 <details><summary>Key measurements</summary>
 <pre><code>{
  "boot": {
-  "loadMs": 3182,
+  "loadMs": 3302,
   "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "consoleErrors": []
  },
  "factory_jumbotron_and_conveyor": {
   "factory": {
-   "ikSolves": 1663,
+   "ikSolves": 1579,
    "pressCycles": 1,
    "partsCarried": 3,
    "nightShift": false
   },
   "jumbotron": {
    "before": {
-    "frames": 115,
-    "overlay": 21,
+    "frames": 114,
+    "overlay": 20,
     "faces": 4
    },
    "viewStart": {
@@ -478,7 +478,7 @@ npm run dev</code></pre>
     "faces": 4
    },
    "after": {
-    "frames": 149,
+    "frames": 152,
     "overlay": 34,
     "faces": 4
    }
@@ -486,35 +486,35 @@ npm run dev</code></pre>
  },
  "physics": {
   "inCar": true,
-  "fpsDuringDrive": 33.9,
-  "speedAfterW": 16.66,
-  "leftHeadingDelta": 0.79,
-  "rightHeadingDelta": -0.664,
+  "fpsDuringDrive": 31,
+  "speedAfterW": 16.5,
+  "leftHeadingDelta": 0.809,
+  "rightHeadingDelta": -0.306,
   "braking": {
-   "before": 26.71,
-   "after": 12.19
+   "before": 26.38,
+   "after": 11.63
   },
   "highSpeed": {
-   "speed": 24.23,
-   "dHeading": -0.525
+   "speed": 23.86,
+   "dHeading": -0.513
   },
   "highSpeedTurn": {
-   "speed": 24.23,
-   "dHeading": -0.525
+   "speed": 23.86,
+   "dHeading": -0.513
   },
-  "skidMarks": 399
+  "skidMarks": 879
  },
  "theft": {
   "inStolenCar": true,
   "doorSwungOpen": 1,
   "markedStolen": true,
-  "wantedLevel": 2,
+  "wantedLevel": 3,
   "pursuit": [
    {
     "mode": "pursuit",
     "pos": [
-     75.4,
-     2.5
+     0.2,
+     7.8
     ],
     "siren": true,
     "parked": true
@@ -522,21 +522,39 @@ npm run dev</code></pre>
    {
     "mode": "pursuit",
     "pos": [
-     73.5,
-     -15.6
+     63,
+     -9.6
+    ],
+    "siren": true,
+    "parked": true
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     -21.1,
+     4.6
+    ],
+    "siren": true,
+    "parked": false
+   },
+   {
+    "mode": "pursuit",
+    "pos": [
+     48.7,
+     2.6
     ],
     "siren": true,
     "parked": false
    }
   ],
   "police": {
-   "level": 2,
+   "level": 3,
    "cars": [
     {
      "mode": "pursuit",
      "pos": [
-      75.4,
-      2.5
+      0.2,
+      7.8
      ],
      "siren": true,
      "parked": true
@@ -544,8 +562,26 @@ npm run dev</code></pre>
     {
      "mode": "pursuit",
      "pos": [
-      73.5,
-      -15.6
+      63,
+      -9.6
+     ],
+     "siren": true,
+     "parked": true
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      -21.1,
+      4.6
+     ],
+     "siren": true,
+     "parked": false
+    },
+    {
+     "mode": "pursuit",
+     "pos": [
+      48.7,
+      2.6
      ],
      "siren": true,
      "parked": false
@@ -555,11 +591,47 @@ npm run dev</code></pre>
     {
      "state": "foot",
      "pos": [
-      76.4,
+      23.1,
       0,
-      4.5
+      19.3
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      68.3,
+      0,
+      4.8
+     ],
+     "armed": true
+    },
+    {
+     "state": "foot",
+     "pos": [
+      148.5,
+      0.2,
+      10.2
+     ],
+     "armed": true
+    },
+    {
+     "state": "beat",
+     "pos": [
+      -86.5,
+      0.2,
+      -8
      ],
      "armed": false
+    },
+    {
+     "state": "foot",
+     "pos": [
+      57.8,
+      0.2,
+      11
+     ],
+     "armed": true
     },
     {
      "state": "seated",
@@ -571,29 +643,11 @@ npm run dev</code></pre>
      "armed": false
     },
     {
-     "state": "foot",
+     "state": "seated",
      "pos": [
-      136.6,
-      0.2,
-      7.2
-     ],
-     "armed": false
-    },
-    {
-     "state": "beat",
-     "pos": [
-      -86.8,
-      0.2,
-      -8
-     ],
-     "armed": false
-    },
-    {
-     "state": "beat",
-     "pos": [
-      35,
-      0.2,
-      8.7
+      0.4,
+      0,
+      0.1
      ],
      "armed": false
     }
@@ -601,22 +655,27 @@ npm run dev</code></pre>
    "stats": {
     "crimes": [
      {
-      "kind": "speeding",
-      "at": 107598,
+      "kind": "rammed",
+      "at": 101699,
       "level": 1
      },
      {
-      "kind": "theft",
-      "at": 138009,
+      "kind": "rammed",
+      "at": 111236,
       "level": 2
+     },
+     {
+      "kind": "theft",
+      "at": 139440,
+      "level": 3
      }
     ],
-    "maxLevel": 2,
+    "maxLevel": 3,
     "busts": 0,
-    "escapes": 1,
-    "dismounts": 1,
-    "footChases": 3,
-    "shotsAtPlayer": 0,
+    "escapes": 0,
+    "dismounts": 2,
+    "footChases": 4,
+    "shotsAtPlayer": 2,
     "resets": 0
    }
   }
@@ -631,24 +690,26 @@ npm run dev</code></pre>
    "velocityClamps": 0,
    "spinClamps": 0,
    "outOfBounds": 0,
-   "activeBodies": 119,
+   "activeBodies": 120,
    "traffic": {
     "whiskerBrakes": 0,
-    "junctionWaits": 2361,
+    "junctionWaits": 1700,
     "resets": 0,
-    "redStops": 17,
+    "redStops": 23,
     "redRuns": 0,
-    "stopSigns": 22,
+    "stopSigns": 24,
     "honks": 0,
-    "rage": 4,
+    "rage": 5,
     "relocated": 0,
-    "signalling": 1073.8441999988631
+    "signalling": 1189.7688999989055,
+    "overtakes": 1,
+    "overtakeAborts": 1
    },
    "nav": {
     "nodes": 1448,
-    "edges": 4505,
-    "rays": 10258,
-    "buildMs": 149
+    "edges": 4523,
+    "rays": 15561,
+    "buildMs": 141
    },
    "policeResets": 0
   }
@@ -663,7 +724,7 @@ npm run dev</code></pre>
    "after": 58.86
   },
   "stall": {
-   "speed": -0.77,
+   "speed": -0.39,
    "fs": {
     "fuel": 0,
     "stalled": true,
@@ -704,80 +765,32 @@ npm run dev</code></pre>
   },
   "refuel": {
    "prompt": "[E] Refuel — $2/gal (35% now)",
-   "fuel": 99.96,
-   "cost": 20.81,
+   "fuel": 99.99,
+   "cost": 20.82,
    "stats": {
     "refuels": 1,
-    "gallons": 10.403159999942776,
-    "spent": 20.806319999885552,
+    "gallons": 10.407599999999988,
+    "spent": 20.815199999999976,
     "jerrycans": 1
    }
   },
   "pumpPrompt": "[E] Refuel — $2/gal (35% now)",
-  "tankFull": 99.96,
+  "tankFull": 99.99,
   "chargedTwoDollarsPerGallon": {
-   "paid": 20.806319999828702,
-   "gal": 10.403159999942776
+   "paid": 20.815199999837205,
+   "gal": 10.407599999999988
   }
  },
  "traffic_obeys_signals": {
   "stats": {
-   "redStops": 6,
+   "redStops": 3,
    "redRuns": 0,
-   "stopSigns": 5,
-   "junctionWaits": 4016,
+   "stopSigns": 2,
+   "junctionWaits": 2892,
    "honks": 0
   },
-  "heldSamples": 19,
+  "heldSamples": 50,
   "redCars": [
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 62.2,
-    "toEnd": 17.5,
-    "x": -32,
-    "z": 3,
-    "sig": null
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 25,
-    "toEnd": 18.6,
-    "x": -33,
-    "z": 3,
-    "sig": null
-   },
-   {
-    "road": "exit",
-    "kind": "lane",
-    "speed": 1.4,
-    "red": true,
-    "blocked": null,
-    "bt": 0,
-    "toEnd": 3.1,
-    "x": 74,
-    "z": -17,
-    "sig": "R"
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 22.1,
-    "toEnd": 18.5,
-    "x": -33,
-    "z": 3,
-    "sig": "R"
-   },
    {
     "road": "main_le",
     "kind": "lane",
@@ -789,28 +802,16 @@ npm run dev</code></pre>
     "x": 17,
     "z": -3,
     "sig": "L"
-   },
-   {
-    "road": "main_lw",
-    "kind": "lane",
-    "speed": 0.2,
-    "red": true,
-    "blocked": "police",
-    "bt": 10.7,
-    "toEnd": 18.4,
-    "x": -33,
-    "z": 3,
-    "sig": null
    }
   ],
   "playerCars": [
    [
     61,
-    -8
+    -7
    ],
    [
-    63,
-    26
+    -39,
+    7
    ],
    [
     43,
@@ -818,19 +819,19 @@ npm run dev</code></pre>
    ],
    [
     0,
-    249
+    242
    ]
   ],
   "carsHoldAtRed": {
-   "redStops": 6,
+   "redStops": 3,
    "redRuns": 0,
-   "stopSigns": 5,
-   "junctionWaits": 4016,
+   "stopSigns": 2,
+   "junctionWaits": 2892,
    "honks": 0
   },
   "noRedLightRunners": 0,
   "heldCar": [
-   16.567826534357952,
+   16.558803542042337,
    -2.6
   ]
  },
@@ -842,11 +843,20 @@ npm run dev</code></pre>
    "pois": 41
   },
   "stats": {
-   "trips": 62,
-   "crossings": 32,
-   "signalWaits": 7483,
-   "gapWaits": 1387,
-   "ch</code></pre>
+   "trips": 87,
+   "crossings": 37,
+   "signalWaits": 12684,
+   "gapWaits": 1019,
+   "chats": 32,
+   "honkReactions": 0,
+   "trickOrTreats": 15,
+   "visits": 43
+  },
+  "states": {
+   "walk": 13,
+   "chat": 2,
+   "do": 2,
+   "inside":</code></pre>
 </details>
 <p><b>Problems found by the QA loop, and their fixes:</b></p>
 <ul>
@@ -886,9 +896,9 @@ npm run dev</code></pre>
 <p><b>Touch (Phase 4):</b> shown automatically on phones and tablets (or add <code>?touch=1</code> to the URL). There's a floating joystick on the left and drag-to-look on the right. On foot the buttons are <b>E</b>, jump, run, fire, aim and reload. In a car they're <b>gas</b>, <b>brake</b>, drift, horn, exit, E, camera, lights and radio. ❚❚ pauses.</p>
 <h2 id="9-telemetry">9. Telemetry</h2>
 <p><code>TELEMETRY.json</code> holds the machine-readable data. The title screen shows the same numbers on the toggleable <b>Build Telemetry</b> badge.</p>
-<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Build started → finished</td><td>2026-10-23T06:41:18Z → 2026-10-30T21:20:30.840Z (<b>182h 39m</b>)</td></tr><tr><td>LLM API calls (agent turns)</td><td>~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150) — approx. agent turns / tool round-trips, counted from the session</td></tr><tr><td>LLM input tokens</td><td>~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M)</td></tr><tr><td>LLM output tokens</td><td>~540k (est.)</td></tr><tr><td>Estimated LLM cost</td><td>metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%)</td></tr><tr><td>Context window at finish</td><td>~620k / 1M tokens (measured via session usage API)</td></tr><tr><td>ElevenLabs API key present</td><td>no</td></tr><tr><td>ElevenLabs API calls / characters</td><td>131 calls / 8620 chars</td></tr><tr><td>ElevenLabs voice IDs (planned per character)</td><td>foreman: <code>8vYCG1Q6bAbJWXdRuCIr</code>, skeleton: <code>RDSy0QN68yhrjuOgqzQ4</code>, groundskeeper: <code>7lJ2JuXZKHyck5zlS7XQ</code>, waitress: <code>tmHt9OXLAa0z2IPF4k0Y</code>, panic: <code>b8JMPeNuVrqqWExQc8e9</code>, civilian: <code>MJw0jtAmgm4D71m0HUJU</code>, dispatch: <code>umwdC76NumBsGtudno3p</code>, cop: <code>R3brgFoQWI6vjwB1A4aP</code>, dj: <code>CeNX9CMwmxDxUF5Q2Inm</code>, kiosk: <code>DXav2Iq8VRhoGarNlWcx</code>, phantom: <code>d3qrd1ge6zWDvUxIeXiH</code>, worker: <code>t1yzxMpe9zK42bXmI1T2</code>, worker2: <code>ZQF62XTHtHemfMB0pp0G</code>, pa: <code>no52gq1ZwK7Lmejv1EHz</code>, civ_m: <code>CwhRBWXzGAHq8TQ4Fs17</code>, panic_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_f: <code>MJw0jtAmgm4D71m0HUJU</code>, kid_b: <code>XjGYkUkzth8BPs29fmcV</code>, kid_g: <code>Nggzl2QAXh3OijoXD116</code>, fence: <code>2UyW0L6yjNuo3ZH3XnoV</code>, clerk: <code>t1yzxMpe9zK42bXmI1T2</code>, attendant: <code>tmHt9OXLAa0z2IPF4k0Y</code>, boxoffice: <code>EMYWJ6jws25NB7xJgDxG</code>, usher: <code>RhcROc65RG054lfxtUIT</code>, vendor: <code>ZQF62XTHtHemfMB0pp0G</code>, projectionist: <code>1BfrkuYXmEwp8AWqSLWk</code>, narrator: <code>9GVWvaD23xXLseHJlxy8</code>, hero: <code>W3C2vBPukr5b5jvoXhPK</code>, villain: <code>Vs5CmVCVJwW4odQS2pVf</code>, dynotech: <code>o9B86nZP8mMLaT5FBEzP</code>, marshal: <code>DduhIyyKkOosbP8VefhP</code>, rival: <code>sfb7P99ZKEnBPrm3Hqam</code>, payphone: <code>qhH5VOAvpCwvNpmn2srO</code>, farmer: <code>7lJ2JuXZKHyck5zlS7XQ</code>, sheriff: <code>W3C2vBPukr5b5jvoXhPK</code>, pumpkin: <code>d3qrd1ge6zWDvUxIeXiH</code></td></tr><tr><td>Dialogue lines synthesised / characters</td><td>138 lines / 9047 chars (elevenlabs: 131, sapi-local: 7)</td></tr><tr><td>Audio caching</td><td>138 lines cached in public/audio/dialogue (re-runs skip unchanged lines; 131 cache hits this run)</td></tr><tr><td>Blender GLB assets</td><td>30 files, 517.984 triangles, 21.8 MB</td></tr><tr><td>QA self-check runs / last result</td><td>30 full runs · last 48/50 · 883 individual check passes in total</td></tr><tr><td>Phase 2 build window</td><td>2026-10-23T11:45:00Z → 2026-10-30T21:20:30.840Z</td></tr><tr><td>Phase 2 ElevenLabs delta</td><td>+28 lines · +1587 chars · <b>+1796 credits</b> (9 new voices)</td></tr><tr><td>Phase 2 LLM usage</td><td>~150 (est.) calls · ~120M processed (est.; prompt-cache reads of a context that grew to ~920k) input · ~190k (est.) output</td></tr><tr><td>Phase 2 performance</td><td>headless Chromium on the R5 M330: 5-7 fps -&gt; 26-37 fps after the broadphase / collision-matrix / batching pass (physics 98 -&gt; 10 ms, render 45 -&gt; 20 ms per frame)</td></tr><tr><td>Phase 3 build window</td><td>2026-10-24T15:00:00Z → 2026-10-30T21:20:30.840Z</td></tr><tr><td>Phase 3 ElevenLabs delta</td><td>+49 lines · +2766 chars · <b>+3545 credits</b> (11 new voices)</td></tr><tr><td>Phase 3 Blender</td><td>roads.glb: 319 objects, 29,620 tris, 1720 KB · cinema.glb: 423 objects, 17,096 tris, 1166 KB · plant.glb + props.glb extended (dyno cell, break room, receiving dock, secret annex, bus stop, arcade, vending, time clock, crate, payphone, UFO, popcorn)</td></tr><tr><td>Phase 3 LLM usage</td><td>~150 tool round-trips calls · ~95M processed (est., prompt-cache reads; context peaked ~890k/1M) input · ~120k (est.) output</td></tr><tr><td>Phase 3 performance</td><td>17.5 fps · 2036 draw calls · 0.61M triangles (QA snapshot, headless Chromium)</td></tr></tbody></table>
+<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Build started → finished</td><td>2026-10-23T06:41:18Z → 2026-10-31T07:25:46.696Z (<b>192h 44m</b>)</td></tr><tr><td>LLM API calls (agent turns)</td><td>~520 (phase 1 ~210 + phase 2 ~160 + phase 3 ~150) — approx. agent turns / tool round-trips, counted from the session</td></tr><tr><td>LLM input tokens</td><td>~275M processed (est.; prompt-cache reads; phase 3 context peaked ~890k/1M)</td></tr><tr><td>LLM output tokens</td><td>~540k (est.)</td></tr><tr><td>Estimated LLM cost</td><td>metered - Claude Pro subscription (phase 3 pushed the 5-hour window to ~90%, weekly ~73%)</td></tr><tr><td>Context window at finish</td><td>~620k / 1M tokens (measured via session usage API)</td></tr><tr><td>ElevenLabs API key present</td><td>no</td></tr><tr><td>ElevenLabs API calls / characters</td><td>138 calls / 9047 chars</td></tr><tr><td>ElevenLabs voice IDs (planned per character)</td><td>foreman: <code>8vYCG1Q6bAbJWXdRuCIr</code>, skeleton: <code>RDSy0QN68yhrjuOgqzQ4</code>, groundskeeper: <code>7lJ2JuXZKHyck5zlS7XQ</code>, waitress: <code>tmHt9OXLAa0z2IPF4k0Y</code>, panic: <code>b8JMPeNuVrqqWExQc8e9</code>, civilian: <code>MJw0jtAmgm4D71m0HUJU</code>, dispatch: <code>umwdC76NumBsGtudno3p</code>, cop: <code>R3brgFoQWI6vjwB1A4aP</code>, dj: <code>CeNX9CMwmxDxUF5Q2Inm</code>, kiosk: <code>DXav2Iq8VRhoGarNlWcx</code>, phantom: <code>d3qrd1ge6zWDvUxIeXiH</code>, worker: <code>t1yzxMpe9zK42bXmI1T2</code>, worker2: <code>ZQF62XTHtHemfMB0pp0G</code>, pa: <code>no52gq1ZwK7Lmejv1EHz</code>, civ_m: <code>CwhRBWXzGAHq8TQ4Fs17</code>, panic_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_m: <code>iP95p4xoKVk53GoZ742B</code>, homeowner_f: <code>MJw0jtAmgm4D71m0HUJU</code>, kid_b: <code>XjGYkUkzth8BPs29fmcV</code>, kid_g: <code>Nggzl2QAXh3OijoXD116</code>, fence: <code>2UyW0L6yjNuo3ZH3XnoV</code>, clerk: <code>t1yzxMpe9zK42bXmI1T2</code>, attendant: <code>tmHt9OXLAa0z2IPF4k0Y</code>, boxoffice: <code>EMYWJ6jws25NB7xJgDxG</code>, usher: <code>RhcROc65RG054lfxtUIT</code>, vendor: <code>ZQF62XTHtHemfMB0pp0G</code>, projectionist: <code>1BfrkuYXmEwp8AWqSLWk</code>, narrator: <code>9GVWvaD23xXLseHJlxy8</code>, hero: <code>W3C2vBPukr5b5jvoXhPK</code>, villain: <code>Vs5CmVCVJwW4odQS2pVf</code>, dynotech: <code>o9B86nZP8mMLaT5FBEzP</code>, marshal: <code>DduhIyyKkOosbP8VefhP</code>, rival: <code>sfb7P99ZKEnBPrm3Hqam</code>, payphone: <code>qhH5VOAvpCwvNpmn2srO</code>, farmer: <code>8vYCG1Q6bAbJWXdRuCIr</code>, sheriff: <code>ISwSE9hIuXvEskn6jKEB</code>, pumpkin: <code>d3qrd1ge6zWDvUxIeXiH</code></td></tr><tr><td>Dialogue lines synthesised / characters</td><td>138 lines / 9047 chars (elevenlabs: 138)</td></tr><tr><td>Audio caching</td><td>138 ElevenLabs MP3s cached in public/audio/dialogue (re-imports skip known generations; 0 cache hits this run)</td></tr><tr><td>Blender GLB assets</td><td>30 files, 517.984 triangles, 21.8 MB</td></tr><tr><td>QA self-check runs / last result</td><td>33 full runs · last 49/50 · 1026 individual check passes in total</td></tr><tr><td>Phase 2 build window</td><td>2026-10-23T11:45:00Z → 2026-10-31T07:25:46.696Z</td></tr><tr><td>Phase 2 ElevenLabs delta</td><td>+28 lines · +1587 chars · <b>+1796 credits</b> (9 new voices)</td></tr><tr><td>Phase 2 LLM usage</td><td>~150 (est.) calls · ~120M processed (est.; prompt-cache reads of a context that grew to ~920k) input · ~190k (est.) output</td></tr><tr><td>Phase 2 performance</td><td>headless Chromium on the R5 M330: 5-7 fps -&gt; 26-37 fps after the broadphase / collision-matrix / batching pass (physics 98 -&gt; 10 ms, render 45 -&gt; 20 ms per frame)</td></tr><tr><td>Phase 3 build window</td><td>2026-10-24T15:00:00Z → 2026-10-31T07:25:46.696Z</td></tr><tr><td>Phase 3 ElevenLabs delta</td><td>+49 lines · +2766 chars · <b>+3545 credits</b> (11 new voices)</td></tr><tr><td>Phase 3 Blender</td><td>roads.glb: 319 objects, 29,620 tris, 1720 KB · cinema.glb: 423 objects, 17,096 tris, 1166 KB · plant.glb + props.glb extended (dyno cell, break room, receiving dock, secret annex, bus stop, arcade, vending, time clock, crate, payphone, UFO, popcorn)</td></tr><tr><td>Phase 3 LLM usage</td><td>~150 tool round-trips calls · ~95M processed (est., prompt-cache reads; context peaked ~890k/1M) input · ~120k (est.) output</td></tr><tr><td>Phase 3 performance</td><td>17.5 fps · 2036 draw calls · 0.61M triangles (QA snapshot, headless Chromium)</td></tr></tbody></table>
 <p><b>Per-phase timestamps</b> (from artifact modification times)</p>
-<table><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Minutes</th></tr></thead><tbody><tr><td>Environment survey &amp; scaffold</td><td>2026-10-23T06:41:18Z</td><td>2026-10-30T18:36:31.972Z</td><td>10795</td></tr><tr><td>Blender asset pipeline (27 GLBs)</td><td>2026-10-30T19:03:39.155Z</td><td>2026-10-30T19:49:16.352Z</td><td>46</td></tr><tr><td>Dialogue synthesis (54 lines)</td><td>2026-10-30T19:48:25.663Z</td><td>2026-10-30T19:49:26.857Z</td><td>1</td></tr><tr><td>Engine, world &amp; gameplay code</td><td>2026-10-30T19:23:12.350Z</td><td>2026-10-30T20:03:03.359Z</td><td>40</td></tr><tr><td>Automated QA loop</td><td>2026-10-30T20:50:18.920Z</td><td>2026-10-30T21:07:27.269Z</td><td>17</td></tr><tr><td>Documentation</td><td>2026-10-30T20:01:37.347Z</td><td>2026-10-30T21:20:30.840Z</td><td>79</td></tr><tr><td>Phase 2 · Blender interiors, plant, props, characters</td><td>2026-10-23T11:45:00Z</td><td>2026-10-30T19:47:54.163Z</td><td>10563</td></tr><tr><td>Phase 2 · ElevenLabs demographic voices (28 lines)</td><td>2026-10-30T19:43:26.857Z</td><td>2026-10-30T19:49:26.857Z</td><td>6</td></tr><tr><td>Phase 2 · Game systems (10 upgrades)</td><td>2026-10-30T18:36:32.534Z</td><td>2026-10-30T20:03:03.359Z</td><td>87</td></tr><tr><td>Phase 2 · QA expansion &amp; perf pass</td><td>2026-10-30T19:50:56.598Z</td><td>2026-10-30T21:07:27.269Z</td><td>77</td></tr><tr><td>Phase 3 · streets.json + Blender road network (roads.glb)</td><td>2026-10-24T15:00:00Z</td><td>2026-10-30T19:49:14.366Z</td><td>8929</td></tr><tr><td>Phase 3 · Blender cinema, dyno cell, break room, props</td><td>2026-10-30T19:49:14.366Z</td><td>2026-10-30T19:49:06.196Z</td><td>1</td></tr><tr><td>Phase 3 · ElevenLabs cast (49 lines, 11 voices)</td><td>2026-10-30T18:36:32.522Z</td><td>2026-10-30T19:49:26.857Z</td><td>73</td></tr><tr><td>Phase 3 · cinema, activities, secrets, townsfolk, signals</td><td>2026-10-30T18:36:32.561Z</td><td>2026-10-30T20:03:03.359Z</td><td>87</td></tr><tr><td>Phase 3 · QA expansion (12 checks)</td><td>2026-10-30T20:03:03.359Z</td><td>2026-10-30T21:07:27.269Z</td><td>64</td></tr><tr><td>Phase 4 · drag-race launch fix</td><td>2026-10-30T18:35:00Z</td><td>2026-10-30T19:00:42.376Z</td><td>26</td></tr><tr><td>Phase 4 · Blender HD pass (mwlib MW_DETAIL) + render pipeline</td><td>2026-10-30T19:00:42.376Z</td><td>2026-10-30T19:23:12.295Z</td><td>22</td></tr><tr><td>Phase 4 · perf pass (physics, culling, Jumbotron) + day/night</td><td>2026-10-30T19:23:12.295Z</td><td>2026-10-30T19:30:13.003Z</td><td>7</td></tr><tr><td>Phase 4 · traffic signals/overtaking, damage, garage</td><td>2026-10-30T19:32:24.521Z</td><td>2026-10-30T19:40:43.244Z</td><td>8</td></tr><tr><td>Phase 4 · Palace Screen 2 + Attack of the 50 ft Pumpkin</td><td>2026-10-30T19:40:43.244Z</td><td>2026-10-30T19:49:06.196Z</td><td>8</td></tr><tr><td>Phase 4 · gamepad + touch, QA expansion, docs</td><td>2026-10-30T19:56:05.991Z</td><td>2026-10-30T21:07:27.269Z</td><td>71</td></tr></tbody></table>
+<table><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Minutes</th></tr></thead><tbody><tr><td>Environment survey &amp; scaffold</td><td>2026-10-23T06:41:18Z</td><td>2026-10-30T18:36:31.972Z</td><td>10795</td></tr><tr><td>Blender asset pipeline (27 GLBs)</td><td>2026-10-30T19:03:39.155Z</td><td>2026-10-30T19:49:16.352Z</td><td>46</td></tr><tr><td>Dialogue synthesis (54 lines)</td><td>2026-10-31T06:49:09.023Z</td><td>2026-10-31T06:49:12.638Z</td><td>1</td></tr><tr><td>Engine, world &amp; gameplay code</td><td>2026-10-30T19:23:12.350Z</td><td>2026-10-31T07:00:19.840Z</td><td>697</td></tr><tr><td>Automated QA loop</td><td>2026-10-31T07:00:31.923Z</td><td>2026-10-31T07:24:07.063Z</td><td>24</td></tr><tr><td>Documentation</td><td>2026-10-30T20:01:37.347Z</td><td>2026-10-31T07:25:46.696Z</td><td>684</td></tr><tr><td>Phase 2 · Blender interiors, plant, props, characters</td><td>2026-10-23T11:45:00Z</td><td>2026-10-30T19:47:54.163Z</td><td>10563</td></tr><tr><td>Phase 2 · ElevenLabs demographic voices (28 lines)</td><td>2026-10-31T06:43:12.638Z</td><td>2026-10-31T06:49:12.638Z</td><td>6</td></tr><tr><td>Phase 2 · Game systems (10 upgrades)</td><td>2026-10-30T18:36:32.534Z</td><td>2026-10-31T07:00:19.840Z</td><td>744</td></tr><tr><td>Phase 2 · QA expansion &amp; perf pass</td><td>2026-10-30T19:50:56.598Z</td><td>2026-10-31T07:24:07.063Z</td><td>693</td></tr><tr><td>Phase 3 · streets.json + Blender road network (roads.glb)</td><td>2026-10-24T15:00:00Z</td><td>2026-10-30T19:49:14.366Z</td><td>8929</td></tr><tr><td>Phase 3 · Blender cinema, dyno cell, break room, props</td><td>2026-10-30T19:49:14.366Z</td><td>2026-10-30T19:49:06.196Z</td><td>1</td></tr><tr><td>Phase 3 · ElevenLabs cast (49 lines, 11 voices)</td><td>2026-10-30T18:36:32.522Z</td><td>2026-10-31T06:49:12.638Z</td><td>733</td></tr><tr><td>Phase 3 · cinema, activities, secrets, townsfolk, signals</td><td>2026-10-30T18:36:32.561Z</td><td>2026-10-31T07:00:19.840Z</td><td>744</td></tr><tr><td>Phase 3 · QA expansion (12 checks)</td><td>2026-10-31T07:00:19.840Z</td><td>2026-10-31T07:24:07.063Z</td><td>24</td></tr><tr><td>Phase 4 · drag-race launch fix</td><td>2026-10-30T18:35:00Z</td><td>2026-10-30T19:00:42.376Z</td><td>26</td></tr><tr><td>Phase 4 · Blender HD pass (mwlib MW_DETAIL) + render pipeline</td><td>2026-10-30T19:00:42.376Z</td><td>2026-10-30T19:23:12.295Z</td><td>22</td></tr><tr><td>Phase 4 · perf pass (physics, culling, Jumbotron) + day/night</td><td>2026-10-30T19:23:12.295Z</td><td>2026-10-30T19:30:13.003Z</td><td>7</td></tr><tr><td>Phase 4 · traffic signals/overtaking, damage, garage</td><td>2026-10-30T19:32:24.521Z</td><td>2026-10-30T19:40:43.244Z</td><td>8</td></tr><tr><td>Phase 4 · Palace Screen 2 + Attack of the 50 ft Pumpkin</td><td>2026-10-30T19:40:43.244Z</td><td>2026-10-30T19:49:06.196Z</td><td>8</td></tr><tr><td>Phase 4 · gamepad + touch, QA expansion, docs</td><td>2026-10-30T19:56:05.991Z</td><td>2026-10-31T07:24:07.063Z</td><td>688</td></tr></tbody></table>
 <h2 id="10-screenshot-gallery">10. Screenshot gallery</h2>
 <p><a href="docs/screenshots/01_title_screen.png" target="_blank"><img alt="01_title_screen" src="docs/screenshots/01_title_screen.png" loading="lazy"/></a> <a href="docs/screenshots/01b_title_telemetry_badge.png" target="_blank"><img alt="01b_title_telemetry_badge" src="docs/screenshots/01b_title_telemetry_badge.png" loading="lazy"/></a> <a href="docs/screenshots/03_player_at_plant_wall.png" target="_blank"><img alt="03_player_at_plant_wall" src="docs/screenshots/03_player_at_plant_wall.png" loading="lazy"/></a> <a href="docs/screenshots/04_pause_menu.png" target="_blank"><img alt="04_pause_menu" src="docs/screenshots/04_pause_menu.png" loading="lazy"/></a> <a href="docs/screenshots/05_dialogue_foreman.png" target="_blank"><img alt="05_dialogue_foreman" src="docs/screenshots/05_dialogue_foreman.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_body.png" target="_blank"><img alt="06_kiosk_body" src="docs/screenshots/06_kiosk_body.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_bodykit.png" target="_blank"><img alt="06_kiosk_bodykit" src="docs/screenshots/06_kiosk_bodykit.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_lighting.png" target="_blank"><img alt="06_kiosk_lighting" src="docs/screenshots/06_kiosk_lighting.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_livery.png" target="_blank"><img alt="06_kiosk_livery" src="docs/screenshots/06_kiosk_livery.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_open.png" target="_blank"><img alt="06_kiosk_open" src="docs/screenshots/06_kiosk_open.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_paint.png" target="_blank"><img alt="06_kiosk_paint" src="docs/screenshots/06_kiosk_paint.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_performance.png" target="_blank"><img alt="06_kiosk_performance" src="docs/screenshots/06_kiosk_performance.png" loading="lazy"/></a> <a href="docs/screenshots/06_kiosk_wheels.png" target="_blank"><img alt="06_kiosk_wheels" src="docs/screenshots/06_kiosk_wheels.png" loading="lazy"/></a> <a href="docs/screenshots/07_rollout_finished_car.png" target="_blank"><img alt="07_rollout_finished_car" src="docs/screenshots/07_rollout_finished_car.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_1_stamping.png" target="_blank"><img alt="07_station_1_stamping" src="docs/screenshots/07_station_1_stamping.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_2_bodyshop.png" target="_blank"><img alt="07_station_2_bodyshop" src="docs/screenshots/07_station_2_bodyshop.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_3_paint.png" target="_blank"><img alt="07_station_3_paint" src="docs/screenshots/07_station_3_paint.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_4_powertrain.png" target="_blank"><img alt="07_station_4_powertrain" src="docs/screenshots/07_station_4_powertrain.png" loading="lazy"/></a> <a href="docs/screenshots/07_station_5_final_qc.png" target="_blank"><img alt="07_station_5_final_qc" src="docs/screenshots/07_station_5_final_qc.png" loading="lazy"/></a> <a href="docs/screenshots/08_hinges_open.png" target="_blank"><img alt="08_hinges_open" src="docs/screenshots/08_hinges_open.png" loading="lazy"/></a> <a href="docs/screenshots/09_driving_turn.png" target="_blank"><img alt="09_driving_turn" src="docs/screenshots/09_driving_turn.png" loading="lazy"/></a> <a href="docs/screenshots/09b_handbrake_drift.png" target="_blank"><img alt="09b_handbrake_drift" src="docs/screenshots/09b_handbrake_drift.png" loading="lazy"/></a> <a href="docs/screenshots/10_cockpit_view.png" target="_blank"><img alt="10_cockpit_view" src="docs/screenshots/10_cockpit_view.png" loading="lazy"/></a> <a href="docs/screenshots/11_diner.png" target="_blank"><img alt="11_diner" src="docs/screenshots/11_diner.png" loading="lazy"/></a> <a href="docs/screenshots/11_elm_avenue.png" target="_blank"><img alt="11_elm_avenue" src="docs/screenshots/11_elm_avenue.png" loading="lazy"/></a> <a href="docs/screenshots/11_gas_station.png" target="_blank"><img alt="11_gas_station" src="docs/screenshots/11_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/11_halloween_yard.png" target="_blank"><img alt="11_halloween_yard" src="docs/screenshots/11_halloween_yard.png" loading="lazy"/></a> <a href="docs/screenshots/11_hardware_store.png" target="_blank"><img alt="11_hardware_store" src="docs/screenshots/11_hardware_store.png" loading="lazy"/></a> <a href="docs/screenshots/11_hill_road.png" target="_blank"><img alt="11_hill_road" src="docs/screenshots/11_hill_road.png" loading="lazy"/></a> <a href="docs/screenshots/11_leaf_piles_trees.png" target="_blank"><img alt="11_leaf_piles_trees" src="docs/screenshots/11_leaf_piles_trees.png" loading="lazy"/></a> <a href="docs/screenshots/11_main_street.png" target="_blank"><img alt="11_main_street" src="docs/screenshots/11_main_street.png" loading="lazy"/></a> <a href="docs/screenshots/11_motorworks_plant.png" target="_blank"><img alt="11_motorworks_plant" src="docs/screenshots/11_motorworks_plant.png" loading="lazy"/></a> <a href="docs/screenshots/11_police_station.png" target="_blank"><img alt="11_police_station" src="docs/screenshots/11_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_crypts.png" target="_blank"><img alt="12_cemetery_crypts" src="docs/screenshots/12_cemetery_crypts.png" loading="lazy"/></a> <a href="docs/screenshots/12_cemetery_gates.png" target="_blank"><img alt="12_cemetery_gates" src="docs/screenshots/12_cemetery_gates.png" loading="lazy"/></a> <a href="docs/screenshots/12_vlad_crypt.png" target="_blank"><img alt="12_vlad_crypt" src="docs/screenshots/12_vlad_crypt.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_chase_overview.png" target="_blank"><img alt="13_police_chase_overview" src="docs/screenshots/13_police_chase_overview.png" loading="lazy"/></a> <a href="docs/screenshots/13_police_pursuit.png" target="_blank"><img alt="13_police_pursuit" src="docs/screenshots/13_police_pursuit.png" loading="lazy"/></a> <a href="docs/screenshots/13_stealing_car.png" target="_blank"><img alt="13_stealing_car" src="docs/screenshots/13_stealing_car.png" loading="lazy"/></a> <a href="docs/screenshots/14_busted.png" target="_blank"><img alt="14_busted" src="docs/screenshots/14_busted.png" loading="lazy"/></a> <a href="docs/screenshots/15_graveyard_shift_trial.png" target="_blank"><img alt="15_graveyard_shift_trial" src="docs/screenshots/15_graveyard_shift_trial.png" loading="lazy"/></a> <a href="docs/screenshots/15_monster_mash_kiosk.png" target="_blank"><img alt="15_monster_mash_kiosk" src="docs/screenshots/15_monster_mash_kiosk.png" loading="lazy"/></a> <a href="docs/screenshots/15_phantom_hearse.png" target="_blank"><img alt="15_phantom_hearse" src="docs/screenshots/15_phantom_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/16_bodyshop_robot_carrying_door.png" target="_blank"><img alt="16_bodyshop_robot_carrying_door" src="docs/screenshots/16_bodyshop_robot_carrying_door.png" loading="lazy"/></a> <a href="docs/screenshots/16_conveyor_skillet_press_feeder.png" target="_blank"><img alt="16_conveyor_skillet_press_feeder" src="docs/screenshots/16_conveyor_skillet_press_feeder.png" loading="lazy"/></a> <a href="docs/screenshots/16_jumbotron_closeup.png" target="_blank"><img alt="16_jumbotron_closeup" src="docs/screenshots/16_jumbotron_closeup.png" loading="lazy"/></a> <a href="docs/screenshots/16_jumbotron_live_feed.png" target="_blank"><img alt="16_jumbotron_live_feed" src="docs/screenshots/16_jumbotron_live_feed.png" loading="lazy"/></a> <a href="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" target="_blank"><img alt="17_kids_and_townsfolk_sidewalk" src="docs/screenshots/17_kids_and_townsfolk_sidewalk.png" loading="lazy"/></a> <a href="docs/screenshots/17_trick_or_treater_kid_dialogue.png" target="_blank"><img alt="17_trick_or_treater_kid_dialogue" src="docs/screenshots/17_trick_or_treater_kid_dialogue.png" loading="lazy"/></a> <a href="docs/screenshots/18_foreman_office_observation.png" target="_blank"><img alt="18_foreman_office_observation" src="docs/screenshots/18_foreman_office_observation.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_diner.png" target="_blank"><img alt="18_interior_diner" src="docs/screenshots/18_interior_diner.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_hardware.png" target="_blank"><img alt="18_interior_hardware" src="docs/screenshots/18_interior_hardware.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_house.png" target="_blank"><img alt="18_interior_house" src="docs/screenshots/18_interior_house.png" loading="lazy"/></a> <a href="docs/screenshots/18_interior_police.png" target="_blank"><img alt="18_interior_police" src="docs/screenshots/18_interior_police.png" loading="lazy"/></a> <a href="docs/screenshots/19_forklift_operator.png" target="_blank"><img alt="19_forklift_operator" src="docs/screenshots/19_forklift_operator.png" loading="lazy"/></a> <a href="docs/screenshots/19_seated_police_officer.png" target="_blank"><img alt="19_seated_police_officer" src="docs/screenshots/19_seated_police_officer.png" loading="lazy"/></a> <a href="docs/screenshots/19_seated_traffic_driver.png" target="_blank"><img alt="19_seated_traffic_driver" src="docs/screenshots/19_seated_traffic_driver.png" loading="lazy"/></a> <a href="docs/screenshots/20_pursuit_traffic_navigation.png" target="_blank"><img alt="20_pursuit_traffic_navigation" src="docs/screenshots/20_pursuit_traffic_navigation.png" loading="lazy"/></a> <a href="docs/screenshots/21_armed_response.png" target="_blank"><img alt="21_armed_response" src="docs/screenshots/21_armed_response.png" loading="lazy"/></a> <a href="docs/screenshots/21_officer_dismounts_cruiser.png" target="_blank"><img alt="21_officer_dismounts_cruiser" src="docs/screenshots/21_officer_dismounts_cruiser.png" loading="lazy"/></a> <a href="docs/screenshots/21_police_foot_chase.png" target="_blank"><img alt="21_police_foot_chase" src="docs/screenshots/21_police_foot_chase.png" loading="lazy"/></a> <a href="docs/screenshots/22_aim_and_fire_pistol.png" target="_blank"><img alt="22_aim_and_fire_pistol" src="docs/screenshots/22_aim_and_fire_pistol.png" loading="lazy"/></a> <a href="docs/screenshots/22_jack_o_lantern_launcher.png" target="_blank"><img alt="22_jack_o_lantern_launcher" src="docs/screenshots/22_jack_o_lantern_launcher.png" loading="lazy"/></a> <a href="docs/screenshots/23_breaker_box_power_cut.png" target="_blank"><img alt="23_breaker_box_power_cut" src="docs/screenshots/23_breaker_box_power_cut.png" loading="lazy"/></a> <a href="docs/screenshots/23_house_lights_off.png" target="_blank"><img alt="23_house_lights_off" src="docs/screenshots/23_house_lights_off.png" loading="lazy"/></a> <a href="docs/screenshots/23_house_lights_on.png" target="_blank"><img alt="23_house_lights_on" src="docs/screenshots/23_house_lights_on.png" loading="lazy"/></a> <a href="docs/screenshots/23_motorworks_night_shift_blacklight.png" target="_blank"><img alt="23_motorworks_night_shift_blacklight" src="docs/screenshots/23_motorworks_night_shift_blacklight.png" loading="lazy"/></a> <a href="docs/screenshots/24_carrying_stolen_tv.png" target="_blank"><img alt="24_carrying_stolen_tv" src="docs/screenshots/24_carrying_stolen_tv.png" loading="lazy"/></a> <a href="docs/screenshots/24_doorbell_homeowner_greets.png" target="_blank"><img alt="24_doorbell_homeowner_greets" src="docs/screenshots/24_doorbell_homeowner_greets.png" loading="lazy"/></a> <a href="docs/screenshots/24_tv_stashed_in_trunk.png" target="_blank"><img alt="24_tv_stashed_in_trunk" src="docs/screenshots/24_tv_stashed_in_trunk.png" loading="lazy"/></a> <a href="docs/screenshots/25_gas_station_pump_hose.png" target="_blank"><img alt="25_gas_station_pump_hose" src="docs/screenshots/25_gas_station_pump_hose.png" loading="lazy"/></a> <a href="docs/screenshots/25_out_of_fuel_stalled.png" target="_blank"><img alt="25_out_of_fuel_stalled" src="docs/screenshots/25_out_of_fuel_stalled.png" loading="lazy"/></a> <a href="docs/screenshots/25_refuelling_pump_counter.png" target="_blank"><img alt="25_refuelling_pump_counter" src="docs/screenshots/25_refuelling_pump_counter.png" loading="lazy"/></a> <a href="docs/screenshots/30_elm_avenue_crosswalk_markings.png" target="_blank"><img alt="30_elm_avenue_crosswalk_markings" src="docs/screenshots/30_elm_avenue_crosswalk_markings.png" loading="lazy"/></a> <a href="docs/screenshots/30_main_elm_intersection_signals.png" target="_blank"><img alt="30_main_elm_intersection_signals" src="docs/screenshots/30_main_elm_intersection_signals.png" loading="lazy"/></a> <a href="docs/screenshots/30_traffic_waiting_at_red.png" target="_blank"><img alt="30_traffic_waiting_at_red" src="docs/screenshots/30_traffic_waiting_at_red.png" loading="lazy"/></a> <a href="docs/screenshots/31_townsfolk_town_square.png" target="_blank"><img alt="31_townsfolk_town_square" src="docs/screenshots/31_townsfolk_town_square.png" loading="lazy"/></a> <a href="docs/screenshots/32_palace_cinema_marquee.png" target="_blank"><img alt="32_palace_cinema_marquee" src="docs/screenshots/32_palace_cinema_marquee.png" loading="lazy"/></a> <a href="docs/screenshots/32_palace_film_chase_scene.png" target="_blank"><img alt="32_palace_film_chase_scene" src="docs/screenshots/32_palace_film_chase_scene.png" loading="lazy"/></a> <a href="docs/screenshots/32_palace_post_credits_stinger.png" target="_blank"><img alt="32_palace_post_credits_stinger" src="docs/screenshots/32_palace_post_credits_stinger.png" loading="lazy"/></a> <a href="docs/screenshots/32_palace_seated_watching_night_of_the_v8.png" target="_blank"><img alt="32_palace_seated_watching_night_of_the_v8" src="docs/screenshots/32_palace_seated_watching_night_of_the_v8.png" loading="lazy"/></a> <a href="docs/screenshots/32_projection_booth_ghost.png" target="_blank"><img alt="32_projection_booth_ghost" src="docs/screenshots/32_projection_booth_ghost.png" loading="lazy"/></a> <a href="docs/screenshots/33_drive_in_from_car.png" target="_blank"><img alt="33_drive_in_from_car" src="docs/screenshots/33_drive_in_from_car.png" loading="lazy"/></a> <a href="docs/screenshots/33_drive_in_intermission_reel.png" target="_blank"><img alt="33_drive_in_intermission_reel" src="docs/screenshots/33_drive_in_intermission_reel.png" loading="lazy"/></a> <a href="docs/screenshots/34_dyno_power_curve_display.png" target="_blank"><img alt="34_dyno_power_curve_display" src="docs/screenshots/34_dyno_power_curve_display.png" loading="lazy"/></a> <a href="docs/screenshots/34_dyno_pull_in_progress.png" target="_blank"><img alt="34_dyno_pull_in_progress" src="docs/screenshots/34_dyno_pull_in_progress.png" loading="lazy"/></a> <a href="docs/screenshots/35_drag_race_finish.png" target="_blank"><img alt="35_drag_race_finish" src="docs/screenshots/35_drag_race_finish.png" loading="lazy"/></a> <a href="docs/screenshots/35_drag_strip_staging_tree.png" target="_blank"><img alt="35_drag_strip_staging_tree" src="docs/screenshots/35_drag_strip_staging_tree.png" loading="lazy"/></a> <a href="docs/screenshots/36_break_room_time_clock.png" target="_blank"><img alt="36_break_room_time_clock" src="docs/screenshots/36_break_room_time_clock.png" loading="lazy"/></a> <a href="docs/screenshots/36_parts_runner_delivery_ring.png" target="_blank"><img alt="36_parts_runner_delivery_ring" src="docs/screenshots/36_parts_runner_delivery_ring.png" loading="lazy"/></a> <a href="docs/screenshots/37_pumpkin_panic_arcade.png" target="_blank"><img alt="37_pumpkin_panic_arcade" src="docs/screenshots/37_pumpkin_panic_arcade.png" loading="lazy"/></a> <a href="docs/screenshots/38_stunt_ramp_landing.png" target="_blank"><img alt="38_stunt_ramp_landing" src="docs/screenshots/38_stunt_ramp_landing.png" loading="lazy"/></a> <a href="docs/screenshots/39_developers_room.png" target="_blank"><img alt="39_developers_room" src="docs/screenshots/39_developers_room.png" loading="lazy"/></a> <a href="docs/screenshots/39_konami_big_head_mode.png" target="_blank"><img alt="39_konami_big_head_mode" src="docs/screenshots/39_konami_big_head_mode.png" loading="lazy"/></a> <a href="docs/screenshots/39_ufo_tractor_beam.png" target="_blank"><img alt="39_ufo_tractor_beam" src="docs/screenshots/39_ufo_tractor_beam.png" loading="lazy"/></a> <a href="docs/screenshots/46_ultra_main_street.png" target="_blank"><img alt="46_ultra_main_street" src="docs/screenshots/46_ultra_main_street.png" loading="lazy"/></a> <a href="docs/screenshots/47_day_noon.png" target="_blank"><img alt="47_day_noon" src="docs/screenshots/47_day_noon.png" loading="lazy"/></a> <a href="docs/screenshots/47_dusk_6pm.png" target="_blank"><img alt="47_dusk_6pm" src="docs/screenshots/47_dusk_6pm.png" loading="lazy"/></a> <a href="docs/screenshots/47_night_11pm.png" target="_blank"><img alt="47_night_11pm" src="docs/screenshots/47_night_11pm.png" loading="lazy"/></a> <a href="docs/screenshots/48_traffic_overtake.png" target="_blank"><img alt="48_traffic_overtake" src="docs/screenshots/48_traffic_overtake.png" loading="lazy"/></a> <a href="docs/screenshots/49_damage_dents.png" target="_blank"><img alt="49_damage_dents" src="docs/screenshots/49_damage_dents.png" loading="lazy"/></a> <a href="docs/screenshots/50_kiosk_garage.png" target="_blank"><img alt="50_kiosk_garage" src="docs/screenshots/50_kiosk_garage.png" loading="lazy"/></a> <a href="docs/screenshots/51_screen2_seated.png" target="_blank"><img alt="51_screen2_seated" src="docs/screenshots/51_screen2_seated.png" loading="lazy"/></a> <a href="docs/screenshots/blender_barrier.png" target="_blank"><img alt="blender_barrier" src="docs/screenshots/blender_barrier.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_coupe.png" target="_blank"><img alt="blender_car_coupe" src="docs/screenshots/blender_car_coupe.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_hearse.png" target="_blank"><img alt="blender_car_hearse" src="docs/screenshots/blender_car_hearse.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_muscle.png" target="_blank"><img alt="blender_car_muscle" src="docs/screenshots/blender_car_muscle.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_pickup.png" target="_blank"><img alt="blender_car_pickup" src="docs/screenshots/blender_car_pickup.png" loading="lazy"/></a> <a href="docs/screenshots/blender_car_sedan.png" target="_blank"><img alt="blender_car_sedan" src="docs/screenshots/blender_car_sedan.png" loading="lazy"/></a> <a href="docs/screenshots/blender_cemetery_gate.png" target="_blank"><img alt="blender_cemetery_gate" src="docs/screenshots/blender_cemetery_gate.png" loading="lazy"/></a> <a href="docs/screenshots/blender_character.png" target="_blank"><img alt="blender_character" src="docs/screenshots/blender_character.png" loading="lazy"/></a> <a href="docs/screenshots/blender_cinema.png" target="_blank"><img alt="blender_cinema" src="docs/screenshots/blender_cinema.png" loading="lazy"/></a> <a href="docs/screenshots/blender_cinema_interior.png" target="_blank"><img alt="blender_cinema_interior" src="docs/screenshots/blender_cinema_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_crane.png" target="_blank"><img alt="blender_crane" src="docs/screenshots/blender_crane.png" loading="lazy"/></a> <a href="docs/screenshots/blender_diner.png" target="_blank"><img alt="blender_diner" src="docs/screenshots/blender_diner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_diner_interior.png" target="_blank"><img alt="blender_diner_interior" src="docs/screenshots/blender_diner_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_forklift.png" target="_blank"><img alt="blender_forklift" src="docs/screenshots/blender_forklift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_garage_door.png" target="_blank"><img alt="blender_garage_door" src="docs/screenshots/blender_garage_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_gas_station.png" target="_blank"><img alt="blender_gas_station" src="docs/screenshots/blender_gas_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_hardware.png" target="_blank"><img alt="blender_hardware" src="docs/screenshots/blender_hardware.png" loading="lazy"/></a> <a href="docs/screenshots/blender_hardware_interior.png" target="_blank"><img alt="blender_hardware_interior" src="docs/screenshots/blender_hardware_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_a.png" target="_blank"><img alt="blender_house_a" src="docs/screenshots/blender_house_a.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_a_interior.png" target="_blank"><img alt="blender_house_a_interior" src="docs/screenshots/blender_house_a_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_b.png" target="_blank"><img alt="blender_house_b" src="docs/screenshots/blender_house_b.png" loading="lazy"/></a> <a href="docs/screenshots/blender_house_b_interior.png" target="_blank"><img alt="blender_house_b_interior" src="docs/screenshots/blender_house_b_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_jumbotron.png" target="_blank"><img alt="blender_jumbotron" src="docs/screenshots/blender_jumbotron.png" loading="lazy"/></a> <a href="docs/screenshots/blender_lift.png" target="_blank"><img alt="blender_lift" src="docs/screenshots/blender_lift.png" loading="lazy"/></a> <a href="docs/screenshots/blender_parts.png" target="_blank"><img alt="blender_parts" src="docs/screenshots/blender_parts.png" loading="lazy"/></a> <a href="docs/screenshots/blender_plant.png" target="_blank"><img alt="blender_plant" src="docs/screenshots/blender_plant.png" loading="lazy"/></a> <a href="docs/screenshots/blender_plant_interior.png" target="_blank"><img alt="blender_plant_interior" src="docs/screenshots/blender_plant_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_police_station.png" target="_blank"><img alt="blender_police_station" src="docs/screenshots/blender_police_station.png" loading="lazy"/></a> <a href="docs/screenshots/blender_police_station_interior.png" target="_blank"><img alt="blender_police_station_interior" src="docs/screenshots/blender_police_station_interior.png" loading="lazy"/></a> <a href="docs/screenshots/blender_press.png" target="_blank"><img alt="blender_press" src="docs/screenshots/blender_press.png" loading="lazy"/></a> <a href="docs/screenshots/blender_props.png" target="_blank"><img alt="blender_props" src="docs/screenshots/blender_props.png" loading="lazy"/></a> <a href="docs/screenshots/blender_roads.png" target="_blank"><img alt="blender_roads" src="docs/screenshots/blender_roads.png" loading="lazy"/></a> <a href="docs/screenshots/blender_robot_arm.png" target="_blank"><img alt="blender_robot_arm" src="docs/screenshots/blender_robot_arm.png" loading="lazy"/></a> <a href="docs/screenshots/blender_scanner.png" target="_blank"><img alt="blender_scanner" src="docs/screenshots/blender_scanner.png" loading="lazy"/></a> <a href="docs/screenshots/blender_skeleton.png" target="_blank"><img alt="blender_skeleton" src="docs/screenshots/blender_skeleton.png" loading="lazy"/></a> <a href="docs/screenshots/blender_sliding_door.png" target="_blank"><img alt="blender_sliding_door" src="docs/screenshots/blender_sliding_door.png" loading="lazy"/></a> <a href="docs/screenshots/blender_wheels.png" target="_blank"><img alt="blender_wheels" src="docs/screenshots/blender_wheels.png" loading="lazy"/></a></p>
 <h2 id="11-phase-4-build-log-rtx-graphics-performance-drag-race-fix-and-the-roadmap">11. Phase 4 build log: RTX graphics, performance, drag-race fix and the roadmap</h2>
@@ -968,7 +978,7 @@ npm run dev</code></pre>
 <h3 id="11-7-palace-screen-2-and-a-second-film">11.7 Palace Screen 2 and a second film</h3>
 <ul>
 <li><b>The annex</b> (<code>blender/build_world.py</code>). A second auditorium is built onto the Palace's west side: 11 × 25.6 m, entered through a new doorway in the lobby's west wall. It has its own screen (<code>Cinema_Screen2</code>), stage, curtains and valance, 6 rows of 14 seats facing the opposite way to Screen 1, aisle lights, sconces, pendant fixtures, a wall-shelf projector with a beam, a <b>SCREEN 2</b> neon on the street side, and SCREEN 1 / SCREEN 2 signs over the doorways. The marquee now lists both features.</li>
-<li>*<b>Attack of the 50 ft Pumpkin</b>* (<code>PumpkinFilm</code> in <code>src/world/cinema.js</code>). A 98-second procedural reel built on the same film-look engine: leader, studio card, title, Hollis farm patch, growth, Main Street rampage, the sheriff's ramp jump, *SQUASHED.*, credits and a post-credits sprout. It has <b>7 voiced cue lines</b> from 3 new characters (Old Man Hollis, Sheriff Mabel Gourd and The Pumpkin). Their voices are local Windows SAPI takes from the existing pipeline (<code>npm run dialogue</code> with no API key; cached, and no ElevenLabs credits used). Setting <code>ELEVENLABS_API_KEY</code> upgrades them, because the new voices reuse the IDs of similar ElevenLabs cast members.</li>
+<li>*<b>Attack of the 50 ft Pumpkin</b>* (<code>PumpkinFilm</code> in <code>src/world/cinema.js</code>). A 98-second procedural reel built on the same film-look engine: leader, studio card, title, Hollis farm patch, growth, Main Street rampage, the sheriff's ramp jump, *SQUASHED.*, credits and a post-credits sprout. It has <b>7 voiced cue lines</b> from 3 new characters (Old Man Hollis, Sheriff Mabel Gourd and The Pumpkin). All seven are <b>ElevenLabs <code>eleven_v4</code> takes</b> (Phase 4.1), generated through the ElevenLabs connector and imported with <code>scripts/import-elevenlabs.mjs</code>. That makes the whole cast, all 138 lines, ElevenLabs. The voices are the Movie Trailer Voice narrator, Grits Oxley (the Gritty Grandpa voice) for the farmer, <b>Michelle Strong Southern</b> for the sheriff (new to the cast), and the Final Boss voice for the Pumpkin. The 7 lines cost about 711 credits.</li>
 <li><b>Programming.</b> Screen 1 shows *Night of the V8* and Screen 2 shows *Attack of the 50 ft Pumpkin*. One $8 ticket covers both, and the usher checks both doors. The <b>drive-in</b> runs the V8 as the early show and the Pumpkin as the <b>midnight movie</b> (00:00–12:00 on the clock). Each reel redraws only while one of its screens is near the camera.</li>
 </ul>
 <p><a href="docs/screenshots/phase4/43_screen2_grid.png" target="_blank"><img alt="Screen 2 annex, lobby doorway, auditorium, drive-in midnight movie" src="docs/screenshots/phase4/43_screen2_grid.png" loading="lazy"/></a> <a href="docs/screenshots/phase4/44_screen2_film_grid.png" target="_blank"><img alt="Attack of the 50 ft Pumpkin" src="docs/screenshots/phase4/44_screen2_film_grid.png" loading="lazy"/></a></p>
@@ -981,13 +991,20 @@ npm run dev</code></pre>
 <p><a href="docs/screenshots/phase4/45_controls_grid.png" target="_blank"><img alt="Gamepad and touch" src="docs/screenshots/phase4/45_controls_grid.png" loading="lazy"/></a></p>
 <h3 id="11-9-qa">11.9 QA</h3>
 <p>Eight new checks: <code>phase4_render_pipeline</code>, <code>phase4_perf_culling</code>, <code>phase4_day_night</code>, <code>phase4_traffic_ai</code>, <code>phase4_damage_model</code>, <code>phase4_garage</code>, <code>phase4_screen2</code> and <code>phase4_gamepad</code>. The existing <code>drag_race</code> check now also asserts the staged car stays on the strip. QA freezes the clock at 18:00 so the documentation screenshots keep the classic dusk look. Results are in §7.</p>
-<p><b>Result: 48/50 on the final run.</b> All Phase 4 checks pass, and so does the drag-race regression assertion. The two misses are flaky checks that predate this work:</p>
+<p><b>Result: 49/50 on the production build</b> (<code>npm run build</code> served by <code>vite preview</code>, which is what GitHub Pages serves). All Phase 4 checks pass, and so does the drag-race regression assertion. Across runs, two checks have been flaky in ways that predate this work:</p>
 <ul>
 <li><b><code>doorbell_and_burglary</code>'s fence step:</b> a single E press at the fence sometimes doesn't sell.</li>
-<li><b><code>police_foot_chase</code>:</b> the officer has to close within 20 m in a fixed window, and the run measured 20.4–22.7 m.</li>
+<li><b><code>police_foot_chase</code>:</b> the officer has to close within 20 m in a fixed window after earlier checks have left other officers on the street. In isolation the officer closes from 13.7 m to 0.8 m and tackles.</li>
 </ul>
 <p>To check that these weren't regressions, the original Phase 3 build was run with its own 42 checks in a separate worktree on the same machine. It scored <b>40/42</b>, failing the fence step and <code>traffic_obeys_signals</code>.</p>
 <p>Investigating <code>traffic_obeys_signals</code> turned up a real, pre-existing jam: traffic queued forever behind a police cruiser left standing in the lane (one car had waited 286 s). Phase 4 now overtakes a stationary cruiser like any parked car and, near junctions, nudges past it after 6 s. That check passes in the final run.</p>
+<p><b>Phase 4.1 traffic fixes</b>, found by running QA on the production build:</p>
+<ul>
+<li><b>Braking distance.</b> Traffic now looks *braking distance* ahead (v²/14 on top of its following distance) for anything standing still in the lane. At 12 m/s it used to see an abandoned car too late, shunt it 20 m down the street and stall.</li>
+<li><b>Overtaking near junctions.</b> An overtake only needs room to clear the obstacle before the junction (distance to it + 11 m) instead of a flat 30 m. Once alongside, the car doesn't abort for the junction.</li>
+<li><b>No permanent jams.</b> If it can't overtake, the head car nudges a stationary car or cruiser along at walking pace after 8 s. Cars waiting behind it no longer use the deadlock creep, which used to stack a whole queue onto one spot. One test car left 19 m before a junction had held 6+ cars for 230 s.</li>
+<li><b>Minified builds.</b> QA hooks name activities with a stable <code>activityName</code>, because the production bundle minifies class names (the dyno and arcade checks read <code>PT</code> / <code>LT</code>).</li>
+</ul>
 <p>Other test-only fixes:</p>
 <ul>
 <li>The Jumbotron check now measures the feed while the screen is in view.</li>
